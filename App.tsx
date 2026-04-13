@@ -1,21 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from "framer-motion";
 import AtomVisualizer from './components/AtomicVisualizer';
 import PeriodicTable from './components/PeriodicTable';
-// import AITutor from './components/AITutor';
-// import AufbauChart from './components/AufbauChart';
-import TrendsVisualizer from './components/TrendsVisualizer';
-// import ElementComparison from './components/ElementComparison';
-// import BondingLab from './components/BondingLab';
-// import GeometryLab from './components/GeometryLab';
-// import HistoricalModels from './components/HistoricalModels';
-// import QuantumConfigLab from './components/QuantumConfigLab';
-// import QuantumNumbersLab from './components/QuantumNumbersLab';
 import LandingPage from './components/LandingPage';
-// import SubjectPage from './components/SubjectPage';
-// import TopicPage from './components/TopicPage';
-// import GestureController from './components/GestureController';
-import { ELEMENTS, SUBJECTS } from './constants';
-import { ElementData, Subject, Topic, ViewState, TopicId } from './types';
+import { ELEMENTS } from './constants';
+import { ElementData, ViewState, TopicId, Subject, Topic } from './types';
 import { Sparkles, MessageSquare, X } from 'lucide-react';
 
 const App: React.FC = () => {
@@ -25,10 +14,9 @@ const App: React.FC = () => {
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [showAITutor, setShowAITutor] = useState(false);
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-  const [isGestureActive, setIsGestureActive] = useState(false);
   const [atomRotation, setAtomRotation] = useState({ dx: 0, dy: 0 });
-  const [gesturePos, setGesturePos] = useState<{ x: number, y: number } | null>(null);
 
+  // 🌗 Theme handling
   useEffect(() => {
     if (theme === 'light') {
       document.body.classList.add('light-mode');
@@ -37,156 +25,156 @@ const App: React.FC = () => {
     }
   }, [theme]);
 
-  const handleSelectSubject = (subject: Subject) => {
-    setSelectedSubject(subject);
-    setViewState(ViewState.SUBJECT);
-  };
-
-  const handleSelectTopic = (topic: Topic) => {
-    setSelectedTopic(topic);
-    setViewState(ViewState.TOPIC);
-  };
-
-  const handleBackToLanding = () => {
-    setViewState(ViewState.LANDING);
-    setSelectedSubject(null);
-  };
-
-  const handleBackToSubject = () => {
-    setViewState(ViewState.SUBJECT);
-    setSelectedTopic(null);
-  };
-
+  // 🔬 Visualization
   const renderVisualization = (topicId: TopicId) => {
     switch (topicId) {
       case TopicId.ATOMIC_STRUCTURE:
         return (
           <div className="flex flex-col h-full">
+
             <div className="flex-1 min-h-0">
               <AtomVisualizer element={selectedElement} rotation={atomRotation} />
             </div>
-            <div className="h-[420px] border-t border-white/5 bg-slate-950/50 backdrop-blur-xl overflow-y-auto">
-              <PeriodicTable onSelect={setSelectedElement} selectedSymbol={selectedElement.symbol} />
+
+            <div className="h-[420px] border-t border-white/10 bg-slate-950/50 backdrop-blur-xl overflow-y-auto">
+              <PeriodicTable
+                onSelect={setSelectedElement}
+                selectedSymbol={selectedElement.symbol}
+              />
             </div>
+
+            {/* Theory */}
+            <div className="p-6 bg-slate-900 border-t border-white/10">
+              <h2 className="text-2xl font-bold mb-3 text-indigo-400">
+                Theory: Atomic Structure
+              </h2>
+              <p className="text-slate-300 leading-relaxed">
+                Atoms consist of protons, neutrons, and electrons. Electrons are arranged
+                in orbitals and determine chemical properties and bonding behavior.
+              </p>
+            </div>
+
           </div>
         );
-    //   case TopicId.MOLECULAR_STRUCTURE:
-    //     return (
-    //       <div className="grid grid-cols-1 lg:grid-cols-2 h-full gap-px bg-white/5 overflow-y-auto">
-    //         <div className="bg-[#020617] p-8">
-    //           <BondingLab />
-    //         </div>
-    //         <div className="bg-[#020617] p-8">
-    //           <GeometryLab />
-    //         </div>
-    //       </div>
-    //     );
-    //   case TopicId.QUANTUM_NUMBERS:
-    //     return (
-    //       <div className="h-full overflow-y-auto p-8">
-    //         <QuantumNumbersLab />
-    //       </div>
-    //     );
-    //   case TopicId.PERIODIC_TRENDS:
-    //     return (
-    //       <div className="grid grid-cols-1 lg:grid-cols-2 h-full gap-px bg-white/5 overflow-y-auto">
-    //         <div className="bg-[#020617] p-8">
-    //           <TrendsVisualizer />
-    //         </div>
-    //         <div className="bg-[#020617] p-8">
-    //           <ElementComparison />
-    //         </div>
-    //       </div>
-    //     );
-    //   case TopicId.HISTORICAL_MODELS:
-    //     return (
-    //       <div className="h-full overflow-y-auto p-8">
-    //         <HistoricalModels />
-    //       </div>
-    //     );
-    //   case TopicId.QUANTUM_CONFIG:
-    //     return (
-    //       <div className="grid grid-cols-1 lg:grid-cols-2 h-full gap-px bg-white/5 overflow-y-auto">
-    //         <div className="bg-[#020617] p-8">
-    //           <QuantumConfigLab element={selectedElement} />
-    //         </div>
-    //         <div className="bg-[#020617] p-8">
-    //           <AufbauChart atomicNumber={selectedElement.number} />
-    //         </div>
-    //       </div>
-    //     );
+
       default:
         return (
           <div className="flex flex-col items-center justify-center h-full text-slate-400 p-12 text-center">
-            <div className="w-20 h-20 rounded-3xl bg-slate-900 flex items-center justify-center mb-6 border border-white/5">
+            <div className="w-20 h-20 rounded-3xl bg-slate-900 flex items-center justify-center mb-6 border border-white/10">
               <Sparkles size={40} className="text-indigo-500" />
             </div>
-            <h3 className="text-2xl font-bold text-white mb-2 uppercase tracking-tighter italic">Coming Soon</h3>
-            <p className="max-w-md mx-auto text-sm font-mono uppercase tracking-widest opacity-50">
-              Our scientists are working hard to bring this interactive module to life.
+
+            <h3 className="text-2xl font-bold text-white mb-2 uppercase italic">
+              Coming Soon
+            </h3>
+
+            <p className="max-w-md text-sm opacity-60">
+              This module is under development.
             </p>
           </div>
         );
     }
   };
 
-  const handleGestureSelect = () => {
-    // This is a bit complex since we don't have the exact coordinates in this component easily
-    // But we can trigger a generic "Click" or use a ref from GestureController
-    // For now, let's assume GestureController handles the coordinate-based click if we pass it a ref
-  };
-
-  const handleGestureBack = () => {
-    if (viewState === ViewState.TOPIC) {
-      handleBackToSubject();
-    } else if (viewState === ViewState.SUBJECT) {
-      handleBackToLanding();
-    }
-  };
-
-  const handleGestureScroll = (delta: number) => {
-    window.scrollBy({ top: delta, behavior: 'smooth' });
-    // Also scroll any scrollable containers
-    const scrollable = document.querySelector('.overflow-y-auto');
-    if (scrollable) {
-      scrollable.scrollBy({ top: delta, behavior: 'smooth' });
-    }
-  };
-
-  const handleGestureRotate = (dx: number, dy: number) => {
-    setAtomRotation({ dx, dy });
-    // Reset after a frame to avoid continuous rotation if not moving
-    setTimeout(() => setAtomRotation({ dx: 0, dy: 0 }), 50);
-  };
-
   return (
-    <div className="min-h-screen flex flex-col bg-[#020617] selection:bg-indigo-500/30 transition-colors duration-400">
-      {/* Structural Overlays */}
+    <div className="min-h-screen flex flex-col bg-[#020617] text-white transition-colors duration-500">
+
+      {/* Background */}
       <div className="fixed inset-0 pointer-events-none -z-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20"></div>
 
-      {viewState === ViewState.LANDING && (
-        <LandingPage onSelectSubject={handleSelectSubject} />
-      )}
+      {/* 🌗 Theme Toggle */}
+      <button
+        onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+        className="fixed top-6 right-6 px-4 py-2 rounded-lg bg-indigo-600 text-white z-[200] hover:scale-105 transition"
+      >
+        {theme === 'dark' ? '☀️ Light Mode' : '🌙 Dark Mode'}
+      </button>
 
-      {/* {viewState === ViewState.SUBJECT && selectedSubject && (
-        <SubjectPage
-          subject={selectedSubject}
-          onSelectTopic={handleSelectTopic}
-          onBack={handleBackToLanding}
-        />
-      )} */}
+      {/* 🔥 ANIMATED PAGES */}
+      <AnimatePresence mode="wait">
 
-      {/*
-      {viewState === ViewState.TOPIC && selectedTopic && (
-        <TopicPage
-          topic={selectedTopic}
-          onBack={handleBackToSubject}
-          visualization={renderVisualization(selectedTopic.id)}
-        />
-      )}
-      */}
+        {/* Landing */}
+        {viewState === ViewState.LANDING && (
+          <motion.div
+            key="landing"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -50 }}
+            transition={{ duration: 0.4 }}
+          >
+            <LandingPage
+              onSelectSubject={(subject) => {
+                setSelectedSubject(subject);
+                setViewState(ViewState.SUBJECT);
+              }}
+            />
+          </motion.div>
+        )}
 
-      {/* AI Tutor Floating Button */}
+        {/* Subject */}
+        {viewState === ViewState.SUBJECT && selectedSubject && (
+          <motion.div
+            key="subject"
+            initial={{ opacity: 0, x: 100 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -100 }}
+            transition={{ duration: 0.4 }}
+            className="p-10"
+          >
+            <button
+              onClick={() => setViewState(ViewState.LANDING)}
+              className="mb-6 px-4 py-2 bg-indigo-600 rounded-lg"
+            >
+              ← Back
+            </button>
+
+            <h1 className="text-4xl font-bold mb-6">
+              {selectedSubject.name}
+            </h1>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {selectedSubject.topics.map((topic) => (
+                <div
+                  key={topic.id}
+                  onClick={() => {
+                    setSelectedTopic(topic);
+                    setViewState(ViewState.TOPIC);
+                  }}
+                  className="p-6 bg-slate-900 rounded-xl cursor-pointer hover:scale-105 transition"
+                >
+                  <h2 className="text-xl font-bold">{topic.name}</h2>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Topic */}
+        {viewState === ViewState.TOPIC && selectedTopic && (
+          <motion.div
+            key="topic"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            transition={{ duration: 0.4 }}
+            className="p-10"
+          >
+            <button
+              onClick={() => setViewState(ViewState.SUBJECT)}
+              className="mb-6 px-4 py-2 bg-indigo-600 rounded-lg"
+            >
+              ← Back
+            </button>
+
+            <div className="h-[80vh]">
+              {renderVisualization(selectedTopic.id)}
+            </div>
+          </motion.div>
+        )}
+
+      </AnimatePresence>
+
+      {/* 🤖 AI Button */}
       <button
         onClick={() => setShowAITutor(!showAITutor)}
         className={`fixed bottom-8 right-8 w-16 h-16 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-500 z-[100] ${
@@ -200,35 +188,19 @@ const App: React.FC = () => {
         )}
       </button>
 
-      {/* AI Tutor Panel */}
-      <div className={`fixed bottom-28 right-8 w-[450px] h-[600px] z-[100] transition-all duration-500 origin-bottom-right ${
-        showAITutor ? 'scale-100 opacity-100 translate-y-0' : 'scale-90 opacity-0 translate-y-10 pointer-events-none'
-      }`}>
-        {/* <AITutor currentElement={selectedElement} /> */}
+      {/* 🤖 AI Panel */}
+      <div
+        className={`fixed bottom-28 right-8 w-[420px] h-[550px] z-[100] transition-all duration-500 origin-bottom-right ${
+          showAITutor
+            ? 'scale-100 opacity-100'
+            : 'scale-90 opacity-0 pointer-events-none'
+        }`}
+      >
+        <div className="bg-slate-900 h-full rounded-xl flex items-center justify-center text-slate-400 shadow-xl">
+          AI Tutor Coming Soon...
+        </div>
       </div>
 
-      {/* <GestureController 
-        isActive={isGestureActive}
-        onToggle={() => setIsGestureActive(!isGestureActive)}
-        onBack={handleGestureBack}
-        onScroll={handleGestureScroll}
-        onRotate={handleGestureRotate}
-        onSelect={handleGestureSelect}
-        onPositionChange={setGesturePos}
-      /> */}
-
-      {isGestureActive && gesturePos && (
-        <div 
-          className="fixed w-8 h-8 rounded-full border-2 border-indigo-500 bg-indigo-500/20 pointer-events-none z-[200] flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.5)] transition-transform duration-75"
-          style={{ 
-            left: `${gesturePos.x * 100}%`, 
-            top: `${gesturePos.y * 100}%`,
-            transform: 'translate(-50%, -50%)'
-          }}
-        >
-          <div className="w-1 h-1 bg-white rounded-full" />
-        </div>
-      )}
     </div>
   );
 };

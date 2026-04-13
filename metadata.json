@@ -1,0 +1,8 @@
+{
+  "name": "Atomic Explorer",
+  "description": "An interactive educational platform to explore atomic structure, electron configurations, and subatomic particles through dynamic visualizations and an AI chemistry tutor.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ]
+}

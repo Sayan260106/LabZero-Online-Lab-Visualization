@@ -16,6 +16,15 @@ const App: React.FC = () => {
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
   const [atomRotation, setAtomRotation] = useState({ dx: 0, dy: 0 });
 
+  const [message, setMessage] = useState("Loading...");
+
+  useEffect(() => {
+    fetch('http://127.0.0.1:8000/api/status/')
+      .then(res => res.json())
+      .then(data => setMessage(data.status))
+      .catch(err => setMessage("Backend offline"));
+  }, []);
+
   // 🌗 Theme handling
   useEffect(() => {
     if (theme === 'light') {
@@ -200,8 +209,12 @@ const App: React.FC = () => {
           AI Tutor Coming Soon...
         </div>
       </div>
-
+      <div>
+      <h1>LabZero Visualization</h1>
+      <p>Backend Status: {message}</p>
     </div>
+    </div>
+    
   );
 };
 

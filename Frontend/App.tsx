@@ -21,13 +21,16 @@ const App: React.FC = () => {
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
   const [showAITutor, setShowAITutor] = useState(false);
 
-  // ✅ Default theme from system
-  const [theme, setTheme] = useState<'dark' | 'light'>(
-    window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-  );
+  const [theme, setTheme] = useState<'dark' | 'light'>('light'); // default safe
 
   const [atomRotation, setAtomRotation] = useState({ dx: 0, dy: 0 });
   const [message, setMessage] = useState("Loading...");
+
+  // ✅ Detect system theme AFTER mount (prevents crash)
+  useEffect(() => {
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    setTheme(isDark ? 'dark' : 'light');
+  }, []);
 
   // ✅ Backend check
   useEffect(() => {
@@ -37,7 +40,7 @@ const App: React.FC = () => {
       .catch(() => setMessage("Backend offline"));
   }, []);
 
-  // ✅ CRITICAL FIX: Proper Tailwind dark mode handling
+  // ✅ APPLY DARK MODE (TAILWIND)
   useEffect(() => {
     const html = document.documentElement;
 
@@ -156,7 +159,7 @@ const App: React.FC = () => {
         {theme === 'dark' ? '☀️ Light' : '🌙 Dark'}
       </button>
 
-      {/* Backend */}
+      {/* Backend Status */}
       <div className="fixed bottom-4 left-4 text-sm opacity-70">
         Backend: {message}
       </div>

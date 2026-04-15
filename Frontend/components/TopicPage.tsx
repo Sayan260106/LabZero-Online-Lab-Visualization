@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Topic, TopicView, Resource } from '../types';
-import { ArrowLeft, BookOpen, Play, Sparkles, FileText, Trash2, Download, ExternalLink, Presentation, GraduationCap } from 'lucide-react';
+import { ArrowLeft, BookOpen, Play, Sparkles, FileText, Trash2, Download, Presentation, GraduationCap, Volume2, VolumeX } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 // import ResourceUpload from './ResourceUpload';
 // import ResourceViewer from './ResourceViewer';
-//import Classroom from './Classroom';
+// import Classroom from './Classroom';
 // import { getResourcesByTopic, deleteResource } from '../services/resourceService';
+import { motion, AnimatePresence } from 'motion/react';
 
 interface TopicPageProps {
   topic: Topic;
@@ -17,28 +18,45 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization }) =
   const [activeView, setActiveView] = useState<TopicView>(TopicView.THEORY);
   const [resources, setResources] = useState<Resource[]>([]);
   const [viewingResource, setViewingResource] = useState<Resource | null>(null);
+  const [isReading, setIsReading] = useState(false);
 
-//   const fetchResources = async () => {
-//     try {
-//       const data = await getResourcesByTopic(topic.id);
-//       setResources(data.sort((a, b) => b.timestamp - a.timestamp));
-//     } catch (err) {
-//       console.error('Failed to fetch resources:', err);
-//     }
-//   };
+  // const fetchResources = async () => {
+  //   try {
+  //     const data = await getResourcesByTopic(topic.id);
+  //     setResources(data.sort((a, b) => b.timestamp - a.timestamp));
+  //   } catch (err) {
+  //     console.error('Failed to fetch resources:', err);
+  //   }
+  // };
 
-//   useEffect(() => {
-//     fetchResources();
-//   }, [topic.id]);
+  // useEffect(() => {
+  //   fetchResources();
+  //   return () => {
+  //     window.speechSynthesis.cancel();
+  //   };
+  // }, [topic.id]);
 
-//   const handleDeleteResource = async (id: string) => {
-//     try {
-//       await deleteResource(id);
-//       fetchResources();
-//     } catch (err) {
-//       console.error('Failed to delete resource:', err);
-//     }
-//   };
+  const toggleReadAloud = () => {
+    if (isReading) {
+      window.speechSynthesis.cancel();
+      setIsReading(false);
+    } else {
+      const utterance = new SpeechSynthesisUtterance(topic.theory.replace(/[#*`]/g, ''));
+      utterance.onend = () => setIsReading(false);
+      utterance.onerror = () => setIsReading(false);
+      window.speechSynthesis.speak(utterance);
+      setIsReading(true);
+    }
+  };
+
+  // const handleDeleteResource = async (id: string) => {
+  //   try {
+  //     await deleteResource(id);
+  //     fetchResources();
+  //   } catch (err) {
+  //     console.error('Failed to delete resource:', err);
+  //   }
+  // };
 
   const handleDownloadResource = (resource: Resource) => {
     const link = document.createElement('a');
@@ -50,158 +68,217 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization }) =
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full bg-[#020617] grainy">
       {/* Topic Header */}
-      <header className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-2xl border-b border-white/5 px-8 py-5 transition-all">
+      <header className="sticky top-0 z-50 bg-[#020617]/80 backdrop-blur-2xl border-b border-white/5 px-8 py-4">
         <div className="max-w-[1800px] mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-8">
             <button
               onClick={onBack}
-              className="w-10 h-10 rounded-xl bg-slate-900 border border-white/5 flex items-center justify-center text-slate-400 hover:text-white hover:border-white/20 transition-all group"
+              className="group flex items-center gap-2 text-slate-500 hover:text-white transition-colors"
             >
-              <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
+              <ArrowLeft size={18} className="group-hover:-translate-x-1 transition-transform" />
+              <span className="text-[10px] font-mono uppercase tracking-[0.2em]">Back</span>
             </button>
+            
+            <div className="h-8 w-px bg-white/10" />
+            
             <div>
-              <h1 className="text-2xl font-black tracking-tighter text-white uppercase italic">
+              <h1 className="text-xl font-display font-bold tracking-tight text-white uppercase">
                 {topic.name}
               </h1>
-              <p className="text-[10px] font-mono text-indigo-500 uppercase tracking-widest">
-                Interactive Module
-              </p>
+              <div className="flex items-center gap-2">
+                <div className="w-1 h-1 rounded-full bg-primary animate-pulse" />
+                <span className="text-[9px] font-mono text-slate-500 uppercase tracking-[0.3em]">
+                  Module ID: {topic.id.split('_').join('-')}
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 p-1 bg-slate-900/50 rounded-2xl border border-white/5">
-            <button
-              onClick={() => setActiveView(TopicView.THEORY)}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm uppercase tracking-widest transition-all ${
-                activeView === TopicView.THEORY
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/40'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <BookOpen size={16} />
-              Theory
-            </button>
-            <button
-              onClick={() => setActiveView(TopicView.VISUALIZATION)}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm uppercase tracking-widest transition-all ${
-                activeView === TopicView.VISUALIZATION
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/40'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Play size={16} />
-              Visualization
-            </button>
-            <button
-              onClick={() => setActiveView(TopicView.CLASSROOM)}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm uppercase tracking-widest transition-all ${
-                activeView === TopicView.CLASSROOM
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/40'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <GraduationCap size={16} />
-              Classroom
-            </button>
-          </div>
+          <nav className="flex items-center gap-1 p-1 bg-white/[0.02] rounded-full border border-white/5">
+            {[
+              { id: TopicView.THEORY, label: 'Theory', icon: BookOpen },
+              { id: TopicView.VISUALIZATION, label: 'Visualization', icon: Play },
+              { id: TopicView.CLASSROOM, label: 'Classroom', icon: GraduationCap },
+            ].map((view) => (
+              <button
+                key={view.id}
+                onClick={() => setActiveView(view.id)}
+                className={`relative flex items-center gap-2 px-6 py-2 rounded-full text-[10px] font-mono uppercase tracking-[0.2em] transition-all duration-300 ${
+                  activeView === view.id
+                    ? 'text-white'
+                    : 'text-slate-500 hover:text-slate-300'
+                }`}
+              >
+                {activeView === view.id && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className="absolute inset-0 bg-primary rounded-full shadow-[0_0_20px_rgba(var(--color-primary-rgb),0.4)]"
+                    transition={{ type: 'spring', bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+                <view.icon size={14} className="relative z-10" />
+                <span className="relative z-10">{view.label}</span>
+              </button>
+            ))}
+          </nav>
         </div>
       </header>
 
       {/* Content Area */}
       <main className="flex-1 overflow-hidden relative">
-        {activeView === TopicView.THEORY ? (
-          <div className="h-full overflow-y-auto px-8 py-12">
-            <div className="max-w-4xl mx-auto space-y-8">
-              {/* Theory Content */}
-              <div className="p-12 rounded-[40px] bg-slate-900/50 border border-white/5 backdrop-blur-3xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 p-8 text-indigo-500/20">
-                  <Sparkles size={120} />
-                </div>
-                <div className="prose prose-invert prose-indigo max-w-none">
-                  <ReactMarkdown>{topic.theory}</ReactMarkdown>
-                </div>
-              </div>
-
-              {/* Resources Section */}
-              <div className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex flex-col">
-                    <h2 className="text-xl font-black text-white uppercase italic tracking-tight">Study Resources</h2>
-                    <p className="text-[10px] font-mono text-indigo-500 uppercase tracking-widest">Uploaded Materials</p>
+        <AnimatePresence mode="wait">
+          {activeView === TopicView.THEORY ? (
+            <motion.div 
+              key="theory"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="h-full overflow-y-auto px-8 py-16"
+            >
+              <div className="max-w-7xl mx-auto space-y-20">
+                {/* Theory Content */}
+                <div className="space-y-12">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center gap-3">
+                      <div className="h-px w-12 bg-primary" />
+                      <h2 className="text-[10px] font-mono text-primary uppercase tracking-[0.4em]">Theoretical Foundation</h2>
+                    </div>
+                    <button
+                      onClick={toggleReadAloud}
+                      className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all duration-300 ${
+                        isReading 
+                          ? 'bg-rose-500/10 border-rose-500/50 text-rose-400 shadow-[0_0_15px_rgba(244,63,94,0.2)]' 
+                          : 'bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10'
+                      }`}
+                    >
+                      {isReading ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                      <span className="text-[9px] font-mono uppercase tracking-widest">
+                        {isReading ? 'Stop Reading' : 'Read Aloud'}
+                      </span>
+                    </button>
+                  </div>
+                  <div className="relative pl-8">
+                    <div className="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-primary/50 via-primary/10 to-transparent" />
+                    <div className="prose prose-invert max-w-none prose-headings:uppercase prose-headings:tracking-tighter prose-headings:font-display">
+                      <ReactMarkdown>{topic.theory}</ReactMarkdown>
+                    </div>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {resources.map((resource) => (
-                    <div 
-                      key={resource.id} 
-                      className="group p-4 rounded-3xl bg-slate-900/50 border border-white/5 hover:border-indigo-500/30 transition-all flex items-center justify-between"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center text-indigo-400">
-                          <FileText size={20} />
-                        </div>
-                        <div className="flex flex-col overflow-hidden">
-                          <span className="text-sm font-bold text-white truncate max-w-[200px]">{resource.name}</span>
-                          <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
-                            {new Date(resource.timestamp).toLocaleDateString()}
-                          </span>
-                        </div>
+                {/* Resources and Upload Section */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 pt-20 border-t border-white/5">
+                  <section className="space-y-8">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                        <FileText size={20} />
                       </div>
-                      
-                      <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button
-                          onClick={() => setViewingResource(resource)}
-                          className="w-10 h-10 rounded-xl bg-slate-800 text-slate-400 hover:text-white hover:bg-indigo-600 transition-all flex items-center justify-center"
-                          title="Present"
-                        >
-                          <Presentation size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDownloadResource(resource)}
-                          className="w-10 h-10 rounded-xl bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-all flex items-center justify-center"
-                          title="Download"
-                        >
-                          <Download size={16} />
-                        </button>
-                        {/* <button
-                          onClick={() => handleDeleteResource(resource.id)}
-                          className="w-10 h-10 rounded-xl bg-slate-800 text-slate-400 hover:text-red-500 hover:bg-red-500/10 transition-all flex items-center justify-center"
-                          title="Delete"
-                        >
-                          <Trash2 size={16} />
-                        </button> */}
-                      </div>
+                      <h2 className="text-xl font-display font-bold text-white uppercase tracking-tight">Reference Materials</h2>
                     </div>
-                  ))}
-                  
-                  {resources.length === 0 && (
-                    <div className="col-span-full py-12 text-center text-slate-500 text-sm font-mono uppercase tracking-widest">
-                      No resources uploaded yet
-                    </div>
-                  )}
-                </div>
 
-                {/* <ResourceUpload topicId={topic.id} onUploadComplete={fetchResources} /> */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {resources.map((resource) => (
+                        <motion.div 
+                          key={resource.id} 
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="group p-6 rounded-[32px] bg-white/[0.02] border border-white/5 hover:border-white/10 hover:bg-white/[0.04] transition-all"
+                        >
+                          <div className="flex items-center gap-4 mb-6">
+                            <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                              <FileText size={20} />
+                            </div>
+                            <div className="flex flex-col overflow-hidden">
+                              <span className="text-sm font-bold text-white truncate">{resource.name}</span>
+                              <span className="text-[9px] font-mono text-slate-600 uppercase tracking-widest">
+                                {new Date(resource.timestamp).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div className="flex items-center gap-2 pt-4 border-t border-white/5">
+                              <button
+                                onClick={() => setViewingResource(resource)}
+                                className="flex-1 h-10 rounded-xl bg-primary text-[10px] font-mono uppercase tracking-widest text-white hover:bg-primary/80 transition-colors flex items-center justify-center gap-2"
+                              >
+                              <Presentation size={14} />
+                              Present
+                            </button>
+                            <button
+                              onClick={() => handleDownloadResource(resource)}
+                              className="w-10 h-10 rounded-xl bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center"
+                            >
+                              <Download size={16} />
+                            </button>
+                            {/* <button
+                              onClick={() => handleDeleteResource(resource.id)}
+                              className="w-10 h-10 rounded-xl bg-white/5 text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all flex items-center justify-center"
+                            >
+                              <Trash2 size={16} />
+                            </button> */}
+                          </div>
+                        </motion.div>
+                      ))}
+                      
+                      {resources.length === 0 && (
+                        <div className="col-span-full py-16 text-center border-2 border-dashed border-white/5 rounded-[40px]">
+                          <p className="text-[10px] font-mono text-slate-600 uppercase tracking-[0.3em]">No materials archived for this module</p>
+                        </div>
+                      )}
+                    </div>
+                  </section>
+
+                  <section className="space-y-8">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-400">
+                        <Download size={20} className="rotate-180" />
+                      </div>
+                      <h2 className="text-xl font-display font-bold text-white uppercase tracking-tight">Ingest Module</h2>
+                    </div>
+                    {/* <div className="glass-panel p-8 rounded-[40px] border border-white/5 bg-white/[0.02]">
+                      <ResourceUpload topicId={topic.id} onUploadComplete={fetchResources} />
+                    </div> */}
+                  </section>
+                </div>
               </div>
-            </div>
-          </div>
-        ) : activeView === TopicView.VISUALIZATION ? (
-          <div className="h-full w-full">
-            {visualization}
-          </div>
-        ) : null}
+            </motion.div>
+          ) : activeView === TopicView.VISUALIZATION ? (
+            <motion.div 
+              key="viz"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="h-full w-full"
+            >
+              {visualization}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="classroom"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -20 }}
+              className="h-full"
+            >
+              {/* <Classroom 
+                topic={topic} 
+                onPresent={(resource) => setViewingResource(resource)} 
+              /> */}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       {/* Resource Viewer Modal */}
-      {/* {viewingResource && (
-        <ResourceViewer
-          resource={viewingResource}
-          onClose={() => setViewingResource(null)}
-        />
-      )} */}
+      {/* <AnimatePresence>
+        {viewingResource && (
+          <ResourceViewer
+            resource={viewingResource}
+            onClose={() => setViewingResource(null)}
+          />
+        )}
+      </AnimatePresence> */}
     </div>
   );
 };

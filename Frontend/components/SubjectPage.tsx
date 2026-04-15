@@ -1,7 +1,7 @@
 import React from 'react';
 import { Subject, Topic } from '../types';
 import { ArrowLeft, ArrowRight, Beaker, Zap, Calculator, Dna } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 
 interface SubjectPageProps {
   subject: Subject;
@@ -38,7 +38,7 @@ const SubjectPage: React.FC<SubjectPageProps> = ({ subject, onSelectTopic, onBac
             animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-8"
           >
-            <div className="w-24 h-24 rounded-3xl flex items-center justify-center bg-white/[0.02] border border-white/5 text-indigo-500 shadow-2xl">
+            <div className="w-24 h-24 rounded-3xl flex items-center justify-center bg-white/[0.02] border border-white/5 text-primary shadow-2xl">
               <Icon size={48} strokeWidth={1.5} />
             </div>
             <div>
@@ -46,14 +46,14 @@ const SubjectPage: React.FC<SubjectPageProps> = ({ subject, onSelectTopic, onBac
                 {subject.name}
               </h2>
               <div className="flex items-center gap-3 mt-4">
-                <div className="h-px w-8 bg-indigo-500" />
+                <div className="h-px w-8 bg-primary" />
                 <p className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.4em]">Laboratory Modules / {subject.topics.length} Units</p>
               </div>
             </div>
           </motion.div>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-px bg-white/5 border border-white/5 rounded-3xl overflow-hidden">
+        <div className="grid grid-cols-1 gap-6">
           {subject.topics.map((topic, index) => (
             <motion.button
               key={topic.id}
@@ -61,32 +61,38 @@ const SubjectPage: React.FC<SubjectPageProps> = ({ subject, onSelectTopic, onBac
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               onClick={() => onSelectTopic(topic)}
-              className="group relative p-10 bg-[#020617] hover:bg-white/[0.02] transition-all duration-500 text-left flex flex-col h-[380px]"
+              className="group relative p-10 bg-[#020617] hover:bg-white/[0.02] border border-white/5 rounded-[40px] transition-all duration-500 text-left flex flex-col md:flex-row md:items-center gap-10 overflow-hidden"
             >
-              <div className="flex justify-between items-start mb-10">
-                <div className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center text-slate-500 group-hover:bg-indigo-600 group-hover:text-white group-hover:scale-110 transition-all duration-500">
-                  <Icon size={24} strokeWidth={1.5} />
-                </div>
-                <div className="text-[9px] font-mono text-slate-600 uppercase tracking-[0.2em] group-hover:text-indigo-400 transition-colors">
-                  Unit {index + 1}
-                </div>
+              <div className="w-20 h-20 rounded-3xl bg-white/5 flex items-center justify-center text-slate-500 group-hover:bg-primary group-hover:text-white group-hover:scale-110 transition-all duration-500 shrink-0">
+                <Icon size={32} strokeWidth={1.5} />
               </div>
               
               <div className="flex-1">
-                <h3 className="text-2xl font-display font-medium text-white mb-4 tracking-tight group-hover:text-indigo-400 transition-colors">{topic.name}</h3>
-                <p className="text-slate-500 text-sm leading-relaxed font-light line-clamp-3">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="text-[9px] font-mono text-slate-600 uppercase tracking-[0.2em] group-hover:text-primary transition-colors">
+                    Unit {index + 1}
+                  </div>
+                  <div className="h-px w-4 bg-white/10" />
+                </div>
+                <h3 className="text-3xl font-display font-bold text-white mb-3 tracking-tight group-hover:text-primary transition-colors uppercase">{topic.name}</h3>
+                <p className="text-slate-500 text-sm leading-relaxed font-light max-w-3xl">
                   {topic.description}
                 </p>
               </div>
               
-              <div className="mt-auto pt-8 border-t border-white/5 flex items-center justify-between">
-                <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-slate-600 group-hover:text-slate-400 transition-colors">Initialize Module</span>
-                <ArrowRight size={18} className="text-indigo-500 transition-all duration-500 -translate-x-4 opacity-0 group-hover:translate-x-0 group-hover:opacity-100" />
+              <div className="flex items-center gap-6 shrink-0">
+                <div className="hidden md:flex flex-col items-end">
+                  <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-slate-600 group-hover:text-slate-400 transition-colors">Initialize</span>
+                  <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-slate-800">Module</span>
+                </div>
+                <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:border-primary transition-colors">
+                  <ArrowRight size={20} className="text-primary transition-all duration-500 -translate-x-2 opacity-0 group-hover:translate-x-0 group-hover:opacity-100" />
+                </div>
               </div>
 
-              {/* Hover Glow */}
               <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none">
-                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent opacity-50" />
+                <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
+                <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
               </div>
             </motion.button>
           ))}

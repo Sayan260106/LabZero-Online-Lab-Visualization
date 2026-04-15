@@ -21,7 +21,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectSubject }) => {
       {/* 🔥 TITLE SECTION */}
       <div className="text-center mb-20">
         <h1 className="text-7xl font-black tracking-tighter uppercase italic mb-6 bg-gradient-to-r from-white to-indigo-500 bg-clip-text text-transparent">
-          OmniScience
+          LabZero
         </h1>
 
         <p className="text-xl text-slate-400 max-w-2xl mx-auto font-medium">

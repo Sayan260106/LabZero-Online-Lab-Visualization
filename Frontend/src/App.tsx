@@ -1,81 +1,55 @@
+import QuizPage from './components/Quiz';
+import { generateQuizAI } from './data/quizData';
+
+import { motion, AnimatePresence } from 'framer-motion';
+
 import React, { useState, useEffect } from 'react';
 import AtomVisualizer from './components/AtomicVisualizer';
 import PeriodicTable from './components/PeriodicTable';
-// import AITutor from './components/AITutor';
-// import AufbauChart from './components/AufbauChart';
 import TrendsVisualizer from './components/TrendsVisualizer';
-// import ElementComparison from './components/ElementComparison';
-// import BondingLab from './components/BondingLab';
-// import GeometryLab from './components/GeometryLab';
-// import HistoricalModels from './components/HistoricalModels';
-// import QuantumConfigLab from './components/QuantumConfigLab';
-// import QuantumNumbersLab from './components/QuantumNumbersLab';
 import LandingPage from './components/LandingPage';
-import { getElements } from './services/elementsService';;
-import GraphVisualizer from './components/GraphVisualizer';
+import { getElements } from './services/elementsService';
 import SubjectPage from './components/SubjectPage';
 import TopicPage from './components/TopicPage';
 import GestureController from './components/GestureController';
-import { ELEMENTS, SUBJECTS } from './utils/constants';
+
 import { ElementData, Subject, Topic, ViewState, TopicId } from './types/types';
-import { Sparkles, MessageSquare, X, Settings, Eye, Moon, Sun, Languages } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { MessageSquare, X } from 'lucide-react';
 import { Language, translations } from './services/translations';
 
-
 const App: React.FC = () => {
+
   const [elements, setElements] = useState<ElementData[]>([]);
   const [selectedElement, setSelectedElement] = useState<ElementData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
   const [viewState, setViewState] = useState<ViewState>(ViewState.LANDING);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
-  const [showAITutor, setShowAITutor] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-  const [colorBlindMode, setColorBlindMode] = useState(false);
-  const [language, setLanguage] = useState<Language>('en');
-  const [isGestureActive, setIsGestureActive] = useState(false);
-  const [atomRotation, setAtomRotation] = useState({ dx: 0, dy: 0 });
-  const [gesturePos, setGesturePos] = useState<{ x: number, y: number } | null>(null);
 
-  // ✅ Backend status (merged safely)
-  const [message, setMessage] = useState("Loading...");
+  const [showAITutor, setShowAITutor] = useState(false);
+  const [language, setLanguage] = useState<Language>('en');
+
+  const [atomRotation, setAtomRotation] = useState({ dx: 0, dy: 0 });
+
+  // ✅ QUIZ STATES
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [quizQuestions, setQuizQuestions] = useState<any[]>([]);
+  const [quizLevel, setQuizLevel] = useState<'basic' | 'intermediate' | 'difficult'>('basic');
+
+  // ✅ prevent same quiz repeat
+  const [lastQuizHash, setLastQuizHash] = useState<string>("");
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/api/status/')
-      .then(res => res.json())
-      .then(data => setMessage(data.status))
-      .catch(err => setMessage("Backend offline"));
-      
-    // Fetch elements from the database via elementService
     getElements()
       .then(data => {
-        if (data && data.length > 0) {
+        if (data?.length) {
           setElements(data);
-          setSelectedElement(data[0]); 
+          setSelectedElement(data[0]);
         }
       })
-      .catch(err => console.error("Failed to fetch elements from DB:", err))
       .finally(() => setIsLoading(false));
   }, []);
-
-  // 🌗 Theme handling
-  useEffect(() => {
-    if (theme === 'light') {
-      document.body.classList.add('light-mode');
-    } else {
-      document.body.classList.remove('light-mode');
-    }
-  }, [theme]);
-
-  useEffect(() => {
-    if (colorBlindMode) {
-      document.body.classList.add('colorblind-mode');
-    } else {
-      document.body.classList.remove('colorblind-mode');
-    }
-  }, [colorBlindMode]);
 
   const t = (key: string) => translations[key]?.[language] || key;
 
@@ -89,324 +63,139 @@ const App: React.FC = () => {
     setViewState(ViewState.TOPIC);
   };
 
-  const handleBackToLanding = () => {
-    setViewState(ViewState.LANDING);
-    setSelectedSubject(null);
-  };
-
-  const handleBackToSubject = () => {
-    setViewState(ViewState.SUBJECT);
-    setSelectedTopic(null);
-  };
-
   const renderVisualization = (topicId: TopicId) => {
-    if (isLoading) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full text-slate-400 p-12 text-center">
-          <div className="w-16 h-16 rounded-full border-4 border-indigo-500/20 border-t-indigo-500 animate-spin mb-6" />
-          <h3 className="text-xl font-bold text-white mb-2 uppercase tracking-tighter italic">Initializing Engine...</h3>
-          <p className="max-w-md mx-auto text-sm font-mono uppercase tracking-widest opacity-50">
-            Establishing neural link to backend database
-          </p>
-        </div>
-      );
-    }
-
-    if (elements.length === 0) {
-      return (
-        <div className="flex flex-col items-center justify-center h-full text-rose-400 p-12 text-center">
-          <X size={48} className="mb-6 opacity-50" />
-          <h3 className="text-xl font-bold text-white mb-2 uppercase tracking-tighter italic">Connection Failed</h3>
-          <p className="max-w-md mx-auto text-sm font-mono uppercase tracking-widest opacity-80 text-rose-300">
-            Unable to fetch element data. Please ensure the Django backend is running.
-          </p>
-        </div>
-      );
-    }
+    if (isLoading) return <div className="p-10 text-white">Loading...</div>;
 
     switch (topicId) {
       case TopicId.ATOMIC_STRUCTURE:
         return (
-          <div className="flex flex-col h-full">
-            <div className="flex-1 min-h-0">
-              {selectedElement && <AtomVisualizer element={selectedElement} rotation={atomRotation} />}
-            </div>
-            <div className="h-[420px] border-t border-white/5 bg-slate-950/50 backdrop-blur-xl overflow-y-auto">
+          <>
+            {selectedElement && (
+              <AtomVisualizer element={selectedElement} rotation={atomRotation} />
+            )}
             <PeriodicTable
               elements={elements}
               onSelect={setSelectedElement}
               selectedSymbol={selectedElement?.symbol || ''}
             />
-            </div>
-          </div>
+          </>
         );
-      // case TopicId.MOLECULAR_STRUCTURE:
-      //   return (
-      //     <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
-      //       <div className="w-full">
-      //         <BondingLab />
-      //       </div>
-      //       <div className="w-full">
-      //         <GeometryLab />
-      //       </div>
-      //     </div>
-      //   );
-      // case TopicId.QUANTUM_NUMBERS:
-      //   return (
-      //     <div className="h-full overflow-y-auto p-8">
-      //       <QuantumNumbersLab />
-      //     </div>
-      //   );
+
       case TopicId.PERIODIC_TRENDS:
-        return (
-          <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
-            <div className="w-full">
-              <TrendsVisualizer />
-            </div>
-            {/* <div className="w-full">
-              <ElementComparison />
-            </div> */}
-          </div>
-        );
-      // case TopicId.HISTORICAL_MODELS:
-      //   return (
-      //     <div className="h-full overflow-y-auto p-8">
-      //       <HistoricalModels />
-      //     </div>
-      //   );
-      // case TopicId.QUANTUM_CONFIG:
-      //   return (
-      //     <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
-      //       <div className="w-full">
-      //         <QuantumConfigLab element={selectedElement} />
-      //       </div>
-      //       <div className="w-full">
-      //         <AufbauChart atomicNumber={selectedElement.number} />
-      //       </div>
-      //     </div>
-      //   );
+        return <TrendsVisualizer />;
+
       default:
-        return (
-          <div className="flex flex-col items-center justify-center h-full text-slate-400 p-12 text-center">
-            <div className="w-20 h-20 rounded-3xl bg-slate-900 flex items-center justify-center mb-6 border border-white/5">
-              <Sparkles size={40} className="text-indigo-500" />
-            </div>
-            <h3 className="text-2xl font-bold text-white mb-2 uppercase tracking-tighter italic">Coming Soon</h3>
-            <p className="max-w-md mx-auto text-sm font-mono uppercase tracking-widest opacity-50">
-              Our scientists are working hard to bring this interactive module to life.
-            </p>
-          </div>
-        );
+        return <div className="text-white p-10">Coming Soon</div>;
     }
   };
 
-  const handleGestureSelect = () => {
-    // This is a bit complex since we don't have the exact coordinates in this component easily
-    // But we can trigger a generic "Click" or use a ref from GestureController
-    // For now, let's assume GestureController handles the coordinate-based click if we pass it a ref
-  };
+  // ✅ FINAL QUIZ START (ANTI-REPEAT + TRUE RANDOM CALL)
+  const startQuiz = () => {
+    if (!selectedSubject) return;
 
-  const handleGestureBack = () => {
-    if (viewState === ViewState.TOPIC) {
-      handleBackToSubject();
-    } else if (viewState === ViewState.SUBJECT) {
-      handleBackToLanding();
+    let generated = generateQuizAI(selectedSubject.name, quizLevel);
+
+    if (!generated || generated.length === 0) {
+      alert("Quiz generation failed");
+      return;
     }
-  };
 
-  const handleGestureScroll = (delta: number) => {
-    window.scrollBy({ top: delta, behavior: 'smooth' });
-    // Also scroll any scrollable containers
-    const scrollable = document.querySelector('.overflow-y-auto');
-    if (scrollable) {
-      scrollable.scrollBy({ top: delta, behavior: 'smooth' });
+    const hash = JSON.stringify(generated);
+
+    // 🚫 prevent same quiz appearing twice
+    if (hash === lastQuizHash) {
+      generated = generateQuizAI(selectedSubject.name, quizLevel);
     }
-  };
 
-  const handleGestureRotate = (dx: number, dy: number) => {
-    setAtomRotation({ dx, dy });
-    // Reset after a frame to avoid continuous rotation if not moving
-    setTimeout(() => setAtomRotation({ dx: 0, dy: 0 }), 50);
+    setLastQuizHash(JSON.stringify(generated));
+    setQuizQuestions(generated);
+    setShowQuiz(true);
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#020617] selection:bg-indigo-500/30 transition-colors duration-400">
-      {/* Structural Overlays */}
-      <div className="fixed inset-0 pointer-events-none z-50 grainy opacity-40"></div>
+    <div className="min-h-screen bg-[#020617] text-white">
 
-      <AnimatePresence mode="wait">
-        {viewState === ViewState.LANDING && (
-          <motion.div
-            key="landing"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex-1"
-          >
-            <LandingPage onSelectSubject={handleSelectSubject} language={language} />
-          </motion.div>
-        )}
+      {/* ✅ QUIZ SCREEN */}
+      {showQuiz && (
+        <QuizPage
+          questions={quizQuestions}
+          onExit={() => setShowQuiz(false)}
+        />
+      )}
 
-        {viewState === ViewState.SUBJECT && selectedSubject && (
-          <motion.div
-            key="subject"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex-1"
-          >
-            <SubjectPage
-              subject={selectedSubject}
-              onSelectTopic={handleSelectTopic}
-              onBack={handleBackToLanding}
-              language={language}
-            />
-          </motion.div>
-        )}
+      {!showQuiz && (
+        <>
+          <AnimatePresence mode="wait">
 
-        {viewState === ViewState.TOPIC && selectedTopic && (
-          <motion.div
-            key="topic"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="flex-1"
-          >
-            <TopicPage
-              topic={selectedTopic}
-              onBack={handleBackToSubject}
-              visualization={renderVisualization(selectedTopic.id)}
-              language={language}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {viewState === ViewState.LANDING && (
+              <motion.div key="landing">
+                <LandingPage onSelectSubject={handleSelectSubject} language={language} />
+              </motion.div>
+            )}
 
-      {/* Accessibility Settings Toggle */}
-      <button
-        onClick={() => setShowSettings(!showSettings)}
-        className={`fixed bottom-8 right-28 w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 z-[110] ${
-          showSettings ? 'bg-indigo-500 rotate-90' : 'bg-white/5 border border-white/10 hover:bg-white/10'
-        }`}
-      >
-        <Settings size={24} className={showSettings ? 'text-white' : 'text-slate-400'} />
-      </button>
+            {viewState === ViewState.SUBJECT && selectedSubject && (
+              <motion.div key="subject">
+                <SubjectPage
+                  subject={selectedSubject}
+                  onSelectTopic={handleSelectTopic}
+                  onBack={() => setViewState(ViewState.LANDING)}
+                  language={language}
+                />
 
-      {/* Accessibility Panel */}
-      <AnimatePresence>
-        {showSettings && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-28 right-28 w-72 glass-panel p-6 rounded-3xl z-[110] border border-white/10 origin-bottom-right"
-          >
-            <h3 className="text-xs font-mono uppercase tracking-[0.3em] text-indigo-400 mb-6 flex items-center gap-2">
-              <Eye size={12} />
-              {t('accessibility')}
-            </h3>
-            
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300">{t('colorblindMode')}</span>
-                  <span className="text-[8px] font-mono text-slate-500">{t('enhancedContrast')}</span>
-                </div>
-                <button
-                  onClick={() => setColorBlindMode(!colorBlindMode)}
-                  className={`w-10 h-5 rounded-full relative transition-colors duration-300 ${
-                    colorBlindMode ? 'bg-indigo-500' : 'bg-slate-800'
-                  }`}
-                >
-                  <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-all duration-300 ${
-                    colorBlindMode ? 'left-6' : 'left-1'
-                  }`} />
-                </button>
-              </div>
-
-              <div className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
-                <div className="flex flex-col">
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300">{t('theme')}</span>
-                  <span className="text-[8px] font-mono text-slate-500">{theme === 'dark' ? t('dark') : t('light')} Visuals</span>
-                </div>
-                <button
-                  onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                  className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
-                >
-                  {theme === 'dark' ? <Moon size={16} /> : <Sun size={16} />}
-                </button>
-              </div>
-
-               <div className="flex flex-col gap-3 p-3 rounded-2xl bg-white/5 border border-white/5">
-                <div className="flex items-center gap-2">
-                  <Languages size={12} className="text-indigo-400" />
-                  <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300">{t('language')}</span>
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  {(['en', 'bn', 'hi'] as Language[]).map((lang) => (
+                {/* ✅ LEVEL SELECTOR */}
+                <div className="fixed bottom-36 right-8 flex gap-2">
+                  {["basic", "intermediate", "difficult"].map((lvl) => (
                     <button
-                      key={lang}
-                      onClick={() => setLanguage(lang)}
-                      className={`py-2 rounded-lg text-[10px] font-mono uppercase tracking-widest transition-all ${
-                        language === lang 
-                          ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' 
-                          : 'bg-slate-800 text-slate-500 hover:text-slate-300'
+                      key={lvl}
+                      onClick={() => setQuizLevel(lvl as any)}
+                      className={`px-3 py-1 rounded capitalize transition ${
+                        quizLevel === lvl
+                          ? "bg-indigo-600"
+                          : "bg-white/10 hover:bg-white/20"
                       }`}
                     >
-                      {lang}
+                      {lvl}
                     </button>
                   ))}
                 </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
-      {/* AI Tutor Floating Button */}
-      <button
-        onClick={() => setShowAITutor(!showAITutor)}
-        className={`fixed bottom-8 right-8 w-16 h-16 rounded-2xl flex items-center justify-center shadow-2xl transition-all duration-500 z-[100] ${
-          showAITutor ? 'bg-rose-500 rotate-90' : 'bg-indigo-600 hover:scale-110'
-        }`}
-      >
-        {showAITutor ? (
-          <X className="text-white" size={28} />
-        ) : (
-          <MessageSquare className="text-white" size={28} />
-        )}
-      </button>
+                {/* ✅ QUIZ BUTTON */}
+                <button
+                  onClick={startQuiz}
+                  className="fixed bottom-24 right-8 px-5 py-3 bg-green-600 rounded-xl hover:bg-green-700 transition"
+                >
+                  Start Quiz
+                </button>
+              </motion.div>
+            )}
 
-      {/* AI Tutor Panel */}
-      {/* <div className={`fixed bottom-28 right-8 w-[450px] h-[600px] z-[100] transition-all duration-500 origin-bottom-right ${
-        showAITutor ? 'scale-100 opacity-100 translate-y-0' : 'scale-90 opacity-0 translate-y-10 pointer-events-none'
-      }`}>
-        <AITutor currentElement={selectedElement} />
-      </div> */}
+            {viewState === ViewState.TOPIC && selectedTopic && (
+              <motion.div key="topic">
+                <TopicPage
+                  topic={selectedTopic}
+                  onBack={() => setViewState(ViewState.SUBJECT)}
+                  visualization={renderVisualization(selectedTopic.id)}
+                  language={language}
+                />
+              </motion.div>
+            )}
 
-      <GestureController 
-        isActive={isGestureActive}
-        onToggle={() => setIsGestureActive(!isGestureActive)}
-        onBack={handleGestureBack}
-        onScroll={handleGestureScroll}
-        onRotate={handleGestureRotate}
-        onSelect={handleGestureSelect}
-        onPositionChange={setGesturePos}
-        onToggleAITutor={() => setShowAITutor(prev => !prev)}
-        onToggleTheme={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
-      />
+          </AnimatePresence>
 
-      {isGestureActive && gesturePos && (
-        <div 
-          className="fixed w-8 h-8 rounded-full border-2 border-indigo-500 bg-indigo-500/20 pointer-events-none z-[200] flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.5)] transition-transform duration-75"
-          style={{ 
-            left: `${gesturePos.x * 100}%`, 
-            top: `${gesturePos.y * 100}%`,
-            transform: 'translate(-50%, -50%)'
-          }}
-        >
-          <div className="w-1 h-1 bg-white rounded-full" />
-        </div>
+          {/* AI BUTTON */}
+          <button
+            onClick={() => setShowAITutor(!showAITutor)}
+            className="fixed bottom-8 right-8 w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center"
+          >
+            {showAITutor ? <X /> : <MessageSquare />}
+          </button>
+
+          <GestureController
+            isActive={false}
+            onToggle={() => {}}
+            onRotate={(dx, dy) => setAtomRotation({ dx, dy })}
+          />
+        </>
       )}
     </div>
   );

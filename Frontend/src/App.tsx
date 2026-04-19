@@ -4,15 +4,15 @@ import PeriodicTable from './components/PeriodicTable';
 // import AITutor from './components/AITutor';
 import AufbauChart from './components/AufbauChart';
 import TrendsVisualizer from './components/TrendsVisualizer';
-// import ElementComparison from './components/ElementComparison';
+import ElementComparison from './components/ElementComparison';
 import BondingLab from './components/BondingLab';
 import GeometryLab from './components/GeometryLab';
-// import HistoricalModels from './components/HistoricalModels';
+import HistoricalModels from './components/HistoricalModels';
 import QuantumConfigLab from './components/QuantumConfigLab';
 import QuantumNumbersLab from './components/QuantumNumbersLab';
 import LandingPage from './components/LandingPage';
-import { getElements } from './services/elementsService';;
-import GraphVisualizer from './components/GraphVisualizer';
+// import { getElements } from './services/elementsService';
+// import GraphVisualizer from './components/GraphVisualizer';
 import SubjectPage from './components/SubjectPage';
 import TopicPage from './components/TopicPage';
 import GestureController from './components/GestureController';
@@ -111,23 +111,23 @@ const AppContent: React.FC = () => {
             <QuantumNumbersLab />
           </div>
         );
-      // case TopicId.PERIODIC_TRENDS:
-      //   return (
-      //     <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
-      //       <div className="w-full">
-      //         <TrendsVisualizer />
-      //       </div>
-      //       <div className="w-full">
-      //         <ElementComparison />
-      //       </div>
-      //     </div>
-      //   );
-      // case TopicId.HISTORICAL_MODELS:
-      //   return (
-      //     <div className="h-full overflow-y-auto p-8">
-      //       <HistoricalModels />
-      //     </div>
-      //   );
+      case TopicId.PERIODIC_TRENDS:
+        return (
+          <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
+            <div className="w-full">
+              <TrendsVisualizer />
+            </div>
+            <div className="w-full">
+              <ElementComparison />
+            </div>
+          </div>
+        );
+      case TopicId.HISTORICAL_MODELS:
+        return (
+          <div className="h-full overflow-y-auto p-8">
+            <HistoricalModels />
+          </div>
+        );
       case TopicId.QUANTUM_CONFIG:
         return (
           <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
@@ -147,7 +147,7 @@ const AppContent: React.FC = () => {
             </div>
             <h3 className="text-2xl font-bold text-white mb-2 uppercase tracking-tighter italic">Coming Soon</h3>
             <p className="max-w-md mx-auto text-sm font-mono uppercase tracking-widest opacity-50">
-              Our scientists are working hard to bring this interactive module to life.
+              Our Developers are working hard to bring this interactive module to life.
             </p>
           </div>
         );

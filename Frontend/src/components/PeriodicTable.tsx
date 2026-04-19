@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { ELEMENTS } from '../utils/constants';
 import { ElementData } from '../types/types';
@@ -10,7 +11,6 @@ interface PeriodicTableProps {
 }
 
 const PeriodicTable: React.FC<PeriodicTableProps> = ({ elements, onSelect, selectedSymbol }) => {
-  // Sort elements by atomic number to ensure correct sequence
   const sortedElements = [...elements].sort((a, b) => a.number - b.number);
 
   return (

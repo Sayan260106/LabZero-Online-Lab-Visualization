@@ -5,11 +5,11 @@ import PeriodicTable from './components/PeriodicTable';
 import AufbauChart from './components/AufbauChart';
 import TrendsVisualizer from './components/TrendsVisualizer';
 // import ElementComparison from './components/ElementComparison';
-// import BondingLab from './components/BondingLab';
-// import GeometryLab from './components/GeometryLab';
+import BondingLab from './components/BondingLab';
+import GeometryLab from './components/GeometryLab';
 // import HistoricalModels from './components/HistoricalModels';
 import QuantumConfigLab from './components/QuantumConfigLab';
-// import QuantumNumbersLab from './components/QuantumNumbersLab';
+import QuantumNumbersLab from './components/QuantumNumbersLab';
 import LandingPage from './components/LandingPage';
 import { getElements } from './services/elementsService';;
 import GraphVisualizer from './components/GraphVisualizer';
@@ -94,23 +94,23 @@ const AppContent: React.FC = () => {
             </div>
           </div>
         );
-      // case TopicId.MOLECULAR_STRUCTURE:
-      //   return (
-      //     <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
-      //       <div className="w-full">
-      //         <BondingLab />
-      //       </div>
-      //       <div className="w-full">
-      //         <GeometryLab />
-      //       </div>
-      //     </div>
-      //   );
-      // case TopicId.QUANTUM_NUMBERS:
-      //   return (
-      //     <div className="h-full overflow-y-auto p-8">
-      //       <QuantumNumbersLab />
-      //     </div>
-      //   );
+      case TopicId.MOLECULAR_STRUCTURE:
+        return (
+          <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">
+            <div className="w-full">
+              <BondingLab />
+            </div>
+            <div className="w-full">
+              <GeometryLab />
+            </div>
+          </div>
+        );
+      case TopicId.QUANTUM_NUMBERS:
+        return (
+          <div className="h-full overflow-y-auto p-8">
+            <QuantumNumbersLab />
+          </div>
+        );
       // case TopicId.PERIODIC_TRENDS:
       //   return (
       //     <div className="grid grid-cols-1 h-full gap-8 bg-[#020617] overflow-y-auto p-8">

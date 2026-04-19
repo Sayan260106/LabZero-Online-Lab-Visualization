@@ -40,6 +40,8 @@ export enum TopicId {
   MECHANICS = 'mechanics',
   CALCULUS = 'calculus',
   GENETICS = 'genetics',
+  TRIGONOMETRY = "TRIGONOMETRY",
+  ALGEBRA = "ALGEBRA",
 }
 
 export interface Topic {

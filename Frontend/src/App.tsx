@@ -3,7 +3,6 @@ import {
   Sparkles, MessageSquare, X, Settings, Eye, Moon, Sun, Languages
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-
 import AtomVisualizer from './components/AtomicVisualizer';
 import PeriodicTable from './components/PeriodicTable';
 import AufbauChart from './components/AufbauChart';
@@ -14,6 +13,9 @@ import GeometryLab from './components/GeometryLab';
 import HistoricalModels from './components/HistoricalModels';
 import QuantumConfigLab from './components/QuantumConfigLab';
 import QuantumNumbersLab from './components/QuantumNumbersLab';
+
+import MechanicsVisualizer from './components/MechanicsVisualizer';
+import ElectromagnetismVisualizer from './components/ElectromagnetismVisualizer';
 
 import LandingPage from './components/LandingPage';
 import SubjectPage from './components/SubjectPage';
@@ -180,6 +182,19 @@ const AppContent: React.FC = () => {
 
       case TopicId.HISTORICAL_MODELS:
         return <HistoricalModels />;
+      
+      case TopicId.MECHANICS: // Make sure this matches your TopicId enum
+  return (
+    <div className="p-8 space-y-8">
+      <MechanicsVisualizer />
+    </div>
+  );
+  case TopicId.ELECTROMAGNETISM:
+  return (
+    <div className="p-8 space-y-8">
+      <ElectromagnetismVisualizer />
+    </div>
+  );
 
       default:
         return <div className="p-10 text-center">Coming Soon</div>;

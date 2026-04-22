@@ -38,6 +38,7 @@ export enum TopicId {
   QUANTUM_CONFIG = 'quantum_config',
   // Placeholders for other subjects
   MECHANICS = 'mechanics',
+  ELECTROMAGNETISM='Electromagnetism',
   CALCULUS = 'calculus',
   GENETICS = 'genetics',
   TRIGONOMETRY = "TRIGONOMETRY",

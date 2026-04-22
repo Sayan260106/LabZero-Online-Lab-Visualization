@@ -105,7 +105,8 @@ Electron configuration is the distribution of electrons of an atom or molecule i
       }
     ]
   },
-  {
+
+{
     id: SubjectId.PHYSICS,
     name: 'Physics',
     icon: 'Zap',
@@ -115,7 +116,50 @@ Electron configuration is the distribution of electrons of an atom or molecule i
         id: TopicId.MECHANICS,
         name: 'Classical Mechanics',
         description: 'Study motion, forces, and energy in the macroscopic world.',
-        theory: '# Classical Mechanics\nComing soon! Explore Newton\'s laws, kinematics, and dynamics.'
+        theory: `
+# Classical Mechanics
+Classical mechanics mathematically describes the motion of macroscopic objects, from projectiles to planets. The entire interactive visualization engine is driven by these fundamental equations.
+
+## Kinematics (Equations of Motion)
+Valid for constant acceleration in a straight line.
+- **Velocity-Time**: v = u + at
+- **Displacement-Time**: s = ut + ½at²
+- **Velocity-Displacement**: v² = u² + 2as
+
+## Newton's Laws of Motion
+- **First Law (Inertia)**: An object at rest stays at rest, and an object in motion stays in motion with the same speed and in the same direction unless acted upon by an unbalanced force.
+- **Second Law (Force)**: The rate of change of momentum of a body is directly proportional to the applied force. (F = ma)
+- **Third Law (Action/Reaction)**: For every action, there is an equal and opposite reaction.
+
+## Conservation Principles
+- **Kinetic Energy**: The energy an object possesses due to its motion. (Ek = ½mv²)
+- **Momentum**: The quantity of motion of a moving body. (p = mv)
+      
+`
+      },
+      {
+        id: TopicId.ELECTROMAGNETISM,
+        name: 'Electromagnetism',
+        description: 'Explore electric fields, magnetic forces, and the fundamental laws of circuits.',
+        theory: `
+# Electromagnetism
+Electromagnetism deals with the electromagnetic force that occurs between electrically charged particles. It is one of the four fundamental forces of nature and governs everything from simple circuits to light waves.
+
+## Electrostatics & Electric Fields
+- **Coulomb's Law**: Calculates the electric force between two point charges. (F = k|q₁q₂| / r²)
+- **Electric Field (E)**: The force per unit charge experienced by a positive test charge placed in the field. (E = F / q)
+- **Electric Potential**: The potential energy per unit charge, often called voltage.
+
+## Current & Circuits
+- **Ohm's Law**: The current through a conductor between two points is directly proportional to the voltage across the two points. (V = IR)
+- **Electrical Power**: The rate at which electrical energy is transferred by an electric circuit. (P = VI = I²R)
+- **Kirchhoff's Laws**: Rules governing the conservation of charge and energy in complex electrical circuits.
+
+## Magnetism & Induction
+- **Magnetic Field (B)**: A vector field that describes the magnetic influence on moving electric charges and magnetic materials.
+- **Lorentz Force**: The total force exerted on a charged particle moving through both an electric and magnetic field. (F = qE + qv × B)
+- **Faraday's Law**: A changing magnetic environment will induce an electromotive force (EMF) in a wire loop.
+        `
       }
     ]
   },

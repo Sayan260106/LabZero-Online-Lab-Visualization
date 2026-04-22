@@ -174,7 +174,6 @@ Electromagnetism deals with the electromagnetic force that occurs between electr
       name: 'Vector Algebra',
       description: 'Visualize 3D vectors, cross products, and orthogonal planes.',
       theory: `
-theory: `
 # Vector Cross Product
 In 3D space, the cross product of two vectors **A** and **B** is a new vector **C** that is perfectly perpendicular (90 degrees) to both of them.
 

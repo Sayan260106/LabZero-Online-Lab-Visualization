@@ -17,6 +17,12 @@ import QuantumNumbersLab from './components/QuantumNumbersLab';
 import MechanicsVisualizer from './components/MechanicsVisualizer';
 import ElectromagnetismVisualizer from './components/ElectromagnetismVisualizer';
 
+import MicrobiologyLab from './components/MicrobiologyLab';
+import CellBiologyLab from './components/CellBiologyLab';
+
+import VectorCalculusLab from './components/VectorCalculusLab';
+import PiVisualizationLab from './components/PiVisualizationLab';
+
 import LandingPage from './components/LandingPage';
 import SubjectPage from './components/SubjectPage';
 import TopicPage from './components/TopicPage';
@@ -34,8 +40,7 @@ import { ElementData, Subject, Topic, ViewState, TopicId } from './types/types';
 import { Language, translations } from './services/translations';
 import { AuthProvider, useAuth } from './services/AuthContext';
 import { getElements } from './services/elementsService';
-import VectorCalculusLab from './components/VectorCalculusLab';
-import PiVisualizationLab from './components/PiVisualizationLab';
+
 
 const AppContent: React.FC = () => {
   const { user, isLoading, logout } = useAuth();
@@ -231,7 +236,33 @@ const AppContent: React.FC = () => {
             </div>
           </div>
         );
+      
+      case TopicId.MICROBIOLOGY:
+  return (
+    <div className="p-8 space-y-8 h-[700px]">
+      <MicrobiologyLab />
+    </div>
+  );
 
+case TopicId.CELL_BIOLOGY:
+  return (
+    <div className="p-8 space-y-8 h-[700px]">
+      <CellBiologyLab />
+    </div>
+  );
+    case TopicId.VECTOR_CALCULUS:
+  return (
+    <div className="p-8 space-y-8 h-[700px]">
+      <VectorCalculusLab/>
+    </div>
+  );
+  case TopicId.PI_APPROXIMATION:
+  return (
+    <div className="p-8 space-y-8 h-[700px]">
+      <PiVisualizationLab/>
+    </div>
+  );
+  
       default:
         return <div className="p-10 text-center">Coming Soon</div>;
     }

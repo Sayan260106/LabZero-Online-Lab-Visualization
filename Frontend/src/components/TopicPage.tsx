@@ -1,22 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { Topic, TopicView, Resource } from '../types/types';
-import { Language, translations } from '../services/translations';
-import { ArrowLeft, BookOpen, Play, Sparkles, FileText, Trash2, Download, Presentation, GraduationCap, Volume2, VolumeX } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import { ArrowLeft, BookOpen, Play, Sparkles, FileText, Trash2, Download, Presentation, GraduationCap, Volume2, VolumeX, Zap } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 // import ResourceUpload from './ResourceUpload';
 // import ResourceViewer from './ResourceViewer';
 // import Classroom from './Classroom';
 // import { getResourcesByTopic, deleteResource } from '../services/resourceService';
+import { motion, AnimatePresence } from 'motion/react';
+import { Language, translations } from '../services/translations';
 
 interface TopicPageProps {
   topic: Topic;
   onBack: () => void;
   visualization: React.ReactNode;
   language: Language;
+  onStartQuiz: () => void;
 }
 
-const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, language }) => {
+const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, language, onStartQuiz }) => {
   const [activeView, setActiveView] = useState<TopicView>(TopicView.THEORY);
   const t = (key: string) => translations[key]?.[language] || key;
   const [resources, setResources] = useState<Resource[]>([]);
@@ -125,6 +126,16 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
                 <span className="relative z-10">{view.label}</span>
               </button>
             ))}
+            
+            <div className="w-px h-6 bg-white/10 mx-2" />
+            
+            <button
+              onClick={onStartQuiz}
+              className="flex items-center gap-2 px-6 py-2 rounded-full text-[10px] font-mono uppercase tracking-[0.2em] bg-green-500/10 text-green-400 hover:bg-green-500 hover:text-white transition-all duration-300"
+            >
+              <Zap size={14} />
+              <span>Take Quiz</span>
+            </button>
           </nav>
         </div>
       </header>
@@ -206,7 +217,7 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
                                 className="flex-1 h-10 rounded-xl bg-primary text-[10px] font-mono uppercase tracking-widest text-white hover:bg-primary/80 transition-colors flex items-center justify-center gap-2"
                               >
                               <Presentation size={14} />
-                              Present
+                              {t('present')}
                             </button>
                             <button
                               onClick={() => handleDownloadResource(resource)}
@@ -237,7 +248,7 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
                       <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-400">
                         <Download size={20} className="rotate-180" />
                       </div>
-                      <h2 className="text-xl font-display font-bold text-white uppercase tracking-tight">Ingest Module</h2>
+                      <h2 className="text-xl font-display font-bold text-white uppercase tracking-tight">{t('ingestModule')}</h2>
                     </div>
                     {/* <div className="glass-panel p-8 rounded-[40px] border border-white/5 bg-white/[0.02]">
                       <ResourceUpload topicId={topic.id} onUploadComplete={fetchResources} />
@@ -266,7 +277,7 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
             >
               {/* <Classroom 
                 topic={topic} 
-                onPresent={(resource) => setViewingResource(resource)} 
+                onPresent={(resource: any) => setViewingResource(resource)} 
               /> */}
             </motion.div>
           )}
@@ -274,14 +285,14 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
       </main>
 
       {/* Resource Viewer Modal */}
-      {/* <AnimatePresence>
-        {viewingResource && (
+      <AnimatePresence>
+        {/* {viewingResource && (
           <ResourceViewer
             resource={viewingResource}
             onClose={() => setViewingResource(null)}
           />
-        )}
-      </AnimatePresence> */}
+        )} */}
+      </AnimatePresence>
     </div>
   );
 };

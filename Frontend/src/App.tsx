@@ -17,9 +17,6 @@ import QuantumNumbersLab from './components/QuantumNumbersLab';
 import MechanicsVisualizer from './components/MechanicsVisualizer';
 import ElectromagnetismVisualizer from './components/ElectromagnetismVisualizer';
 
-import MicrobiologyLab from './components/MicrobiologyLab';
-import CellBiologyLab from './components/CellBiologyLab';
-
 import LandingPage from './components/LandingPage';
 import SubjectPage from './components/SubjectPage';
 import TopicPage from './components/TopicPage';
@@ -33,10 +30,10 @@ import QuizPage from './components/Quiz';
 import { generateQuizAI } from './data/quizData';
 
 import { ELEMENTS } from './utils/constants';
-import { getElements } from './services/elementsService';
 import { ElementData, Subject, Topic, ViewState, TopicId } from './types/types';
 import { Language, translations } from './services/translations';
 import { AuthProvider, useAuth } from './AuthContext';
+import { getElements } from './services/elementsService';
 import VectorCalculusLab from './components/VectorCalculusLab';
 import PiVisualizationLab from './components/PiVisualizationLab';
 
@@ -132,11 +129,11 @@ const AppContent: React.FC = () => {
     switch (topicId) {
       case TopicId.ATOMIC_STRUCTURE:
         return (
-          <div className="flex flex-col h-full">
-            <div className="flex-1">
+          <div className="flex flex-col h-full overflow-hidden">
+            <div className="flex-[3] relative min-h-[300px]">
               <AtomVisualizer element={selectedElement} rotation={atomRotation} />
             </div>
-            <div className="h-[420px] border-t border-white/5 overflow-y-auto">
+            <div className="flex-[2] border-t border-white/5 overflow-y-auto bg-black/40">
               <PeriodicTable
                 elements={elements}
                 onSelect={setSelectedElement}
@@ -148,8 +145,8 @@ const AppContent: React.FC = () => {
 
       case TopicId.QUANTUM_CONFIG:
         return (
-          <div className="flex flex-col h-full">
-            <div className="h-[350px] overflow-y-auto">
+          <div className="flex flex-col h-full overflow-hidden">
+            <div className="flex-1 overflow-y-auto bg-black/40 border-b border-white/5">
               <PeriodicTable
                 elements={elements}
                 onSelect={setSelectedElement}
@@ -157,77 +154,72 @@ const AppContent: React.FC = () => {
               />
             </div>
 
-            <div className="flex-1 p-8 grid xl:grid-cols-4 gap-8">
+            <div className="flex-[2] p-8 grid xl:grid-cols-4 gap-8 min-h-0 overflow-y-auto">
               <div className="xl:col-span-3">
                 <QuantumConfigLab element={selectedElement} />
               </div>
-              <AufbauChart atomicNumber={selectedElement.number} />
+              <div className="h-full min-h-[400px]">
+                <AufbauChart atomicNumber={selectedElement.number} />
+              </div>
             </div>
           </div>
         );
 
       case TopicId.PERIODIC_TRENDS:
         return (
-          <div className="p-8 space-y-8">
-            <TrendsVisualizer />
-            <ElementComparison />
+          <div className="h-full overflow-y-auto p-4 md:p-8 space-y-12 bg-[#020617]">
+            <section className="max-w-7xl mx-auto">
+              <TrendsVisualizer />
+            </section>
+            <section className="max-w-7xl mx-auto">
+              <ElementComparison />
+            </section>
           </div>
         );
 
       case TopicId.MOLECULAR_STRUCTURE:
         return (
-          <div className="p-8 space-y-8">
-            <BondingLab />
-            <GeometryLab />
+          <div className="h-full overflow-y-auto p-4 md:p-8 space-y-12 bg-[#020617]">
+            <section className="max-w-7xl mx-auto">
+              <BondingLab />
+            </section>
+            <section className="max-w-7xl mx-auto">
+              <GeometryLab />
+            </section>
           </div>
         );
 
       case TopicId.QUANTUM_NUMBERS:
-        return <QuantumNumbersLab />;
+        return (
+          <div className="h-full overflow-y-auto">
+            <QuantumNumbersLab />
+          </div>
+        );
 
       case TopicId.HISTORICAL_MODELS:
-        return <HistoricalModels />;
+        return (
+          <div className="h-full overflow-y-auto">
+            <HistoricalModels />
+          </div>
+        );
       
-      case TopicId.MECHANICS: // Make sure this matches your TopicId enum
-  return (
-    <div className="p-8 space-y-8">
-      <MechanicsVisualizer />
-    </div>
-  );
-  case TopicId.ELECTROMAGNETISM:
-  return (
-    <div className="p-8 space-y-8">
-      <ElectromagnetismVisualizer />
-    </div>
-  );
+      case TopicId.MECHANICS:
+        return (
+          <div className="h-full overflow-y-auto p-4 md:p-8 bg-[#020617]">
+            <div className="max-w-7xl mx-auto">
+              <MechanicsVisualizer />
+            </div>
+          </div>
+        );
 
-case TopicId.MICROBIOLOGY:
-  return (
-    <div className="p-8 space-y-8 h-[700px]">
-      <MicrobiologyLab />
-    </div>
-  );
-
-case TopicId.CELL_BIOLOGY:
-  return (
-    <div className="p-8 space-y-8 h-[700px]">
-      <CellBiologyLab />
-    </div>
-  );
-
-  case TopicId.VECTOR_CALCULUS:
-  return (
-    <div className="p-8 space-y-8 h-[700px]">
-      <VectorCalculusLab/>
-    </div>
-  );
-  case TopicId.PI_APPROXIMATION:
-  return (
-    <div className="p-8 space-y-8 h-[700px]">
-      <PiVisualizationLab/>
-    </div>
-  );
-  
+      case TopicId.ELECTROMAGNETISM:
+        return (
+          <div className="h-full overflow-y-auto p-4 md:p-8 bg-[#020617]">
+            <div className="max-w-7xl mx-auto">
+              <ElectromagnetismVisualizer />
+            </div>
+          </div>
+        );
 
       default:
         return <div className="p-10 text-center">Coming Soon</div>;
@@ -269,7 +261,7 @@ case TopicId.CELL_BIOLOGY:
   if (!user) return <AuthPage />;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#020617] text-white">
+    <div className="h-screen w-full flex flex-col bg-[#020617] text-white overflow-hidden">
 
       {/* ================= QUIZ SCREEN ================= */}
       <AnimatePresence>
@@ -292,52 +284,33 @@ case TopicId.CELL_BIOLOGY:
         <>
           <AnimatePresence mode="wait">
             {viewState === ViewState.LANDING && (
-              <motion.div key="landing">
+              <motion.div key="landing" className="h-full w-full overflow-y-auto">
                 <LandingPage onSelectSubject={handleSelectSubject} language={language} />
               </motion.div>
             )}
 
             {viewState === ViewState.SUBJECT && selectedSubject && (
-              <motion.div key="subject">
+              <motion.div key="subject" className="h-full w-full overflow-y-auto">
                 <SubjectPage
                   subject={selectedSubject}
                   onSelectTopic={handleSelectTopic}
                   onBack={handleBackToLanding}
                   language={language}
+                  onStartQuiz={startQuiz}
+                  quizLevel={quizLevel}
+                  onLevelChange={setQuizLevel}
                 />
-
-                {/* LEVEL SELECTOR */}
-                <div className="fixed bottom-36 right-8 flex gap-2 z-[120]">
-                  {["basic", "intermediate", "difficult"].map((lvl) => (
-                    <button
-                      key={lvl}
-                      onClick={() => setQuizLevel(lvl as any)}
-                      className={`px-3 py-1 rounded text-xs ${
-                        quizLevel === lvl ? "bg-indigo-600" : "bg-white/10"
-                      }`}
-                    >
-                      {lvl}
-                    </button>
-                  ))}
-                </div>
-
-                {/* START QUIZ */}
-                <button
-                  onClick={startQuiz}
-                  className="fixed bottom-24 right-8 px-5 py-3 bg-green-600 rounded-xl hover:bg-green-700 z-[120]"
-                >
-                  Start Quiz
-                </button>
               </motion.div>
             )}
 
             {viewState === ViewState.TOPIC && selectedTopic && (
-              <motion.div key="topic">
+              <motion.div key="topic" className="h-full w-full">
                 <TopicPage
                   topic={selectedTopic}
                   onBack={handleBackToSubject}
                   visualization={renderVisualization(selectedTopic.id)}
                   language={language}
+                  onStartQuiz={startQuiz}
                 />
               </motion.div>
             )}

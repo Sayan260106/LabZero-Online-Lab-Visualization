@@ -17,6 +17,9 @@ import QuantumNumbersLab from './components/QuantumNumbersLab';
 import MechanicsVisualizer from './components/MechanicsVisualizer';
 import ElectromagnetismVisualizer from './components/ElectromagnetismVisualizer';
 
+import MicrobiologyLab from './components/MicrobiologyLab';
+import CellBiologyLab from './components/CellBiologyLab';
+
 import LandingPage from './components/LandingPage';
 import SubjectPage from './components/SubjectPage';
 import TopicPage from './components/TopicPage';
@@ -193,6 +196,20 @@ const AppContent: React.FC = () => {
   return (
     <div className="p-8 space-y-8">
       <ElectromagnetismVisualizer />
+    </div>
+  );
+
+case TopicId.MICROBIOLOGY:
+  return (
+    <div className="p-8 space-y-8 h-[700px]">
+      <MicrobiologyLab />
+    </div>
+  );
+
+case TopicId.CELL_BIOLOGY:
+  return (
+    <div className="p-8 space-y-8 h-[700px]">
+      <CellBiologyLab />
     </div>
   );
 

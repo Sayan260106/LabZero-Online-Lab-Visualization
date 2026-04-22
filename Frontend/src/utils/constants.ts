@@ -301,14 +301,39 @@ $$2\\pi$$
   {
     id: SubjectId.BIOLOGY,
     name: 'Biology',
-    icon: 'Dna',
-    color: 'rose',
+    icon: 'Beaker', 
+    color: 'emerald',
     topics: [
       {
-        id: TopicId.GENETICS,
-        name: 'Genetics',
-        description: 'Explore the blueprint of life and how traits are inherited.',
-        theory: '# Genetics\nComing soon! Discover DNA, genes, and inheritance patterns.'
+        id: TopicId.MICROBIOLOGY,
+        name: 'Microorganisms',
+        description: 'Analyze the 3D structure and movement mechanisms of a single-celled bacterium.',
+        theory: `
+# Microorganisms: The Bacterium
+Bacteria are prokaryotic microorganisms. They are incredibly resilient and exist in almost every environment on Earth.
+
+## Structural Anatomy
+Unlike complex cells, bacteria lack a membrane-bound nucleus.
+- **Capsule & Cell Wall**: The rigid outer layers that provide structural support and protection from the environment.
+- **Nucleoid**: An irregularly shaped region within the cell where the genetic material (circular DNA) is localized.
+- **Flagella**: Long, whip-like appendages driven by a biological motor used for cellular locomotion.
+- **Pili**: Hair-like structures on the surface used for attachment to surfaces and DNA transfer.
+        `
+      },
+      {
+        id: TopicId.CELL_BIOLOGY,
+        name: 'Cellular Anatomy',
+        description: 'Explore a 3D cross-section of a eukaryotic cell and its organelles.',
+        theory: `
+# Cellular Anatomy
+Eukaryotic cells are the complex building blocks of animals and plants. They are defined by having a true, membrane-bound nucleus and specialized organelles.
+
+## Key Organelles
+- **Nucleus**: The control center. It houses the cell's linear DNA and coordinates cell activities like growth and reproduction.
+- **Mitochondria**: The site of cellular respiration, generating the cell's supply of adenosine triphosphate (ATP) used as a source of chemical energy.
+- **Cytoplasm**: The jelly-like substance filling the cell, providing a medium for chemical reactions and suspending the organelles.
+- **Cell Membrane**: The selectively permeable barrier that controls the movement of substances in and out of the cell.
+        `
       }
     ]
   }

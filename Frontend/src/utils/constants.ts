@@ -175,15 +175,15 @@ Electromagnetism deals with the electromagnetic force that occurs between electr
       description: 'Visualize 3D vectors, cross products, and orthogonal planes.',
       theory: `
 # Vector Cross Product
-In 3D space, the cross product of two vectors $\vec{A}$ and $\vec{B}$ is a vector $\vec{C}$ that is perpendicular to both.
+In 3D space, the cross product of two vectors **A** and **B** is a new vector **C** that is perfectly perpendicular (90 degrees) to both of them.
 
 ## Geometric Properties
-- **Direction**: Determined by the right-hand rule.
-- **Magnitude**: Equal to the area of the parallelogram formed by $\vec{A}$ and $\vec{B}$.
-- **Formula**: $\vec{A} \times \vec{B} = \|\vec{A}\| \|\vec{B}\| \sin(\theta) \mathbf{\hat{n}}$
+- **Direction**: Determined by the **Right-Hand Rule**. If you curl your fingers from A to B, your thumb points in the direction of the Cross Product.
+- **Magnitude**: The length of the resulting vector represents the area of the parallelogram formed by vectors A and B.
+- **Formula**: **A × B = |A| |B| sin(θ) n**
 
 ## CSE Applications
-This math is used in **Backface Culling** in graphics to determine which side of a triangle faces the camera!
+This is the backbone of 3D lighting! It is used to calculate "surface normals" to determine how light bounces off a 3D model.
       `
     },
     {

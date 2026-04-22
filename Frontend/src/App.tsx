@@ -36,12 +36,12 @@ import { ELEMENTS } from './utils/constants';
 import { getElements } from './services/elementsService';
 import { ElementData, Subject, Topic, ViewState, TopicId } from './types/types';
 import { Language, translations } from './services/translations';
-import { AuthProvider, useAuth } from './AuthContext';
+import { AuthProvider, useAuth } from './services/AuthContext';
 import VectorCalculusLab from './components/VectorCalculusLab';
 import PiVisualizationLab from './components/PiVisualizationLab';
 
 const AppContent: React.FC = () => {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, logout } = useAuth();
 
   const [elements, setElements] = useState<ElementData[]>(ELEMENTS);
   const [selectedElement, setSelectedElement] = useState<ElementData>(ELEMENTS[0]);
@@ -93,9 +93,13 @@ const AppContent: React.FC = () => {
 
   // ================= NAVIGATION =================
   const handleSelectSubject = useCallback((subject: Subject) => {
+    if (!user) {
+      setShowAuth(true);
+      return;
+    }
     setSelectedSubject(subject);
     setViewState(ViewState.SUBJECT);
-  }, []);
+  }, [user]);
 
   const handleSelectTopic = useCallback((topic: Topic) => {
     setSelectedTopic(topic);
@@ -266,7 +270,6 @@ case TopicId.CELL_BIOLOGY:
 
   // ================= AUTH =================
   if (isLoading) return null;
-  if (!user) return <AuthPage />;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#020617] text-white">
@@ -293,7 +296,14 @@ case TopicId.CELL_BIOLOGY:
           <AnimatePresence mode="wait">
             {viewState === ViewState.LANDING && (
               <motion.div key="landing">
-                <LandingPage onSelectSubject={handleSelectSubject} language={language} />
+                <LandingPage 
+                  onSelectSubject={handleSelectSubject} 
+                  language={language} 
+                  user={user}
+                  onLoginClick={() => setShowAuth(true)}
+                  onLogoutClick={logout}
+                  onProfileClick={() => setShowAuth(true)}
+                />
               </motion.div>
             )}
 

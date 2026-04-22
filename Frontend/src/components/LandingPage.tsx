@@ -1,13 +1,17 @@
 import React from 'react';
 import { Subject } from '../types/types';
 import { SUBJECTS } from '../utils/constants';
-import { Beaker, Zap, Calculator, Dna, ArrowRight, Globe, Sparkles } from 'lucide-react';
+import { Beaker, Zap, Calculator, Dna, ArrowRight, Globe, Sparkles, User as UserIcon, LogOut } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Language, translations } from '../services/translations';
 
 interface LandingPageProps {
   onSelectSubject: (subject: Subject) => void;
   language: Language;
+  user?: any;
+  onLoginClick?: () => void;
+  onLogoutClick?: () => void;
+  onProfileClick?: () => void;
 }
 
 const iconMap: Record<string, any> = {
@@ -17,7 +21,14 @@ const iconMap: Record<string, any> = {
   Dna,
 };
 
-const LandingPage: React.FC<LandingPageProps> = ({ onSelectSubject, language }) => {
+const LandingPage: React.FC<LandingPageProps> = ({ 
+  onSelectSubject, 
+  language,
+  user,
+  onLoginClick,
+  onLogoutClick,
+  onProfileClick
+}) => {
   const t = (key: string) => translations[key]?.[language] || key;
   return (
     <div className="relative min-h-screen overflow-hidden grainy">
@@ -29,6 +40,38 @@ const LandingPage: React.FC<LandingPageProps> = ({ onSelectSubject, language }) 
       </div>
 
       <div className="relative max-w-7xl mx-auto px-6 pt-32 pb-20">
+        {/* Auth Controls */}
+        <div className="absolute top-8 right-6 flex items-center gap-4 z-50">
+          {!user ? (
+            <button 
+              onClick={onLoginClick}
+              className="px-6 py-2.5 bg-primary/20 hover:bg-primary text-primary hover:text-white border border-primary/50 rounded-full text-xs font-mono uppercase tracking-widest transition-all shadow-lg shadow-primary/20 backdrop-blur-md"
+            >
+              Login / Sign Up
+            </button>
+          ) : (
+            <div className="flex items-center gap-3 bg-[#020617]/50 backdrop-blur-md p-2 pl-4 border border-white/10 rounded-full shadow-xl">
+              <span className="text-xs font-medium text-slate-300">
+                Welcome, <span className="text-white font-bold">{user.first_name || user.username}</span>
+              </span>
+              <button 
+                onClick={onProfileClick}
+                className="p-2 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white rounded-full transition-colors"
+                title="Profile Dashboard"
+              >
+                <UserIcon size={16} />
+              </button>
+              <button 
+                onClick={onLogoutClick}
+                className="p-2 bg-white/5 hover:bg-rose-500/20 text-slate-300 hover:text-rose-400 rounded-full transition-colors"
+                title="Logout"
+              >
+                <LogOut size={16} />
+              </button>
+            </div>
+          )}
+        </div>
+
         <header className="mb-32">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}

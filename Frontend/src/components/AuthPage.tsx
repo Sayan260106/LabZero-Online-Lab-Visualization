@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useAuth } from '../AuthContext';
+import { useAuth } from '../services/AuthContext';
 import { UserRole } from '../types/types';
 import { 
   GraduationCap, 
@@ -16,20 +16,43 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 
 const AuthPage: React.FC = () => {
-  const { login } = useAuth();
+  const { login, signup } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [selectedRole, setSelectedRole] = useState<UserRole>('student');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [username, setUsername] = useState('');
   const [instituteName, setInstituteName] = useState('');
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // In this mock, we just use name or institute name as the user name
-    const finalName = selectedRole === 'institute' ? instituteName : name;
-    if (!finalName) return;
-    login(finalName, selectedRole);
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      if (isLogin) {
+        if (!email || !password) return;
+        await login(email, password);
+        setSuccess("Login successful! Entering laboratory...");
+      } else {
+        if (selectedRole === 'institute') {
+          if (!instituteName || !username || !email || !password) return;
+          await signup(instituteName, '', username, email, password, 'institute');
+        } else {
+          if (!firstName || !lastName || !username || !email || !password) return;
+          await signup(firstName, lastName, username, email, password, selectedRole);
+        }
+        setSuccess("Account created successfully!");
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.detail || "Authentication failed. Please check your credentials.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const roles: { id: UserRole; label: string; icon: any; color: string; desc: string }[] = [
@@ -79,7 +102,7 @@ const AuthPage: React.FC = () => {
               <div className="p-2 bg-white/10 backdrop-blur-md rounded-xl">
                 <Sparkles size={24} />
               </div>
-              <h1 className="text-2xl font-display font-bold uppercase tracking-tight italic">OMNI SCIENCE</h1>
+              <h1 className="text-2xl font-display font-bold uppercase tracking-tight italic">LABZERO</h1>
             </div>
             
             <h2 className="text-5xl font-display font-bold leading-[0.9] uppercase italic mb-8">
@@ -110,7 +133,7 @@ const AuthPage: React.FC = () => {
                 <div className="w-10 h-10 rounded-full bg-white/20" />
                 <div>
                   <div className="text-xs font-bold uppercase">Sayan Sinha</div>
-                  <div className="text-[10px] text-white/50 uppercase font-mono">Lead Scientist, OmniScience</div>
+                  <div className="text-[10px] text-white/50 uppercase font-mono">Lead Scientist, LabZero</div>
                 </div>
               </div>
             </div>
@@ -143,6 +166,26 @@ const AuthPage: React.FC = () => {
             </p>
           </div>
 
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-mono uppercase tracking-widest text-center"
+            >
+              {error}
+            </motion.div>
+          )}
+
+          {success && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-mono uppercase tracking-widest text-center"
+            >
+              {success}
+            </motion.div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 gap-3 py-4">
               <label className="text-[10px] font-mono text-slate-500 uppercase tracking-widest pl-2">Select Account Type</label>
@@ -163,31 +206,87 @@ const AuthPage: React.FC = () => {
                   </button>
                 ))}
               </div>
+              {!isLogin && selectedRole === 'institute' && (
+                <div className="space-y-4">
+                  <div className="relative group">
+                    <Building2 className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-indigo-500 transition-colors" />
+                    <input
+                      type="text"
+                      placeholder="INSTITUTE NAME"
+                      value={instituteName}
+                      onChange={(e) => setInstituteName(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-xs font-mono"
+                      required
+                    />
+                  </div>
+                  <div className="relative group">
+                    <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-indigo-500 transition-colors" />
+                    <input
+                      type="text"
+                      placeholder="USERNAME"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-xs font-mono"
+                      required
+                    />
+                  </div>
+                </div>
+              )}
+
+              {!isLogin && selectedRole !== 'institute' && (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="relative group">
+                      <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-indigo-500 transition-colors" />
+                      <input
+                        type="text"
+                        placeholder="FIRST NAME"
+                        value={firstName}
+                        onChange={(e) => setFirstName(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-xs font-mono"
+                        required
+                      />
+                    </div>
+                    <div className="relative group">
+                      <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-indigo-500 transition-colors" />
+                      <input
+                        type="text"
+                        placeholder="LAST NAME"
+                        value={lastName}
+                        onChange={(e) => setLastName(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-xs font-mono"
+                        required
+                      />
+                    </div>
+                  </div>
+                  <div className="relative group">
+                    <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500 group-focus-within:text-indigo-500 transition-colors" />
+                    <input
+                      type="text"
+                      placeholder="USERNAME"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-xs font-mono"
+                      required
+                    />
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="space-y-4">
-              {!isLogin && (
-                <div className="relative group">
-                  <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-indigo-400 transition-colors" size={18} />
-                  <input 
-                    type="text"
-                    required
-                    value={selectedRole === 'institute' ? instituteName : name}
-                    onChange={(e) => selectedRole === 'institute' ? setInstituteName(e.target.value) : setName(e.target.value)}
-                    placeholder={selectedRole === 'institute' ? "Institute Name" : "Full Name"}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-white focus:outline-none focus:border-indigo-500/50 transition-all font-light placeholder:text-slate-700"
-                  />
-                </div>
-              )}
-              
               <div className="relative group">
-                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-indigo-400 transition-colors" size={18} />
+                {isLogin ? (
+                  <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-indigo-400 transition-colors" size={18} />
+                ) : (
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-600 group-focus-within:text-indigo-400 transition-colors" size={18} />
+                )}
                 <input 
-                  type="email"
+                  type={isLogin ? "text" : "email"}
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Email Address"
+                  placeholder={isLogin ? "Email or Username" : "Email Address"}
                   className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-4 text-white focus:outline-none focus:border-indigo-500/50 transition-all font-light placeholder:text-slate-700"
                 />
               </div>
@@ -221,10 +320,20 @@ const AuthPage: React.FC = () => {
 
             <button 
               type="submit"
-              className="w-full h-16 rounded-2xl bg-indigo-600 text-white font-mono uppercase tracking-[.2em] hover:bg-indigo-500 transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-600/30 group"
+              disabled={isSubmitting}
+              className="w-full h-16 rounded-2xl bg-indigo-600 text-white font-mono uppercase tracking-[.2em] hover:bg-indigo-500 transition-all flex items-center justify-center gap-3 shadow-xl shadow-indigo-600/30 group disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isLogin ? 'Enter Laboratory' : 'Create Account'}
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              {isSubmitting ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                  <span>Processing...</span>
+                </div>
+              ) : (
+                <>
+                  {isLogin ? 'Enter Laboratory' : 'Create Account'}
+                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </>
+              )}
             </button>
 
             <p className="text-center font-mono text-[9px] text-slate-600 uppercase tracking-widest pt-4">

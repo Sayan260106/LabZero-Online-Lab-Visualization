@@ -121,9 +121,11 @@ export type UserRole = 'student' | 'teacher' | 'institute';
 
 export interface User {
   id: string;
-  name: string;
+  username: string;
   email: string;
   role: UserRole;
+  first_name: string;
+  last_name: string;
 }
 
 export interface GlossaryTerm {

@@ -369,10 +369,11 @@ export class GlossaryService {
 
   private async prePopulate(): Promise<void> {
     const terms = await this.getAll();
-    if (terms.length === 0) {
-      for (const term of INITIAL_GLOSSARY_TERMS) {
-        await this.add(term);
-      }
+    const existingIds = new Set(terms.map((term) => term.id));
+    const missingTerms = INITIAL_GLOSSARY_TERMS.filter((term) => !existingIds.has(term.id));
+
+    for (const term of missingTerms) {
+      await this.add(term);
     }
   }
 

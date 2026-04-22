@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  Sparkles, MessageSquare, X, Settings, Eye, Moon, Sun, Languages
+  Sparkles, MessageSquare, X, Settings, Eye, Moon, Sun, Languages, BookOpen
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import AtomVisualizer from './components/AtomicVisualizer';
@@ -422,6 +422,27 @@ const AppContent: React.FC = () => {
                         </button>
                       ))}
                     </div>
+                  </div>
+
+                  <div className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-amber-300">
+                        <BookOpen size={16} />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300">Glossary</span>
+                        <span className="text-[8px] font-mono text-slate-500">Open quick science definitions</span>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setShowGlossary(true);
+                        setShowSettings(false);
+                      }}
+                      className="rounded-xl bg-amber-500 px-3 py-2 text-[10px] font-mono uppercase tracking-widest text-slate-950 transition-colors hover:bg-amber-400"
+                    >
+                      Open
+                    </button>
                   </div>
                 </div>
               </motion.div>

@@ -32,13 +32,13 @@ import { generateQuizAI } from './data/quizData';
 import { ELEMENTS } from './utils/constants';
 import { ElementData, Subject, Topic, ViewState, TopicId } from './types/types';
 import { Language, translations } from './services/translations';
-import { AuthProvider, useAuth } from './AuthContext';
+import { AuthProvider, useAuth } from './services/AuthContext';
 import { getElements } from './services/elementsService';
 import VectorCalculusLab from './components/VectorCalculusLab';
 import PiVisualizationLab from './components/PiVisualizationLab';
 
 const AppContent: React.FC = () => {
-  const { user, isLoading } = useAuth();
+  const { user, isLoading, logout } = useAuth();
 
   const [elements, setElements] = useState<ElementData[]>(ELEMENTS);
   const [selectedElement, setSelectedElement] = useState<ElementData>(ELEMENTS[0]);
@@ -90,9 +90,13 @@ const AppContent: React.FC = () => {
 
   // ================= NAVIGATION =================
   const handleSelectSubject = useCallback((subject: Subject) => {
+    if (!user) {
+      setShowAuth(true);
+      return;
+    }
     setSelectedSubject(subject);
     setViewState(ViewState.SUBJECT);
-  }, []);
+  }, [user]);
 
   const handleSelectTopic = useCallback((topic: Topic) => {
     setSelectedTopic(topic);
@@ -258,7 +262,6 @@ const AppContent: React.FC = () => {
 
   // ================= AUTH =================
   if (isLoading) return null;
-  if (!user) return <AuthPage />;
 
   return (
     <div className="h-screen w-full flex flex-col bg-[#020617] text-white overflow-hidden">
@@ -285,7 +288,14 @@ const AppContent: React.FC = () => {
           <AnimatePresence mode="wait">
             {viewState === ViewState.LANDING && (
               <motion.div key="landing" className="h-full w-full overflow-y-auto">
-                <LandingPage onSelectSubject={handleSelectSubject} language={language} />
+                <LandingPage 
+                  onSelectSubject={handleSelectSubject} 
+                  language={language} 
+                  user={user}
+                  onLoginClick={() => setShowAuth(true)}
+                  onLogoutClick={logout}
+                  onProfileClick={() => setShowAuth(true)}
+                />
               </motion.div>
             )}
 

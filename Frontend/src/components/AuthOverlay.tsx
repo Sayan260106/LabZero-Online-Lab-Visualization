@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useAuth } from '../AuthContext';
+import { useAuth } from '../services/AuthContext';
 import { UserRole } from '../types/types';
 import { User, LogOut, GraduationCap, School, X, ArrowRight, Building2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -10,14 +10,37 @@ interface AuthOverlayProps {
 }
 
 const AuthOverlay: React.FC<AuthOverlayProps> = ({ onClose }) => {
-  const { user, login, logout } = useAuth();
-  const [name, setName] = useState('');
+  const { user, login, signup, logout } = useAuth();
+  const [isLogin, setIsLogin] = useState(true);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [role, setRole] = useState<UserRole>('student');
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name) return;
-    login(name, role);
+    setError(null);
+    setIsSubmitting(true);
+    try {
+      if (isLogin) {
+        if (!email || !password) return;
+        await login(email, password);
+        setSuccess("Success! Identity verified.");
+      } else {
+        if (!firstName || !lastName || !username || !email || !password) return;
+        await signup(firstName, lastName, username, email, password, role);
+        setSuccess("Welcome! Account created.");
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.detail || "Auth failed. Check credentials.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -43,28 +66,112 @@ const AuthOverlay: React.FC<AuthOverlayProps> = ({ onClose }) => {
             </button>
           </div>
 
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="mb-6 p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-[10px] font-mono uppercase tracking-widest text-center"
+            >
+              {error}
+            </motion.div>
+          )}
+
+          {success && (
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="mb-6 p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-mono uppercase tracking-widest text-center"
+            >
+              {success}
+            </motion.div>
+          )}
+
           <AnimatePresence mode="wait">
             {!user ? (
-              <motion.form 
-                key="login"
+              <motion.div 
+                key="auth-forms"
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                onSubmit={handleLogin}
-                className="space-y-8"
+                className="space-y-6"
               >
-                <div className="space-y-2">
-                  <label className="text-[10px] font-mono text-slate-500 uppercase tracking-widest pl-2">Full Name</label>
-                  <input 
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    placeholder="Enter your name..."
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl p-5 text-white focus:outline-none focus:border-primary/50 transition-all font-light"
-                  />
+                <div className="flex items-center gap-1 p-1 bg-white/5 rounded-2xl w-full mb-6 border border-white/5">
+                  <button 
+                    type="button"
+                    onClick={() => setIsLogin(true)}
+                    className={`flex-1 py-2.5 rounded-xl text-[10px] font-mono uppercase tracking-widest transition-all ${isLogin ? 'bg-primary text-white shadow-lg' : 'text-slate-500 hover:text-white'}`}
+                  >
+                    Login
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={() => setIsLogin(false)}
+                    className={`flex-1 py-2.5 rounded-xl text-[10px] font-mono uppercase tracking-widest transition-all ${!isLogin ? 'bg-primary text-white shadow-lg' : 'text-slate-500 hover:text-white'}`}
+                  >
+                    Sign Up
+                  </button>
                 </div>
+                
+                <form onSubmit={handleSubmit} className="space-y-6">
+                  {!isLogin && (
+                    <div className="space-y-3">
+                      <div className="grid grid-cols-2 gap-3">
+                        <input
+                          type="text"
+                          placeholder="FIRST NAME"
+                          value={firstName}
+                          onChange={(e) => setFirstName(e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 px-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-xs font-mono"
+                          required
+                        />
+                        <input
+                          type="text"
+                          placeholder="LAST NAME"
+                          value={lastName}
+                          onChange={(e) => setLastName(e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 px-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-xs font-mono"
+                          required
+                        />
+                      </div>
+                      <input
+                        type="text"
+                        placeholder="USERNAME"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl py-3 px-4 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500 transition-all text-xs font-mono"
+                        required
+                      />
+                    </div>
+                  )}
 
-                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-mono text-slate-500 uppercase tracking-widest pl-2">
+                      {isLogin ? "Email or Username" : "Email"}
+                    </label>
+                    <input 
+                      type={isLogin ? "text" : "email"}
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder={isLogin ? "Enter email or username..." : "Enter your email..."}
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:outline-none focus:border-primary/50 transition-all font-light"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-mono text-slate-500 uppercase tracking-widest pl-2">Password</label>
+                    <input 
+                      type="password"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Enter your password..."
+                      className="w-full bg-white/5 border border-white/10 rounded-2xl p-4 text-white focus:outline-none focus:border-primary/50 transition-all font-light"
+                    />
+                  </div>
+
+                  {!isLogin && (
+                    <div className="space-y-4 pt-2">
                   <label className="text-[10px] font-mono text-slate-500 uppercase tracking-widest pl-2">Select Access Level</label>
                   <div className="grid grid-cols-1 gap-3">
                     {[
@@ -92,16 +199,28 @@ const AuthOverlay: React.FC<AuthOverlayProps> = ({ onClose }) => {
                       </button>
                     ))}
                   </div>
-                </div>
+                    </div>
+                  )}
 
-                <button 
-                  type="submit"
-                  className="w-full h-16 rounded-2xl bg-primary text-white font-mono uppercase tracking-[.2em] hover:bg-primary/80 transition-all flex items-center justify-center gap-3 shadow-xl shadow-primary/30"
-                >
-                  Authorize Access
-                  <ArrowRight size={18} />
-                </button>
-              </motion.form>
+                  <button 
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full h-16 rounded-2xl bg-primary text-white font-mono uppercase tracking-[.2em] hover:bg-primary/80 transition-all flex items-center justify-center gap-3 shadow-xl shadow-primary/30 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {isSubmitting ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                        <span>Verifying...</span>
+                      </div>
+                    ) : (
+                      <>
+                        {isLogin ? 'Login' : 'Create Account'}
+                        <ArrowRight size={18} />
+                      </>
+                    )}
+                  </button>
+                </form>
+              </motion.div>
             ) : (
               <motion.div 
                 key="profile"
@@ -117,20 +236,23 @@ const AuthOverlay: React.FC<AuthOverlayProps> = ({ onClose }) => {
                       Active Session
                     </div>
                   </div>
-                  <h3 className="text-2xl font-display font-bold text-white mb-2">{user.name}</h3>
+                  <h3 className="text-2xl font-display font-bold text-white mb-2">
+                    {user.first_name || user.last_name ? `${user.first_name} ${user.last_name}` : user.username}
+                  </h3>
                   <p className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.4em] mb-6">{user.role}</p>
                   
                   <div className="w-full space-y-3">
                     <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase">System ID</span>
-                      <span className="text-[10px] font-mono text-white opacity-80 uppercase">{user.id}</span>
+                      <span className="text-[10px] font-mono text-slate-500 uppercase">Username</span>
+                      <span className="text-[10px] font-mono text-white opacity-80 uppercase tracking-widest">{user.username}</span>
                     </div>
                     <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase">Sync Status</span>
-                      <span className="text-[10px] font-mono text-emerald-500 uppercase flex items-center gap-2">
-                        <div className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                        Online
-                      </span>
+                      <span className="text-[10px] font-mono text-slate-500 uppercase">Email</span>
+                      <span className="text-[10px] font-mono text-white opacity-80">{user.email}</span>
+                    </div>
+                    <div className="flex items-center justify-between p-4 rounded-2xl bg-white/5 border border-white/5">
+                      <span className="text-[10px] font-mono text-slate-500 uppercase">System ID</span>
+                      <span className="text-[10px] font-mono text-white opacity-80 uppercase">{user.id}</span>
                     </div>
                   </div>
                 </div>

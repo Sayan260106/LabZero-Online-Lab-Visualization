@@ -39,12 +39,13 @@ export enum TopicId {
   // Placeholders for other subjects
   MECHANICS = 'mechanics',
   ELECTROMAGNETISM='Electromagnetism',
-  CALCULUS = 'calculus',
-  GENETICS = 'genetics',
-  TRIGONOMETRY = "TRIGONOMETRY",
-  ALGEBRA = "ALGEBRA",
+  
+  VECTOR_CALCULUS="VECTOR_CALCULUS",
+  PI_APPROXIMATION="PI_APPROXIMATION",
+
   MICROBIOLOGY="MICROBIOLOGY",
   CELL_BIOLOGY="CELL_BIOLOGY",
+
 }
 
 export interface Topic {

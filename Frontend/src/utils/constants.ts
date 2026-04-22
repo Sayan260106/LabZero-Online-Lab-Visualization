@@ -167,135 +167,46 @@ Electromagnetism deals with the electromagnetic force that occurs between electr
   id: SubjectId.MATH,
   name: 'Mathematics',
   icon: 'Calculator',
-  color: 'amber',
+  color: 'indigo',
   topics: [
     {
-      id: TopicId.ALGEBRA,
-      name: 'Algebra',
-      description: 'Learn equations, variables, and problem solving.',
+      id: TopicId.VECTOR_CALCULUS,
+      name: 'Vector Algebra',
+      description: 'Visualize 3D vectors, cross products, and orthogonal planes.',
       theory: `
-# Algebra
+# Vector Cross Product
+In 3D space, the cross product of two vectors $\vec{A}$ and $\vec{B}$ is a vector $\vec{C}$ that is perpendicular to both.
 
-Algebra is the branch of mathematics that uses symbols and variables to represent numbers and relationships.
+## Geometric Properties
+- **Direction**: Determined by the right-hand rule.
+- **Magnitude**: Equal to the area of the parallelogram formed by $\vec{A}$ and $\vec{B}$.
+- **Formula**: $\vec{A} \times \vec{B} = \|\vec{A}\| \|\vec{B}\| \sin(\theta) \mathbf{\hat{n}}$
 
-## Key Concepts
-
-• Variables: Symbols like x, y represent unknown values  
-• Constants: Fixed values like 2, 5, 10  
-• Expressions: Combination of variables and numbers  
-
-## Linear Equation
-$$ax + b = 0$$
-
-Solution:
-$$x = -\\frac{b}{a}$$
-
-## Example
-Solve:
-$$2x + 4 = 0$$
-
-$$2x = -4$$  
-$$x = -2$$
-
-## Quadratic Equation
-$$ax^2 + bx + c = 0$$
-
-Solution:
-$$x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$$
-
-## Why Algebra Matters
-• Used in programming  
-• Helps in problem solving  
-• Foundation for higher mathematics  
-`
+## CSE Applications
+This math is used in **Backface Culling** in graphics to determine which side of a triangle faces the camera!
+      `
     },
-
     {
-      id: TopicId.CALCULUS,
-      name: 'Calculus',
-      description: 'Understand change through derivatives and integrals.',
-      theory: `
-# Calculus
+  id: TopicId.PI_APPROXIMATION,
+  name: 'Approximating Pi',
+  description: 'Use the Archimedes method to calculate π by increasing polygon sides.',
+  theory: `
+# Archimedes' Method
+Archimedes discovered that you could find the value of **π** by "trapping" a circle between two polygons.
 
-Calculus studies how things change and accumulate.
+## The Limit Concept
+- A **Hexagon** (n = 6) is a poor approximation of a circle.
+- A **Myriagon** (n = 10,000) is almost indistinguishable from a circle.
+- As the number of sides (n) approaches infinity, the ratio of the Perimeter to the Diameter approaches **π**.
 
-## 1. Limits
-Limits describe behavior of functions as input approaches a value.
+## The Calculation
+For a circle with radius r = 1:
 
-$$\\lim_{x \\to a} f(x)$$
+**Perimeter = n × sin(180/n) × 2**
 
-## 2. Derivatives (Rate of Change)
-
-Derivative measures how fast something changes.
-
-$$\\frac{d}{dx}(x^n) = nx^{n-1}$$
-
-### Example
-$$\\frac{d}{dx}(x^2) = 2x$$
-
-Used in:
-• Speed & motion  
-• Optimization problems  
-
-## 3. Integrals (Area Under Curve)
-
-$$\\int x^n dx = \\frac{x^{n+1}}{n+1} + C$$
-
-### Example
-$$\\int x^2 dx = \\frac{x^3}{3} + C$$
-
-Used in:
-• Finding area  
-• Physics (work, energy)
-
-## Real Life Applications
-• Engineering  
-• AI & Machine Learning  
-• Economics
-`
-    },
-
-    {
-      id: TopicId.TRIGONOMETRY,
-      name: 'Trigonometry',
-      description: 'Study angles and relationships in triangles.',
-      theory: `
-# Trigonometry
-
-Trigonometry studies relationships between angles and sides of triangles.
-
-## Basic Ratios
-
-$$\\sin \\theta = \\frac{opposite}{hypotenuse}$$  
-$$\\cos \\theta = \\frac{adjacent}{hypotenuse}$$  
-$$\\tan \\theta = \\frac{opposite}{adjacent}$$  
-
-## Important Identity
-
-$$\\sin^2\\theta + \\cos^2\\theta = 1$$
-
-## Example
-
-If:
-$$\\sin \\theta = \\frac{3}{5}$$
-
-Then:
-$$\\cos \\theta = \\frac{4}{5}$$
-
-## Applications
-• Navigation (GPS)  
-• Waves & sound  
-• Computer graphics  
-
-## Graph Insight
-
-Sine wave:
-$$y = \\sin x$$
-
-It is periodic and repeats every:
-$$2\\pi$$
-`
-    }
+As n approaches infinity, **Perimeter → 2π**.
+  `
+}
   ]
 },
   {

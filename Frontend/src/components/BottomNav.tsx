@@ -1,7 +1,6 @@
 
 import React from 'react';
-import { Home, Book, User, Settings, Sparkles, MessageSquare, X } from 'lucide-react';
-import { motion } from 'motion/react';
+import { Home, Book, User, Settings, Sparkles, MessageSquare, X, Hand, Camera } from 'lucide-react';
 import { ViewState } from '../types/types';
 
 interface BottomNavProps {
@@ -10,6 +9,8 @@ interface BottomNavProps {
   onOpenGlossary: () => void;
   onOpenSettings: () => void;
   onOpenProfile: () => void;
+  onToggleGesture?: () => void;
+  isGestureActive?: boolean;
   showSettings?: boolean;
   showAITutor?: boolean;
   showGlossary?: boolean;
@@ -23,53 +24,64 @@ const BottomNav: React.FC<BottomNavProps> = ({
   onOpenGlossary,
   onOpenSettings,
   onOpenProfile,
+  onToggleGesture,
+  isGestureActive,
   showSettings,
-  showAITutor,
   showGlossary,
   showAuth,
   language
 }) => {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-[150] px-4 pb-4 md:hidden">
-      <div className="bg-[#020617]/80 backdrop-blur-2xl border border-white/10 rounded-[32px] p-2 flex items-center justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
+    <div className="fixed bottom-0 left-0 right-0 z-[150] px-3 pb-4 md:hidden">
+      <div className="bg-[#020617]/80 backdrop-blur-2xl border border-white/10 rounded-[32px] p-1.5 flex items-center justify-between shadow-[0_-10px_40px_rgba(0,0,0,0.5)]">
         <button 
           onClick={() => onNavigate(ViewState.LANDING)}
-          className={`flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all ${
+          className={`flex flex-col items-center justify-center w-12 h-12 rounded-2xl transition-all ${
             currentView === ViewState.LANDING ? 'bg-primary text-white shadow-lg shadow-primary/30' : 'text-slate-500 hover:text-white hover:bg-white/5'
           }`}
         >
-          <Home size={20} />
-          <span className="text-[8px] font-mono mt-1">HOME</span>
+          <Home size={18} />
+          <span className="text-[7px] font-mono mt-1">HOME</span>
         </button>
 
         <button 
           onClick={onOpenGlossary}
-          className={`flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all ${
+          className={`flex flex-col items-center justify-center w-12 h-12 rounded-2xl transition-all ${
             showGlossary ? 'bg-amber-500 text-white shadow-lg shadow-amber-500/30' : 'text-slate-500 hover:text-white hover:bg-white/5'
           }`}
         >
-          <Book size={20} />
-          <span className="text-[8px] font-mono mt-1">BOOK</span>
+          <Book size={18} />
+          <span className="text-[7px] font-mono mt-1">BOOK</span>
+        </button>
+
+        <button 
+          onClick={onToggleGesture}
+          className={`flex flex-col items-center justify-center w-12 h-12 rounded-2xl transition-all ${
+            isGestureActive ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/30' : 'text-slate-500 hover:text-white hover:bg-white/5'
+          }`}
+        >
+          {isGestureActive ? <Hand size={18} /> : <Camera size={18} />}
+          <span className="text-[7px] font-mono mt-1">GEST</span>
         </button>
 
         <button 
           onClick={onOpenProfile}
-          className={`flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all ${
+          className={`flex flex-col items-center justify-center w-12 h-12 rounded-2xl transition-all ${
             showAuth ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/30' : 'text-slate-500 hover:text-white hover:bg-white/5'
           }`}
         >
-          <User size={20} />
-          <span className="text-[8px] font-mono mt-1">USER</span>
+          <User size={18} />
+          <span className="text-[7px] font-mono mt-1">USER</span>
         </button>
 
         <button 
           onClick={onOpenSettings}
-          className={`flex flex-col items-center justify-center w-14 h-14 rounded-2xl transition-all ${
+          className={`flex flex-col items-center justify-center w-12 h-12 rounded-2xl transition-all ${
             showSettings ? 'bg-indigo-500 text-white shadow-lg shadow-indigo-500/30' : 'text-slate-500 hover:text-white hover:bg-white/5'
           }`}
         >
-          <Settings size={20} className={showSettings ? 'rotate-90 transition-transform duration-500' : ''} />
-          <span className="text-[8px] font-mono mt-1">SET</span>
+          <Settings size={18} className={showSettings ? 'rotate-90 transition-transform duration-500' : ''} />
+          <span className="text-[7px] font-mono mt-1">SET</span>
         </button>
       </div>
     </div>

@@ -204,17 +204,17 @@ const GestureController: React.FC<GestureControllerProps> = ({
   }, [isActive, onSelect, onBack, onScroll, onRotate, onToggleAITutor, onToggleTheme]);
 
   return (
-    <div className="fixed bottom-12 left-12 z-[100]">
+    <div className={`fixed left-4 md:left-12 z-[100] transition-all duration-500 ${isActive ? 'bottom-28 md:bottom-12' : 'bottom-12'}`}>
       <div className={`
         relative flex items-center gap-4 p-2 rounded-2xl border transition-all duration-700
-        ${isActive ? 'bg-[#020617] border-indigo-500/50 shadow-[0_0_50px_rgba(99,102,241,0.2)]' : 'bg-white/[0.02] border-white/5'}
+        ${isActive ? 'bg-[#020617] border-indigo-500/50 shadow-[0_0_50px_rgba(99,102,241,0.2)]' : 'bg-white/[0.02] border-white/5 md:flex hidden'}
       `}>
         {isActive && <div className="absolute inset-0 radial-track opacity-20 pointer-events-none rounded-2xl" />}
 
         <button
           onClick={onToggle}
           className={`
-            relative w-16 h-16 rounded-xl flex items-center justify-center transition-all duration-500 overflow-hidden group
+            relative w-16 h-16 rounded-xl flex items-center justify-center transition-all duration-500 overflow-hidden group md:flex hidden
             ${isActive ? 'bg-indigo-600 text-white' : 'bg-white/5 text-slate-500 hover:text-white hover:bg-white/10'}
           `}
         >

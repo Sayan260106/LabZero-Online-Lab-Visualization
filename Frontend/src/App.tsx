@@ -390,12 +390,18 @@ const AppContent: React.FC = () => {
             )}
           </AnimatePresence>
 
-          <BottomNav
+          <BottomNav 
             currentView={viewState}
             onNavigate={setViewState}
-            onOpenGlossary={() => setShowGlossary(true)}
-            onOpenSettings={() => setShowSettings(prev => !prev)}
-            onOpenProfile={() => setShowAuth(true)}
+            onOpenGlossary={() => setShowGlossary(!showGlossary)}
+            onOpenSettings={() => setShowSettings(!showSettings)}
+            onOpenAITutor={() => setShowAITutor(!showAITutor)}
+            onOpenProfile={() => setShowAuth(!showAuth)}
+            onToggleGesture={() => setIsGestureActive(!isGestureActive)}
+            isGestureActive={isGestureActive}
+            showSettings={showSettings}
+            showGlossary={showGlossary}
+            showAuth={showAuth}
             language={language}
           />
 

@@ -23,6 +23,7 @@ const mathPool: Question[] = [
   { question: "Determinant of identity matrix?", options: ["1","0","n","-1"], answer: "1" },
   { question: "log₁₀(100)?", options: ["2","1","10","0"], answer: "2" },
   { question: "sin²θ + cos²θ =", options: ["1","0","2","θ"], answer: "1" },
+  { question: "sec²θ - tan²θ =", options: ["1","0","2","θ"], answer: "1" },
   { question: "Derivative of sin x?", options: ["cos x","-cos x","sin x","-sin x"], answer: "cos x" },
   { question: "Integral of x dx?", options: ["x²/2","x²","2x","1"], answer: "x²/2" },
   { question: "Matrix inverse exists when?", options: ["det≠0","det=0","always","never"], answer: "det≠0" },
@@ -51,6 +52,7 @@ const mathPool: Question[] = [
   { question: "∫ e^x dx?", options: ["e^x","x","1","ln x"], answer: "e^x" },
   { question: "tan 45°?", options: ["1","0","-1","∞"], answer: "1" },
   { question: "cos 90°?", options: ["0","1","-1","∞"], answer: "0" },
+  { question: "sin 90°?", options: ["0","1","-1","∞"], answer: "1" },
   { question: "Rank of zero matrix?", options: ["0","1","n","-1"], answer: "0" },
 
 ];

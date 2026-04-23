@@ -1,15 +1,27 @@
 from django.contrib import admin
-from .models import Element
+from .models import Element, Molecule, AtomPosition, LonePair
 
 @admin.register(Element)
 class ElementAdmin(admin.ModelAdmin):
     list_display = ('number', 'symbol', 'name', 'mass', 'category', 'electrons', 'discovery', 'color', 'config', 'radius', 'ionization', 'electronegativity', 'period', 'group', 'summary')
 
-    def has_change_permission(self, request, obj=None):
-        return False
+class AtomPositionInline(admin.TabularInline):
+    model = AtomPosition
+    extra = 1
 
-    def has_delete_permission(self, request, obj=None):
-        return False
+class LonePairInline(admin.TabularInline):
+    model = LonePair
+    extra = 1
 
-    def has_add_permission(self, request):
-        return False
+@admin.register(Molecule)
+class MoleculeAdmin(admin.ModelAdmin):
+    list_display = ('name', 'formula', 'central_atom', 'real_angle', 'model_angle')
+    inlines = [AtomPositionInline, LonePairInline]
+
+@admin.register(AtomPosition)
+class AtomPositionAdmin(admin.ModelAdmin):
+    list_display = ('symbol', 'molecule', 'x', 'y', 'z')
+
+@admin.register(LonePair)
+class LonePairAdmin(admin.ModelAdmin):
+    list_display = ('molecule', 'x', 'y', 'z')

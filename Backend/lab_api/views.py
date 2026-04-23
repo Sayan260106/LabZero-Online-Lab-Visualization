@@ -1,18 +1,22 @@
 from rest_framework.views import APIView
 from rest_framework import generics
-from .models import Element
-from .serializers import ElementSerializer
+from .models import Element, Molecule
+from .serializers import ElementSerializer, MoleculeSerializer
 from rest_framework.response import Response
 
 class APIStatus(APIView):
     def get(self, request):
-        return Response({"status": "Lab Backend is Online", "code": 200})
+        return Response({"status": "Online", "version": "1.0.0"})
 
 class ElementList(generics.ListAPIView):
-    queryset = Element.objects.all().order_by('number') 
+    queryset = Element.objects.all()
     serializer_class = ElementSerializer
 
 class ElementDetail(generics.RetrieveAPIView):
     queryset = Element.objects.all()
     serializer_class = ElementSerializer
     lookup_field = 'number'
+
+class MoleculeList(generics.ListAPIView):
+    queryset = Molecule.objects.all()
+    serializer_class = MoleculeSerializer

@@ -38,7 +38,7 @@ import { generateQuizAI } from './data/quizData';
 import { ELEMENTS } from './utils/constants';
 import { ElementData, Subject, Topic, ViewState, TopicId } from './types/types';
 import { Language, translations } from './services/translations';
-import { AuthProvider, useAuth } from './services/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import { getElements } from './services/elementsService';
 
 

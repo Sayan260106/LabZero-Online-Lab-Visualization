@@ -37,21 +37,19 @@ class Element(models.Model):
     def __str__(self):
         return f"{self.number}. {self.name} ({self.symbol})"
 
-'''
+
 class Molecule(models.Model):
     formula = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=100, unique=True)
     central_atom = models.CharField(max_length=5)
-    real_angle = models.DecimalField(
-        max_digits=6,
-        decimal_places=3,
-        help_text = "The actual Bond Angle in dgrees"
-        )
-    model_angle = models.DecimalField(
-        max_digits=6,
-        decimal_places=3,
-        help_text = "The model Bond Angle in degrees"
-        )
+    real_angle = models.CharField(
+        max_length=100,
+        help_text = "The actual Bond Angle in degrees (can be multiple values)"
+    )
+    model_angle = models.CharField(
+        max_length=100,
+        help_text = "The model Bond Angle in degrees (can be multiple values)"
+    )
 
     def __str__(self):
         return f"{self.name} ({self.formula})"
@@ -80,4 +78,3 @@ class LonePair(models.Model):
 
     def __str__(self):
         return f"Lone Pair for {self.molecule.formula}"
-'''

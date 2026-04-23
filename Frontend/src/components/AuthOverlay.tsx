@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useAuth } from '../services/AuthContext';
+import { useAuth } from '../context/AuthContext';
 import { UserRole } from '../types/types';
 import { User, LogOut, GraduationCap, School, X, ArrowRight, Building2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';

@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'lab_api',
     'users',
+    'glossary',
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'

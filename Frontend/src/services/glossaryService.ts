@@ -7,7 +7,7 @@ export const INITIAL_GLOSSARY_TERMS: GlossaryTerm[] = [
   // ... (keeping the array for extreme fallback, but truncated for brevity in this tool call)
 ];
 
-const DB_NAME = 'OmniScienceDB';
+const DB_NAME = 'LabZeroDB';
 const STORE_NAME = 'glossary';
 const DB_VERSION = 1;
 

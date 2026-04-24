@@ -33,8 +33,8 @@ interface GestureControllerProps {
   onAnnotate?: (pos: { x: number; y: number } | null) => void;
   /** Victory hold 1 s → toggle AI Tutor */
   onToggleTheme?: () => void;
-  /** ILoveYou hold 1 s → bookmark */
-  onBookmark?: () => void;
+  /** Reset Zoom gesture */
+  onResetZoom?: () => void;
   /** Pinch (landmark-based) → zoom delta */
   onZoom?: (delta: number) => void;
   /** Raw hand position for any overlay consumer */
@@ -144,15 +144,15 @@ const GESTURE_DEFS = [
   {
     id: 'ILoveYou',
     emoji: '🤙',
-    label: 'Bookmark',
+    label: 'Reset',
     sublabel: 'Hold 1 s',
-    action: 'Bookmark',
-    useCase: 'Save important moments',
+    action: 'Reset Zoom',
+    useCase: 'Return to original view slowly',
     color: '#ec4899',
     glow: 'rgba(236,72,153,0.55)',
     holdMs: 1000,
-    icon: Bookmark,
-    mode: 'BOOKMARK',
+    icon: RotateCw,
+    mode: 'RESET',
   },
   {
     id: 'Pinch',
@@ -347,7 +347,7 @@ const GestureController: React.FC<GestureControllerProps> = ({
   onSelect, onBack, onRaiseHand, onScroll,
   onNextSlide, onPrevSlide, onRotate,
   onLaserPointer, onAnnotate,
-  onToggleTheme, onBookmark, onZoom,
+  onToggleTheme, onResetZoom, onZoom,
   onPositionChange, isActive, onToggle,
 }) => {
   const videoRef     = useRef<HTMLVideoElement>(null);
@@ -364,9 +364,9 @@ const GestureController: React.FC<GestureControllerProps> = ({
   const lastPinchDistRef  = useRef<number | null>(null);
   const raiseHandFiredRef = useRef(false);
 
-  const TARGET_FPS           = 30;
+  const TARGET_FPS           = 60;
   const FRAME_INTERVAL       = 1000 / TARGET_FPS;
-  const SMOOTH               = 0.28;
+  const SMOOTH               = 0.45;
   const SAFE                 = 0.05;
   const PINCH_THRESHOLD      = 0.07;   // normalised landmark units
   const SWIPE_VEL_THRESHOLD  = 0.55;   // units / second
@@ -387,11 +387,32 @@ const GestureController: React.FC<GestureControllerProps> = ({
 
   // ── Init recognizer ──────────────────────────────────────────────────────
   useEffect(() => {
-    if (isActive && !gestureRecRef.current) {
+    if (!isActive) return;
+
+    // Suppress technical TFLite info logs that look like errors
+    const originalInfo = console.info;
+    const originalLog = console.log;
+    console.info = (...args) => {
+      const msg = args[0];
+      if (typeof msg === 'string' && (msg.includes('TensorFlow Lite') || msg.includes('XNNPACK'))) return;
+      originalInfo(...args);
+    };
+    console.log = (...args) => {
+      const msg = args[0];
+      if (typeof msg === 'string' && (msg.includes('Created TensorFlow Lite') || msg.includes('XNNPACK'))) return;
+      originalLog(...args);
+    };
+
+    if (!gestureRecRef.current) {
       getGestureRecognizer()
         .then(r => { gestureRecRef.current = r; setIsLoaded(true); })
         .catch(e => console.error('GestureRecognizer init failed:', e));
     }
+
+    return () => {
+      console.info = originalInfo;
+      console.log = originalLog;
+    };
   }, [isActive]);
 
   // ── Camera + prediction loop ─────────────────────────────────────────────
@@ -417,7 +438,7 @@ const GestureController: React.FC<GestureControllerProps> = ({
         fpsRef.current = { n: 0, last: now };
       }
 
-      if (now - lastProcTimeRef.current < FRAME_INTERVAL) { raf = requestAnimationFrame(loop); return; }
+      if (now - lastProcTimeRef.current < FRAME_INTERVAL - 1) { raf = requestAnimationFrame(loop); return; }
 
       const vid = videoRef.current;
       if (vid.currentTime !== lastVideoTimeRef.current && vid.videoWidth > 0) {
@@ -500,7 +521,7 @@ const GestureController: React.FC<GestureControllerProps> = ({
                   }
                   case 'Thumb_Down':  onBack?.();          break;
                   case 'Victory':     onToggleTheme?.(); break;
-                  case 'ILoveYou':    onBookmark?.();      break;
+                  case 'ILoveYou':    onResetZoom?.();      break;
                 }
               }
             } else {
@@ -558,14 +579,14 @@ const GestureController: React.FC<GestureControllerProps> = ({
               setActiveMode('ROTATE');
               if (prev) {
                 const dx = pos.x - prev.x, dy = pos.y - prev.y;
-                if (Math.abs(dx) > 0.005 || Math.abs(dy) > 0.005) onRotate?.(dx * 900, dy * 900);
+                if (Math.abs(dx) > 0.005 || Math.abs(dy) > 0.005) onRotate?.(dx * 400, dy * 400);
               }
 
             } else if (gesture === 'Pinch') {
               setActiveMode('ZOOM');
               if (lastPinchDistRef.current !== null) {
                 const delta = pinchDist - lastPinchDistRef.current;
-                if (Math.abs(delta) > 0.003) onZoom?.(delta * 1500);
+                if (Math.abs(delta) > 0.003) onZoom?.(delta * 500);
               }
 
             } else {
@@ -618,7 +639,7 @@ const GestureController: React.FC<GestureControllerProps> = ({
       stream?.getTracks().forEach(t => t.stop());
     };
   }, [isActive, onSelect, onBack, onRaiseHand, onScroll, onNextSlide, onPrevSlide,
-      onRotate, onLaserPointer, onAnnotate, onToggleTheme, onBookmark, onZoom]);
+      onRotate, onLaserPointer, onAnnotate, onToggleTheme, onResetZoom, onZoom]);
 
   // ── Derived ──────────────────────────────────────────────────────────────
   const activeDef  = GESTURE_DEFS.find(g => g.id === currentGesture);

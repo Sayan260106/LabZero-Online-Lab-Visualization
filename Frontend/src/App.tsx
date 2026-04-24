@@ -29,6 +29,8 @@ import PythagorasLab from './components/PythagorasLab';
 import LandingPage from './components/LandingPage';
 import SubjectPage from './components/SubjectPage';
 import TopicPage from './components/TopicPage';
+import TeacherDashboard from './components/TeacherDashboard';
+import InstituteDashboard from './components/InstituteDashboard';
 import GestureController from './components/GestureController';
 import BottomNav from './components/BottomNav';
 import Glossary from './components/Glossary';
@@ -339,6 +341,33 @@ case TopicId.CELL_BIOLOGY:
     setAtomZoom((prev) => Math.min(1.8, Math.max(0.7, prev + delta * 0.00012)));
   };
 
+  const handleResetZoom = useCallback(() => {
+    const startMZoom = moleculeZoom;
+    const startAZoom = atomZoom;
+    const targetZoom = 1.0;
+    const duration = 1200; // Slow reset
+    const startTime = performance.now();
+
+    const animate = (time: number) => {
+      const elapsed = time - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // Easing: easeInOutCubic
+      const ease = progress < 0.5
+        ? 4 * progress * progress * progress
+        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+      setMoleculeZoom(startMZoom + (targetZoom - startMZoom) * ease);
+      setAtomZoom(startAZoom + (targetZoom - startAZoom) * ease);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  }, [moleculeZoom, atomZoom, selectedTopic]);
+
   // ================= AUTH =================
   if (isLoading) return null;
 
@@ -447,6 +476,12 @@ case TopicId.CELL_BIOLOGY:
                   language={language}
                   onStartQuiz={startQuiz}
                 />
+              </motion.div>
+            )}
+
+            {viewState === ViewState.DASHBOARD && user && (
+              <motion.div key="dashboard" className="h-full w-full">
+                {user.role === 'teacher' ? <TeacherDashboard /> : <InstituteDashboard />}
               </motion.div>
             )}
           </AnimatePresence>
@@ -558,12 +593,17 @@ case TopicId.CELL_BIOLOGY:
             onOpenGlossary={() => setShowGlossary(!showGlossary)}
             onOpenSettings={() => setShowSettings(!showSettings)}
             onOpenProfile={() => setShowAuth(!showAuth)}
-            onToggleGesture={() => setIsGestureActive(!isGestureActive)}
+            onToggleGesture={() => {
+              if (user?.role !== 'student') {
+                setIsGestureActive(!isGestureActive);
+              }
+            }}
             isGestureActive={isGestureActive}
             showSettings={showSettings}
             showGlossary={showGlossary}
             showAuth={showAuth}
             language={language}
+            user={user}
           />
 
           <AnimatePresence>
@@ -572,28 +612,36 @@ case TopicId.CELL_BIOLOGY:
           </AnimatePresence>
 
           <GestureController 
-            isActive={isGestureActive}
-            onToggle={() => setIsGestureActive(!isGestureActive)}
+            isActive={isGestureActive && user?.role !== 'student'}
+            onToggle={() => {
+              if (user?.role !== 'student') {
+                setIsGestureActive(!isGestureActive);
+              }
+            }}
             onBack={handleGestureBack}
             onScroll={handleGestureScroll}
             onRotate={handleGestureRotate}
             onZoom={handleGestureZoom}
+            onResetZoom={handleResetZoom}
             onSelect={handleGestureSelect}
             onPositionChange={setGesturePos}
             onToggleTheme={() => setTheme(prev => prev === 'dark' ? 'light' : 'dark')}
           />
 
-          {isGestureActive && gesturePos && (
-            <div 
-              className="fixed w-8 h-8 rounded-full border-2 border-indigo-500 bg-indigo-500/20 pointer-events-none z-[200] flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.5)] transition-transform duration-75"
-              style={{ 
+          {isGestureActive && gesturePos && user?.role !== 'student' && (
+            <motion.div 
+              className="fixed w-8 h-8 rounded-full border-2 border-indigo-500 bg-indigo-500/20 pointer-events-none z-[200] flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.5)]"
+              animate={{ 
                 left: `${gesturePos.x * 100}%`, 
-                top: `${gesturePos.y * 100}%`,
+                top: `${gesturePos.y * 100}%` 
+              }}
+              transition={{ type: 'spring', stiffness: 1000, damping: 60, mass: 1 }}
+              style={{ 
                 transform: 'translate(-50%, -50%)'
               }}
             >
               <div className="w-1 h-1 bg-white rounded-full" />
-            </div>
+            </motion.div>
           )}
         </>
       )}

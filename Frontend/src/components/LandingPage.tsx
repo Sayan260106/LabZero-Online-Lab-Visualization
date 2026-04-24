@@ -79,6 +79,14 @@ const LandingPage: React.FC<LandingPageProps> = ({
               <span className="text-xs font-medium text-slate-300">
                 Welcome, <span className="text-white font-bold">{user.first_name || user.username}</span>
               </span>
+              {(user.role === 'teacher' || user.role === 'institute') && (
+                <button 
+                  onClick={onDashboardClick}
+                  className="px-4 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-full text-[10px] font-mono uppercase tracking-widest transition-all shadow-lg shadow-indigo-600/20"
+                >
+                  Dashboard
+                </button>
+              )}
               <button 
                 onClick={onProfileClick}
                 className="p-2 bg-white/5 hover:bg-white/10 text-slate-300 hover:text-white rounded-full transition-colors"

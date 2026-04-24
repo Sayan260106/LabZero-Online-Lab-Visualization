@@ -72,6 +72,7 @@ export enum ViewState {
   CLASS_SUBJECTS = 'CLASS_SUBJECTS', 
   SUBJECT = 'subject',
   TOPIC = 'topic',
+  DASHBOARD = 'dashboard',
 }
 
 export enum TopicView {

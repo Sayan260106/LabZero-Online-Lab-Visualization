@@ -2,12 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Topic, TopicView, Resource } from '../types/types';
 import { ArrowLeft, BookOpen, Play, Sparkles, FileText, Trash2, Download, Presentation, GraduationCap, Volume2, VolumeX, Zap } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
-// import ResourceUpload from './ResourceUpload';
-// import ResourceViewer from './ResourceViewer';
-// import Classroom from './Classroom';
-// import { getResourcesByTopic, deleteResource } from '../services/resourceService';
+import ResourceUpload from './ResourceUpload';
+import ResourceViewer from './ResourceViewer';
+import Classroom from './Classroom';
+import { getResourcesByTopic, deleteResource } from '../services/resourceService';
 import { motion, AnimatePresence } from 'motion/react';
 import { Language, translations } from '../services/translations';
+import { useAuth } from '../context/AuthContext';
 
 interface TopicPageProps {
   topic: Topic;
@@ -18,27 +19,28 @@ interface TopicPageProps {
 }
 
 const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, language, onStartQuiz }) => {
+  const { user } = useAuth();
   const [activeView, setActiveView] = useState<TopicView>(TopicView.THEORY);
   const t = (key: string) => translations[key]?.[language] || key;
   const [resources, setResources] = useState<Resource[]>([]);
   const [viewingResource, setViewingResource] = useState<Resource | null>(null);
   const [isReading, setIsReading] = useState(false);
 
-  // const fetchResources = async () => {
-  //   try {
-  //     const data = await getResourcesByTopic(topic.id);
-  //     setResources(data.sort((a, b) => b.timestamp - a.timestamp));
-  //   } catch (err) {
-  //     console.error('Failed to fetch resources:', err);
-  //   }
-  // };
+  const fetchResources = async () => {
+    try {
+      const data = await getResourcesByTopic(topic.id);
+      setResources(data.sort((a, b) => b.timestamp - a.timestamp));
+    } catch (err) {
+      console.error('Failed to fetch resources:', err);
+    }
+  };
 
-  // useEffect(() => {
-  //   fetchResources();
-  //   return () => {
-  //     window.speechSynthesis.cancel();
-  //   };
-  // }, [topic.id]);
+  useEffect(() => {
+    fetchResources();
+    return () => {
+      window.speechSynthesis.cancel();
+    };
+  }, [topic.id]);
 
   const toggleReadAloud = () => {
     if (isReading) {
@@ -53,14 +55,14 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
     }
   };
 
-  // const handleDeleteResource = async (id: string) => {
-  //   try {
-  //     await deleteResource(id);
-  //     fetchResources();
-  //   } catch (err) {
-  //     console.error('Failed to delete resource:', err);
-  //   }
-  // };
+  const handleDeleteResource = async (id: string) => {
+    try {
+      await deleteResource(id);
+      fetchResources();
+    } catch (err) {
+      console.error('Failed to delete resource:', err);
+    }
+  };
 
   const handleDownloadResource = (resource: Resource) => {
     const link = document.createElement('a');
@@ -212,25 +214,29 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
                           </div>
                           
                           <div className="flex items-center gap-2 pt-4 border-t border-white/5">
+                            {(user?.role === 'teacher' || user?.role === 'institute') && (
                               <button
                                 onClick={() => setViewingResource(resource)}
                                 className="flex-1 h-10 rounded-xl bg-primary text-[10px] font-mono uppercase tracking-widest text-white hover:bg-primary/80 transition-colors flex items-center justify-center gap-2"
                               >
-                              <Presentation size={14} />
-                              {t('present')}
-                            </button>
-                            <button
-                              onClick={() => handleDownloadResource(resource)}
-                              className="w-10 h-10 rounded-xl bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center"
-                            >
-                              <Download size={16} />
-                            </button>
-                            {/* <button
-                              onClick={() => handleDeleteResource(resource.id)}
-                              className="w-10 h-10 rounded-xl bg-white/5 text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all flex items-center justify-center"
-                            >
-                              <Trash2 size={16} />
-                            </button> */}
+                                <Presentation size={14} />
+                                {t('present')}
+                              </button>
+                            )}
+                              <button
+                                onClick={() => handleDownloadResource(resource)}
+                                className="w-10 h-10 rounded-xl bg-white/5 text-slate-400 hover:text-white hover:bg-white/10 transition-all flex items-center justify-center"
+                              >
+                                <Download size={16} />
+                              </button>
+                              {(user?.role === 'teacher' || user?.role === 'institute') && (
+                                <button
+                                  onClick={() => handleDeleteResource(resource.id)}
+                                  className="w-10 h-10 rounded-xl bg-white/5 text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 transition-all flex items-center justify-center"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              )}
                           </div>
                         </motion.div>
                       ))}
@@ -242,7 +248,7 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
                       )}
                     </div>
                   </section>
-
+ 
                   <section className="space-y-8">
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-400">
@@ -250,9 +256,11 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
                       </div>
                       <h2 className="text-xl font-display font-bold text-white uppercase tracking-tight">{t('ingestModule')}</h2>
                     </div>
-                    {/* <div className="glass-panel p-8 rounded-[40px] border border-white/5 bg-white/[0.02]">
-                      <ResourceUpload topicId={topic.id} onUploadComplete={fetchResources} />
-                    </div> */}
+                    {(user?.role === 'teacher' || user?.role === 'institute') && (
+                      <div className="glass-panel p-8 rounded-[40px] border border-white/5 bg-white/[0.02]">
+                        <ResourceUpload topicId={topic.id} onUploadComplete={fetchResources} />
+                      </div>
+                    )}
                   </section>
                 </div>
               </div>
@@ -275,23 +283,23 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
               exit={{ opacity: 0, x: -20 }}
               className="h-full"
             >
-              {/* <Classroom 
+              <Classroom 
                 topic={topic} 
                 onPresent={(resource: any) => setViewingResource(resource)} 
-              /> */}
+              />
             </motion.div>
           )}
         </AnimatePresence>
       </main>
-
+ 
       {/* Resource Viewer Modal */}
       <AnimatePresence>
-        {/* {viewingResource && (
+        {viewingResource && (
           <ResourceViewer
             resource={viewingResource}
             onClose={() => setViewingResource(null)}
           />
-        )} */}
+        )}
       </AnimatePresence>
     </div>
   );

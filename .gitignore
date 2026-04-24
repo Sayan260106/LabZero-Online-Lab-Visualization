@@ -19,4 +19,8 @@ staticfiles/
 Extras/
 
 .DS_Store
+.codex/
 
+.sixth/
+
+.bg-shell/

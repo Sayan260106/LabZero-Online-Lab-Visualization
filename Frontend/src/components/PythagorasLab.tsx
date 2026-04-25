@@ -1,234 +1,113 @@
-import React, { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import { Triangle, Calculator, Info } from "lucide-react";
-
-type Target = { base: number; height: number };
+import React, { useState } from 'react';
+import { motion } from 'motion/react';
+import { Calculator, Triangle, Ruler, Sparkles } from 'lucide-react';
 
 const PythagorasLab: React.FC = () => {
-  const mountRef = useRef<HTMLDivElement>(null);
+  const [base, setBase] = useState(150);
+  const [height, setHeight] = useState(150);
 
-  // UI state
-  const [base, setBase] = useState(4);
-  const [height, setHeight] = useState(3);
+  const hypotenuse = Math.sqrt(base * base + height * height);
+  const angle = Math.atan2(height, base) * (180 / Math.PI);
 
-  // Animation refs
-  const current = useRef<Target>({ base: 4, height: 3 });
-  const target = useRef<Target>({ base: 4, height: 3 });
-
-  const triangleRef = useRef<THREE.Line | null>(null);
-  const squareRef = useRef<THREE.Line | null>(null);
-
-  const hypotenuse = Math.sqrt(base ** 2 + height ** 2);
-
-  // ─── INIT SCENE ONCE ──────────────────────────────────────────
-  useEffect(() => {
-    const el = mountRef.current;
-    if (!el) return;
-
-    const scene = new THREE.Scene();
-
-    const aspect = el.clientWidth / el.clientHeight;
-    const d = 12;
-
-    const camera = new THREE.OrthographicCamera(
-      -d * aspect,
-      d * aspect,
-      d,
-      -d,
-      1,
-      1000
-    );
-
-    camera.position.set(6, 6, 10);
-    camera.lookAt(6, 6, 0);
-
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true,
-    });
-
-    renderer.setSize(el.clientWidth, el.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-
-    el.appendChild(renderer.domElement);
-
-    // ─── GRID ───────────────────────────────────────────────────
-    const grid = new THREE.GridHelper(30, 30, 0x4f46e5, 0x1e293b);
-    grid.rotation.x = Math.PI / 2;
-    scene.add(grid);
-
-    // ─── TRIANGLE ───────────────────────────────────────────────
-    const triGeo = new THREE.BufferGeometry();
-    const triPos = new Float32Array(12);
-    triGeo.setAttribute("position", new THREE.BufferAttribute(triPos, 3));
-
-    const triMat = new THREE.LineBasicMaterial({ color: 0x818cf8 });
-    const triangle = new THREE.Line(triGeo, triMat);
-
-    triangleRef.current = triangle;
-    scene.add(triangle);
-
-    // ─── RIGHT ANGLE MARKER ─────────────────────────────────────
-    const sqGeo = new THREE.BufferGeometry();
-    const sqPos = new Float32Array(9);
-    sqGeo.setAttribute("position", new THREE.BufferAttribute(sqPos, 3));
-
-    const sqMat = new THREE.LineBasicMaterial({ color: 0x94a3b8 });
-    const square = new THREE.Line(sqGeo, sqMat);
-
-    squareRef.current = square;
-    scene.add(square);
-
-    // ─── ANIMATION LOOP ─────────────────────────────────────────
-    let raf: number;
-
-    const animate = () => {
-      raf = requestAnimationFrame(animate);
-
-      // smooth interpolation
-      current.current.base +=
-        (target.current.base - current.current.base) * 0.08;
-      current.current.height +=
-        (target.current.height - current.current.height) * 0.08;
-
-      const a = current.current.base;
-      const b = current.current.height;
-
-      // update triangle
-      if (triangleRef.current) {
-        const pos =
-          triangleRef.current.geometry.attributes.position
-            .array as Float32Array;
-
-        // (0,0) → (a,0) → (a,b) → (0,0)
-        pos[0] = 0; pos[1] = 0; pos[2] = 0;
-        pos[3] = a; pos[4] = 0; pos[5] = 0;
-        pos[6] = a; pos[7] = b; pos[8] = 0;
-        pos[9] = 0; pos[10] = 0; pos[11] = 0;
-
-        triangleRef.current.geometry.attributes.position.needsUpdate = true;
-      }
-
-      // update right angle square
-      if (squareRef.current) {
-        const size = Math.min(a, b) * 0.2;
-
-        const pos =
-          squareRef.current.geometry.attributes.position
-            .array as Float32Array;
-
-        pos[0] = 0; pos[1] = size; pos[2] = 0;
-        pos[3] = size; pos[4] = size; pos[5] = 0;
-        pos[6] = size; pos[7] = 0; pos[8] = 0;
-
-        squareRef.current.geometry.attributes.position.needsUpdate = true;
-      }
-
-      renderer.render(scene, camera);
-    };
-
-    animate();
-
-    // ─── RESIZE ────────────────────────────────────────────────
-    const handleResize = () => {
-      const width = el.clientWidth;
-      const height = el.clientHeight;
-      const aspect = width / height;
-
-      camera.left = -d * aspect;
-      camera.right = d * aspect;
-      camera.top = d;
-      camera.bottom = -d;
-      camera.updateProjectionMatrix();
-
-      renderer.setSize(width, height);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", handleResize);
-      renderer.dispose();
-      el.removeChild(renderer.domElement);
-    };
-  }, []);
-
-  // ─── SYNC STATE → TARGET ─────────────────────────────────────
-  useEffect(() => {
-    target.current = { base, height };
-  }, [base, height]);
-
-  // ─── UI ──────────────────────────────────────────────────────
   return (
-    <div className="relative w-full h-full flex flex-col md:flex-row gap-6">
+    <div className="flex flex-col lg:flex-row gap-8 h-full">
+      <div className="flex-1 glass-panel p-8 rounded-[40px] flex flex-col justify-center items-center relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="w-full h-full bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:20px_20px]" />
+        </div>
 
-      {/* Canvas */}
-      <div className="flex-[2] relative rounded-3xl overflow-hidden border border-white/10 bg-black/40">
-        <div ref={mountRef} className="absolute inset-0" />
+        <svg viewBox="0 0 400 400" className="w-[300px] h-[300px] relative z-10">
+          {/* Base */}
+          <line x1="50" y1="350" x2={50 + base} y2="350" stroke="#94a3b8" strokeWidth="3" strokeLinecap="round" />
+          {/* Height */}
+          <line x1={50 + base} y1="350" x2={50 + base} y2={350 - height} stroke="#94a3b8" strokeWidth="3" strokeLinecap="round" />
+          {/* Hypotenuse */}
+          <motion.line 
+            x1="50" 
+            y1="350" 
+            animate={{ x2: 50 + base, y2: 350 - height }}
+            stroke="#6366f1" 
+            strokeWidth="4" 
+            strokeLinecap="round"
+          />
 
-        <div className="absolute top-4 left-4 bg-black/50 px-4 py-2 rounded-xl">
-          <div className="text-xs text-slate-400 flex items-center gap-2">
-            <Triangle size={12} /> Hypotenuse
+          {/* Right Angle Marker */}
+          <rect x={50 + base - 15} y="335" width="15" height="15" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
+
+          {/* Labels */}
+          <text x={50 + base / 2} y="380" fill="#94a3b8" fontSize="12" textAnchor="middle" className="font-mono uppercase tracking-widest">a</text>
+          <text x={70 + base} y={350 - height / 2} fill="#94a3b8" fontSize="12" className="font-mono uppercase tracking-widest">b</text>
+          <motion.text 
+            animate={{ x: 50 + base / 3, y: 340 - height / 2 }}
+            fill="#6366f1" 
+            fontSize="14" 
+            className="font-display font-bold italic"
+          >c</motion.text>
+        </svg>
+
+        <div className="w-full max-w-md space-y-8 mt-12">
+          <div className="space-y-4">
+            <div className="flex justify-between text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+              <span>Base (a): {base.toFixed(0)} units</span>
+            </div>
+            <input 
+              type="range" min="50" max="300" value={base} 
+              onChange={(e) => setBase(parseInt(e.target.value))}
+              className="w-full accent-indigo-500"
+            />
           </div>
-          <div className="text-xl text-indigo-400 font-bold">
-            {hypotenuse.toFixed(2)}
+          <div className="space-y-4">
+            <div className="flex justify-between text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+              <span>Height (b): {height.toFixed(0)} units</span>
+            </div>
+            <input 
+              type="range" min="50" max="300" value={height} 
+              onChange={(e) => setHeight(parseInt(e.target.value))}
+              className="w-full accent-indigo-500"
+            />
           </div>
         </div>
       </div>
 
-      {/* Controls */}
-      <div className="flex-1 p-6 rounded-3xl border border-white/10 bg-black/40 flex flex-col gap-6">
-
-        <div>
-          <h2 className="flex items-center gap-2 text-lg font-bold">
-            <Info size={18} className="text-indigo-400" />
-            Triangle Controls
-          </h2>
-          <p className="text-sm text-slate-400">
-            Adjust base and height to explore the geometry.
-          </p>
-        </div>
-
-        <div className="space-y-4">
+      <div className="w-full lg:w-96 space-y-6">
+        <div className="p-8 rounded-[32px] bg-white/[0.02] border border-white/5 space-y-8">
           <div>
-            <label className="text-xs text-slate-400">
-              Base (a): {base}
-            </label>
-            <input
-              type="range"
-              min="1"
-              max="15"
-              value={base}
-              onChange={(e) => setBase(Number(e.target.value))}
-              className="w-full accent-indigo-500"
-            />
+            <div className="text-indigo-400 font-mono text-[10px] uppercase tracking-widest mb-2 flex items-center gap-2">
+              <Calculator size={12} /> Calculation Result
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="text-5xl font-display font-bold text-white tracking-tighter italic">
+                {hypotenuse.toFixed(1)}
+              </span>
+              <span className="text-slate-600 text-sm font-mono uppercase tracking-widest italic">Hypotenuse</span>
+            </div>
           </div>
 
-          <div>
-            <label className="text-xs text-slate-400">
-              Height (b): {height}
-            </label>
-            <input
-              type="range"
-              min="1"
-              max="15"
-              value={height}
-              onChange={(e) => setHeight(Number(e.target.value))}
-              className="w-full accent-indigo-500"
-            />
+          <div className="space-y-4 pt-8 border-t border-white/5">
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-slate-500 font-mono italic">a² + b² = c²</span>
+              <span className="text-indigo-400 font-mono">{Math.pow(base, 2).toFixed(0)} + {Math.pow(height, 2).toFixed(0)} = {Math.pow(hypotenuse, 2).toFixed(0)}</span>
+            </div>
+            <div className="flex justify-between items-center text-xs">
+              <span className="text-slate-500 font-mono italic">θ (Angle)</span>
+              <span className="text-white font-mono">{angle.toFixed(1)}°</span>
+            </div>
           </div>
         </div>
 
-        {/* Math */}
-        <div className="mt-auto bg-black/30 p-4 rounded-xl text-sm font-mono">
-          <div>a² + b² = c²</div>
-          <div>{base}² + {height}² = {base ** 2 + height ** 2}</div>
-          <div className="text-indigo-400 font-bold mt-2">
-            c = {hypotenuse.toFixed(2)}
+        <div className="p-8 rounded-[32px] bg-indigo-600 shadow-2xl shadow-indigo-600/20 text-white relative overflow-hidden group">
+          <div className="absolute right-0 top-0 p-6 opacity-20 transform translate-x-4 -translate-y-4 rotate-12 group-hover:scale-110 transition-transform duration-700">
+            <Triangle size={120} />
+          </div>
+          <div className="relative z-10 space-y-4">
+            <h3 className="text-xl font-display font-bold italic tracking-tight uppercase flex items-center gap-2">
+              <Sparkles size={18} /> Deep Insight
+            </h3>
+            <p className="text-indigo-100 text-[11px] leading-relaxed font-light">
+              This theorem is the bridge between distance and coordinate geometry. In computer science, we use it to calculate Euclidian distance in any dimensional space.
+            </p>
           </div>
         </div>
-
       </div>
     </div>
   );

@@ -1,228 +1,117 @@
-import React, { useEffect, useRef, useState } from "react";
-import * as THREE from "three";
-import { RotateCcw, RefreshCcw, Info } from "lucide-react";
-
-type Vec2 = { real: number; imag: number };
+import React, { useState } from 'react';
+import { motion } from 'motion/react';
+import { RotateCw, Info, Magnet, Sparkles } from 'lucide-react';
 
 const ComplexNumbersLab: React.FC = () => {
-  const mountRef = useRef<HTMLDivElement>(null);
+  const [point, setPoint] = useState({ x: 1, y: 0.5 });
+  const [showUnitCircle, setShowUnitCircle] = useState(true);
 
-  const [z, setZ] = useState<Vec2>({ real: 3, imag: 2 });
-  const [isAnimating, setIsAnimating] = useState(false);
-
-  // Three.js refs
-  const arrowRef = useRef<THREE.ArrowHelper | null>(null);
-  const current = useRef(new THREE.Vector3(3, 2, 0));
-  const target = useRef(new THREE.Vector3(3, 2, 0));
-
-  // ─── MATH ACTIONS ─────────────────────────────────────────────
-  const multiplyByI = () => {
-    const { real, imag } = z;
-    const newZ = { real: -imag, imag: real };
-    setZ(newZ);
-    target.current.set(newZ.real, newZ.imag, 0);
-    setIsAnimating(true);
+  // Rotate point by 90 degrees (Multiply by i)
+  const rotate90 = () => {
+    setPoint(prev => ({ x: -prev.y, y: prev.x }));
   };
 
-  const reset = () => {
-    const base = { real: 3, imag: 2 };
-    setZ(base);
-    target.current.set(3, 2, 0);
-    setIsAnimating(true);
+  // Convert to display coordinates
+  const scale = 120;
+  const toDisplay = (val: number, isY: boolean) => {
+    return isY ? 250 - val * scale : 250 + val * scale;
   };
 
-  // ─── INIT SCENE ONCE ──────────────────────────────────────────
-  useEffect(() => {
-    const el = mountRef.current;
-    if (!el) return;
-
-    const scene = new THREE.Scene();
-
-    const aspect = el.clientWidth / el.clientHeight;
-    const d = 10;
-
-    const camera = new THREE.OrthographicCamera(
-      -d * aspect,
-      d * aspect,
-      d,
-      -d,
-      1,
-      1000
-    );
-    camera.position.set(0, 0, 10);
-
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(el.clientWidth, el.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
-
-    el.appendChild(renderer.domElement);
-
-    // Grid
-    const grid = new THREE.GridHelper(20, 20, 0x4f46e5, 0x1e293b);
-    grid.rotation.x = Math.PI / 2;
-    scene.add(grid);
-
-    // Axes
-    const material = new THREE.LineBasicMaterial({ color: 0x94a3b8 });
-
-    const xAxis = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(-10, 0, 0),
-      new THREE.Vector3(10, 0, 0),
-    ]);
-
-    const yAxis = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(0, -10, 0),
-      new THREE.Vector3(0, 10, 0),
-    ]);
-
-    scene.add(new THREE.Line(xAxis, material));
-    scene.add(new THREE.Line(yAxis, material));
-
-    // Arrow
-    const arrow = new THREE.ArrowHelper(
-      current.current.clone().normalize(),
-      new THREE.Vector3(),
-      current.current.length(),
-      0x818cf8
-    );
-
-    arrowRef.current = arrow;
-    scene.add(arrow);
-
-    // ─── ANIMATION LOOP ─────────────────────────────────────────
-    let raf: number;
-
-    const animate = () => {
-      raf = requestAnimationFrame(animate);
-
-      // smooth interpolation
-      current.current.lerp(target.current, 0.08);
-
-      const len = current.current.length();
-
-      if (len > 0.01 && arrowRef.current) {
-        arrowRef.current.setDirection(current.current.clone().normalize());
-        arrowRef.current.setLength(len, 0.5, 0.3);
-      }
-
-      if (current.current.distanceTo(target.current) < 0.01) {
-        setIsAnimating(false);
-      }
-
-      renderer.render(scene, camera);
-    };
-
-    animate();
-
-    // resize
-    const handleResize = () => {
-      const width = el.clientWidth;
-      const height = el.clientHeight;
-      const aspect = width / height;
-
-      camera.left = -d * aspect;
-      camera.right = d * aspect;
-      camera.updateProjectionMatrix();
-
-      renderer.setSize(width, height);
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("resize", handleResize);
-      renderer.dispose();
-      el.removeChild(renderer.domElement);
-    };
-  }, []);
-
-  // ─── SYNC TARGET WHEN SLIDERS CHANGE ──────────────────────────
-  useEffect(() => {
-    target.current.set(z.real, z.imag, 0);
-  }, [z]);
-
-  // ─── UI ───────────────────────────────────────────────────────
   return (
-    <div className="relative w-full h-full flex flex-col md:flex-row gap-6">
-
-      {/* Canvas */}
-      <div className="flex-[2] relative rounded-3xl overflow-hidden border border-white/10 bg-black/40">
-
-        <div ref={mountRef} className="absolute inset-0" />
-
-        <div className="absolute top-4 left-4 bg-black/50 px-4 py-2 rounded-xl">
-          <div className="text-xs text-slate-400">Z</div>
-          <div className="text-lg text-indigo-400 font-bold">
-            {z.real} {z.imag >= 0 ? "+" : "-"} {Math.abs(z.imag)}i
-          </div>
-        </div>
-      </div>
-
-      {/* Controls */}
-      <div className="flex-1 p-6 rounded-3xl border border-white/10 bg-black/40 flex flex-col gap-6">
-
-        <div>
-          <h2 className="flex items-center gap-2 text-lg font-bold">
-            <Info size={18} className="text-indigo-400" />
-            Controls
-          </h2>
-          <p className="text-sm text-slate-400">
-            Multiply by i rotates the vector by 90° in the complex plane.
-          </p>
+    <div className="flex flex-col lg:flex-row gap-8 h-full">
+      <div className="flex-1 glass-panel p-8 rounded-[40px] flex flex-col justify-center items-center relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <div className="w-full h-full bg-[linear-gradient(rgba(255,255,255,0.05)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.05)_1px,transparent_1px)] bg-[size:40px_40px]" />
         </div>
 
-        {/* Sliders */}
-        <div className="space-y-4">
-          <div>
-            <label className="text-xs text-slate-400">Real: {z.real}</label>
-            <input
-              type="range"
-              min="-8"
-              max="8"
-              value={z.real}
-              disabled={isAnimating}
-              onChange={(e) =>
-                setZ({ ...z, real: Number(e.target.value) })
+        <svg viewBox="0 0 500 500" className="w-[350px] h-[350px] relative z-10">
+          {/* Unit Circle */}
+          {showUnitCircle && (
+            <circle cx="250" cy="250" r={scale} fill="none" stroke="rgba(99, 102, 241, 0.2)" strokeWidth="1" strokeDasharray="4 4" />
+          )}
+
+          {/* Axes */}
+          <line x1="50" y1="250" x2="450" y2="250" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+          <line x1="250" y1="50" x2="250" y2="450" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+
+          {/* Point Vector */}
+          <motion.line
+            x1="250"
+            y1="250"
+            animate={{ x2: toDisplay(point.x, false), y2: toDisplay(point.y, true) }}
+            stroke="#6366f1"
+            strokeWidth="3"
+            strokeLinecap="round"
+          />
+
+          {/* Point */}
+          <motion.circle
+            animate={{ cx: toDisplay(point.x, false), cy: toDisplay(point.y, true) }}
+            r="8"
+            fill="#6366f1"
+            className="cursor-pointer"
+            drag
+            dragConstraints={{ left: 50, right: 450, top: 50, bottom: 450 }}
+            onDrag={(_, info) => {
+              const rect = (document.querySelector('svg') as any)?.getBoundingClientRect();
+              if (rect) {
+                const newX = (point.x * scale + info.delta.x) / scale;
+                const newY = (point.y * scale - info.delta.y) / scale;
+                setPoint({ x: newX, y: newY });
               }
-              className="w-full accent-indigo-500"
-            />
-          </div>
+            }}
+          />
+          
+          {/* Labels */}
+          <text x="460" y="245" fill="rgba(255,255,255,0.3)" fontSize="10" className="font-mono">RE</text>
+          <text x="255" y="40" fill="rgba(255,255,255,0.3)" fontSize="10" className="font-mono">IM</text>
+        </svg>
 
-          <div>
-            <label className="text-xs text-slate-400">Imag: {z.imag}</label>
-            <input
-              type="range"
-              min="-8"
-              max="8"
-              value={z.imag}
-              disabled={isAnimating}
-              onChange={(e) =>
-                setZ({ ...z, imag: Number(e.target.value) })
-              }
-              className="w-full accent-indigo-500"
-            />
-          </div>
-        </div>
-
-        {/* Buttons */}
-        <div className="mt-auto space-y-3">
-          <button
-            onClick={multiplyByI}
-            disabled={isAnimating}
-            className="w-full py-3 bg-indigo-600 rounded-xl hover:bg-indigo-500"
+        <div className="mt-8 flex gap-4">
+          <button 
+            onClick={rotate90}
+            className="px-6 py-3 rounded-2xl bg-indigo-600 text-white text-xs font-mono uppercase tracking-widest hover:bg-indigo-500 transition-all flex items-center gap-2"
           >
-            Multiply by i
+            <RotateCw size={14} /> Multiply by i (90°)
           </button>
-
-          <button
-            onClick={reset}
-            disabled={isAnimating}
-            className="w-full py-2 border border-white/10 rounded-xl"
+          <button 
+            onClick={() => setPoint({ x: 1, y: 0 })}
+            className="px-6 py-3 rounded-2xl bg-white/5 border border-white/10 text-white text-xs font-mono uppercase tracking-widest hover:bg-white/10 transition-all"
           >
             Reset
           </button>
         </div>
+      </div>
+
+      <div className="w-full lg:w-96 space-y-6">
+        <div className="p-8 rounded-[32px] bg-white/[0.02] border border-white/5 space-y-4">
+          <div className="text-indigo-400 font-mono text-[10px] uppercase tracking-widest mb-1 flex items-center gap-2">
+            <Magnet size={12} /> Live Coordinates
+          </div>
+          <div className="text-3xl font-display font-bold text-white">
+            {point.x.toFixed(2)} + {point.y.toFixed(2)}<span className="text-indigo-400 italic">i</span>
+          </div>
+          <p className="text-slate-500 text-xs leading-relaxed font-light">
+            In complex analysis, multiplying by <span className="text-white font-mono">i</span> is a rotational operator. Drag the point or use the button to see the Argand plane in action.
+          </p>
+        </div>
+
+        <div className="p-8 rounded-[32px] bg-indigo-600/10 border border-indigo-500/20 space-y-4">
+          <h3 className="text-white font-bold text-sm flex items-center gap-2">
+            <Sparkles size={16} className="text-indigo-400" />
+            Mathematical Fact
+          </h3>
+          <p className="text-indigo-300 text-xs font-light leading-relaxed">
+            Did you know? Euler's formula <span className="font-mono text-white italic">eⁱᶿ = cosᶿ + i sinᶿ</span> relates trigonometric functions to complex powers.
+          </p>
+        </div>
+
+        <button 
+          onClick={() => setShowUnitCircle(!showUnitCircle)}
+          className="w-full p-4 rounded-2xl bg-white/5 border border-white/5 text-[10px] font-mono uppercase tracking-widest text-slate-500 hover:text-white transition-all flex items-center justify-center gap-2"
+        >
+          <Info size={14} /> {showUnitCircle ? 'Hide' : 'Show'} Unit Circle (r=1)
+        </button>
       </div>
     </div>
   );

@@ -15,6 +15,7 @@ interface LandingPageProps {
   onOpenGlossary?: () => void;
   selectedClass?: string | null; // NEW: Receives the selected class
   onBack?: () => void;
+  onDashboardClick?: () => void;
 }
 
 const iconMap: Record<string, any> = {
@@ -33,7 +34,8 @@ const LandingPage: React.FC<LandingPageProps> = ({
   onProfileClick,
   onOpenGlossary,
   selectedClass,
-  onBack
+  onBack,
+  onDashboardClick
   
 }) => {
   const t = (key: string) => translations[key]?.[language] || key;
@@ -235,7 +237,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
 
         <footer className="mt-32 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-slate-600">
-            © 2024 OmniScience Laboratory / v2.4.0
+            © 2026 LabZero. All rights reserved.
           </div>
           <div className="flex gap-8">
             <a href="#" className="text-[10px] font-mono uppercase tracking-[0.3em] text-slate-600 hover:text-primary transition-colors">Documentation</a>

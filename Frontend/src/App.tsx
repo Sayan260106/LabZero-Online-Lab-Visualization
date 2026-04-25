@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Sparkles, MessageSquare, X, Settings, Eye, Moon, Sun, Languages, BookOpen
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import AtomVisualizer from './components/AtomicVisualizer';
 import PeriodicTable from './components/PeriodicTable';
 import AufbauChart from './components/AufbauChart';
@@ -109,10 +109,10 @@ const AppContent: React.FC = () => {
   }, []);
 
   const handleSelectSubject = useCallback((subject: Subject) => {
-    if (!user) {
-      setShowAuth(true);
-      return;
-    }
+    // if (!user) {
+    //   setShowAuth(true);
+    //   return;
+    // }
     setSelectedSubject(subject);
     setViewState(ViewState.SUBJECT);
   }, [user]);

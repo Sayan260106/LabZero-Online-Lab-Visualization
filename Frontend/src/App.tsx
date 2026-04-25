@@ -56,6 +56,7 @@ const AppContent: React.FC = () => {
   const [viewState, setViewState] = useState<ViewState>(ViewState.LANDING);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
+  const [selectedClass, setSelectedClass] = useState<string | null>(null);
 
   const [showAITutor, setShowAITutor] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -102,6 +103,11 @@ const AppContent: React.FC = () => {
   const t = (key: string) => translations[key]?.[language] || key;
 
   // ================= NAVIGATION =================
+  const handleSelectClass = useCallback((className: string) => {
+    setSelectedClass(className);
+    setViewState(ViewState.CLASS_SUBJECTS);
+  }, []);
+
   const handleSelectSubject = useCallback((subject: Subject) => {
     if (!user) {
       setShowAuth(true);
@@ -111,6 +117,7 @@ const AppContent: React.FC = () => {
     setViewState(ViewState.SUBJECT);
   }, [user]);
 
+
   const handleSelectTopic = useCallback((topic: Topic) => {
     setSelectedTopic(topic);
     setViewState(ViewState.TOPIC);
@@ -118,6 +125,11 @@ const AppContent: React.FC = () => {
 
   const handleBackToLanding = () => {
     setViewState(ViewState.LANDING);
+    setSelectedSubject(null);
+  };
+
+  const handleBackToClass = () => {
+    setViewState(ViewState.CLASS_SUBJECTS);
     setSelectedSubject(null);
   };
 
@@ -382,20 +394,63 @@ case TopicId.CELL_BIOLOGY:
       {!showQuiz && (
         <>
           <AnimatePresence mode="wait">
+            {/* 1. CLASS SELECTION (The new First Screen) */}
             {viewState === ViewState.LANDING && (
-              <motion.div key="landing" className="h-full w-full overflow-y-auto">
+              <motion.div 
+                key="landing" 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                className="h-full w-full overflow-y-auto p-8 flex flex-col items-center justify-center"
+              >
+                <div className="max-w-6xl w-full pt-10">
+                  <div className="text-center mb-12">
+                    <h1 className="text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400 mb-4">
+                      Welcome to LabZero
+                    </h1>
+                    <p className="text-slate-400 text-lg">Select your standard to begin the interactive journey</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {['Class 9', 'Class 10', 'Class 11', 'Class 12'].map((cls) => (
+                      <button
+                        key={cls}
+                        onClick={() => handleSelectClass(cls)}
+                        className="group relative p-10 rounded-[2rem] bg-white/5 border border-white/10 hover:bg-white/10 hover:border-indigo-500/50 transition-all duration-500 text-left overflow-hidden"
+                      >
+                        <div className="absolute -right-4 -top-4 w-24 h-24 bg-indigo-500/10 rounded-full blur-2xl group-hover:bg-indigo-500/20 transition-all" />
+                        <span className="text-indigo-400 font-mono text-sm tracking-widest uppercase mb-4 block">Standard Curriculum</span>
+                        <h2 className="text-3xl font-bold group-hover:text-white transition-colors">{cls}</h2>
+                        <div className="mt-6 w-12 h-1 bg-white/10 group-hover:w-full group-hover:bg-indigo-500 transition-all duration-700" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+            {/* 2. SUBJECT SELECTION (Filtered by the selected class) */}
+            {viewState === ViewState.CLASS_SUBJECTS && selectedClass && (
+              <motion.div 
+                key="class_subjects" 
+                initial={{ opacity: 0, x: 50 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -50 }}
+                className="h-full w-full overflow-y-auto"
+              >
                 <LandingPage 
                   onSelectSubject={handleSelectSubject} 
                   language={language} 
                   user={user}
+                  selectedClass={selectedClass} // You can pass this to LandingPage to filter subjects
                   onLoginClick={() => setShowAuth(true)}
                   onLogoutClick={logout}
                   onProfileClick={() => setShowAuth(true)}
                   onOpenGlossary={() => setShowGlossary(true)}
-                  onDashboardClick={() => setViewState(ViewState.DASHBOARD)}
+                  onBack={handleBackToLanding} // Allow users to go back to class selection
                 />
               </motion.div>
             )}
+
 
             {viewState === ViewState.SUBJECT && selectedSubject && (
               <motion.div key="subject" className="h-full w-full overflow-y-auto">
@@ -407,6 +462,7 @@ case TopicId.CELL_BIOLOGY:
                   onStartQuiz={startQuiz}
                   quizLevel={quizLevel}
                   onLevelChange={setQuizLevel}
+                  selectedClass={selectedClass}
                 />
               </motion.div>
             )}

@@ -55,6 +55,7 @@ export interface Topic {
   name: string;
   description: string;
   theory: string;
+  targetClass?: string[];
 }
 
 export interface Subject {
@@ -63,10 +64,12 @@ export interface Subject {
   icon: string;
   color: string;
   topics: Topic[];
+  targetClass?: string[];
 }
 
 export enum ViewState {
   LANDING = 'landing',
+  CLASS_SUBJECTS = 'CLASS_SUBJECTS', 
   SUBJECT = 'subject',
   TOPIC = 'topic',
   DASHBOARD = 'dashboard',

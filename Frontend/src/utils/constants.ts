@@ -7,11 +7,13 @@ export const SUBJECTS: Subject[] = [
     name: 'Chemistry',
     icon: 'Beaker',
     color: 'emerald',
+    targetClass: ['Class 11', 'Class 12'],
     topics: [
       {
         id: TopicId.ATOMIC_STRUCTURE,
         name: 'Atomic Structure',
         description: 'Explore the building blocks of matter, from subatomic particles to electron orbitals.',
+        targetClass: ['Class 11'],
         theory: `
 # Atomic Structure
 The atom is the basic unit of matter. It consists of a central **nucleus** surrounded by a cloud of **electrons**.
@@ -32,6 +34,7 @@ Electrons don't move in simple circles. They exist in **orbitals**, which are re
         id: TopicId.MOLECULAR_STRUCTURE,
         name: 'Molecular Structure',
         description: 'Understand how atoms bond together to form molecules and their 3D shapes.',
+        targetClass: ['Class 11'],
         theory: `
 # Molecular Structure
 Molecules are formed when two or more atoms bond together. The shape of a molecule is determined by the arrangement of its atoms in space.
@@ -50,6 +53,7 @@ Valence Shell Electron Pair Repulsion (VSEPR) theory predicts the geometry of mo
         id: TopicId.QUANTUM_NUMBERS,
         name: 'Quantum Numbers',
         description: 'Learn the four quantum numbers that describe the unique state of an electron.',
+        targetClass: ['Class 11'],
         theory: `
 # Quantum Numbers
 Quantum numbers are like the "address" of an electron in an atom. No two electrons in the same atom can have the same set of four quantum numbers.
@@ -64,6 +68,7 @@ Quantum numbers are like the "address" of an electron in an atom. No two electro
         id: TopicId.PERIODIC_TRENDS,
         name: 'Periodic Trends',
         description: 'Discover how properties like atomic radius and electronegativity change across the periodic table.',
+        targetClass: ['Class 12'],
         theory: `
 # Periodic Trends
 The periodic table is organized such that elements with similar properties fall into the same columns (groups).
@@ -78,6 +83,7 @@ The periodic table is organized such that elements with similar properties fall 
         id: TopicId.HISTORICAL_MODELS,
         name: 'Historical Models',
         description: 'Trace the evolution of atomic theory from Dalton to the modern Quantum Mechanical model.',
+        targetClass: ['Class 12'],
         theory: `
 # Historical Atomic Models
 Our understanding of the atom has changed significantly over time.
@@ -93,6 +99,7 @@ Our understanding of the atom has changed significantly over time.
         id: TopicId.QUANTUM_CONFIG,
         name: 'Quantum Configuration',
         description: 'Master the rules for filling electron shells and writing electron configurations.',
+        targetClass: ['Class 12'],
         theory: `
 # Electron Configuration
 Electron configuration is the distribution of electrons of an atom or molecule in atomic or molecular orbitals.
@@ -111,11 +118,13 @@ Electron configuration is the distribution of electrons of an atom or molecule i
     name: 'Physics',
     icon: 'Zap',
     color: 'blue',
+    targetClass: ['Class 11', 'Class 12'],
     topics: [
       {
         id: TopicId.MECHANICS,
         name: 'Classical Mechanics',
         description: 'Study motion, forces, and energy in the macroscopic world.',
+        targetClass: ['Class 12'],
         theory: `
 # Classical Mechanics
 Classical mechanics mathematically describes the motion of macroscopic objects, from projectiles to planets. The entire interactive visualization engine is driven by these fundamental equations.
@@ -139,6 +148,7 @@ Valid for constant acceleration in a straight line.
       },
       {
         id: TopicId.ELECTROMAGNETISM,
+        targetClass: ['Class 11'],
         name: 'Electromagnetism',
         description: 'Explore electric fields, magnetic forces, and the fundamental laws of circuits.',
         theory: `
@@ -168,11 +178,13 @@ Electromagnetism deals with the electromagnetic force that occurs between electr
   name: 'Mathematics',
   icon: 'Calculator',
   color: 'indigo',
+  targetClass: ['Class 9', 'Class 10', 'Class 11', 'Class 12'],
   topics: [
     {
       id: TopicId.VECTOR_CALCULUS,
       name: 'Vector Algebra',
       description: 'Visualize 3D vectors, cross products, and orthogonal planes.',
+      targetClass: ['Class 12'],
       theory: `
 # Vector Cross Product
 In 3D space, the cross product of two vectors **A** and **B** is a new vector **C** that is perfectly perpendicular (90 degrees) to both of them.
@@ -190,6 +202,7 @@ This is the backbone of 3D lighting! It is used to calculate "surface normals" t
   id: TopicId.PI_APPROXIMATION,
   name: 'Approximating Pi',
   description: 'Use the Archimedes method to calculate π by increasing polygon sides.',
+  targetClass: ['Class 10'],
   theory: `
 # Archimedes' Method
 Archimedes discovered that you could find the value of **π** by "trapping" a circle between two polygons.
@@ -210,6 +223,7 @@ As n approaches infinity, **Perimeter → 2π**.
 
 {
     id: TopicId.COMPLEX_NUMBERS,
+    targetClass: ['Class 11'],
     name: 'Complex Numbers & Rotation',
     description: 'Explore the Argand plane and watch how multiplying by imaginary numbers rotates space.',
     theory: `
@@ -231,6 +245,7 @@ Complex numbers are the mathematical engine behind signal processing (Fourier Tr
   },
   {
     id: TopicId.PYTHAGORAS_THEOREM,
+    targetClass: ['Class 9'],
     name: 'Pythagorean Theorem',
     description: 'Adjust the base and height of a triangle to visualize how the hypotenuse is calculated.',
     theory: `
@@ -258,11 +273,13 @@ In video game development, this exact math is used every single frame to calcula
     name: 'Biology',
     icon: 'Beaker', 
     color: 'emerald',
+    targetClass: ['Class 11', 'Class 12'],
     topics: [
       {
         id: TopicId.MICROBIOLOGY,
         name: 'Microorganisms',
         description: 'Analyze the 3D structure and movement mechanisms of a single-celled bacterium.',
+        targetClass: ['Class 11'],
         theory: `
 # Microorganisms: The Bacterium
 Bacteria are prokaryotic microorganisms. They are incredibly resilient and exist in almost every environment on Earth.
@@ -279,6 +296,7 @@ Unlike complex cells, bacteria lack a membrane-bound nucleus.
         id: TopicId.CELL_BIOLOGY,
         name: 'Cellular Anatomy',
         description: 'Explore a 3D cross-section of a eukaryotic cell and its organelles.',
+        targetClass: ['Class 12'],
         theory: `
 # Cellular Anatomy
 Eukaryotic cells are the complex building blocks of animals and plants. They are defined by having a true, membrane-bound nucleus and specialized organelles.

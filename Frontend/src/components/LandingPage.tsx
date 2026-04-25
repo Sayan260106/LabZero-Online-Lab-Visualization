@@ -1,7 +1,7 @@
 import React from 'react';
 import { Subject } from '../types/types';
 import { SUBJECTS } from '../utils/constants';
-import { Beaker, Zap, Calculator, Dna, ArrowRight, Globe, Sparkles, User as UserIcon, LogOut, BookOpen, Search } from 'lucide-react';
+import { Beaker, Zap, Calculator, Dna, ArrowRight, Globe, Sparkles, User as UserIcon, LogOut, BookOpen, Search, ArrowLeft } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Language, translations } from '../services/translations';
 
@@ -13,7 +13,8 @@ interface LandingPageProps {
   onLogoutClick?: () => void;
   onProfileClick?: () => void;
   onOpenGlossary?: () => void;
-  onDashboardClick?: () => void;
+  selectedClass?: string | null; // NEW: Receives the selected class
+  onBack?: () => void;
 }
 
 const iconMap: Record<string, any> = {
@@ -31,9 +32,16 @@ const LandingPage: React.FC<LandingPageProps> = ({
   onLogoutClick,
   onProfileClick,
   onOpenGlossary,
-  onDashboardClick
+  selectedClass,
+  onBack
+  
 }) => {
   const t = (key: string) => translations[key]?.[language] || key;
+  const displayedSubjects = selectedClass 
+    ? SUBJECTS.filter((subject: any) => 
+        !subject.targetClass || subject.targetClass.includes(selectedClass)
+      )
+    : SUBJECTS;
   return (
     <div className="relative min-h-screen overflow-hidden grainy">
       {/* Background Decorative Elements */}
@@ -43,7 +51,20 @@ const LandingPage: React.FC<LandingPageProps> = ({
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.05)_0%,transparent_70%)]" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 pt-32 pb-20">
+      <div className="relative max-w-7xl mx-auto px-6 pt-24 pb-20">
+        {onBack && (
+          <motion.button 
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            onClick={onBack}
+            className="mb-12 flex items-center gap-3 text-slate-400 hover:text-white transition-colors group"
+          >
+            <div className="p-2 rounded-full bg-white/5 border border-white/10 group-hover:bg-white/10 transition-colors">
+              <ArrowLeft size={16} />
+            </div>
+            <span className="text-xs font-mono uppercase tracking-[0.2em]">Change Standard</span>
+          </motion.button>
+        )}
         {/* Auth Controls */}
         <div className="absolute top-8 right-6 flex items-center gap-4 z-50">
           {!user ? (
@@ -92,8 +113,9 @@ const LandingPage: React.FC<LandingPageProps> = ({
             className="flex items-center gap-3 mb-8"
           >
             <div className="h-px w-12 bg-primary" />
-            <span className="text-xs font-mono uppercase tracking-[0.3em] text-primary">The Future of Learning</span>
-          </motion.div>
+            <span className="text-xs font-mono uppercase tracking-[0.3em] text-primary">
+              {selectedClass ? `${selectedClass} Curriculum` : 'The Future of Learning'}
+            </span>          </motion.div>
 
           <motion.h1 
             initial={{ opacity: 0, x: -20 }}
@@ -128,7 +150,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/5 border border-white/5 rounded-3xl overflow-hidden">
-          {SUBJECTS.map((subject, index) => {
+          {displayedSubjects.map((subject, index) => {
             const Icon = iconMap[subject.icon] || Beaker;
             const accentColor = {
               emerald: 'group-hover:text-emerald-400',

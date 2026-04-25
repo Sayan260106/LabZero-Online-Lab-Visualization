@@ -12,6 +12,7 @@ interface SubjectPageProps {
   onStartQuiz: () => void;
   quizLevel: 'basic' | 'intermediate' | 'difficult';
   onLevelChange: (level: 'basic' | 'intermediate' | 'difficult') => void;
+  selectedClass?: string | null;
 }
 
 const iconMap: Record<string, any> = {
@@ -28,11 +29,16 @@ const SubjectPage: React.FC<SubjectPageProps> = ({
   language,
   onStartQuiz,
   quizLevel,
-  onLevelChange
+  onLevelChange,
+  selectedClass
 }) => {
   const Icon = iconMap[subject.icon] || Beaker;
   const t = (key: string) => translations[key]?.[language] || key;
-
+  const displayedTopics = selectedClass
+    ? subject.topics.filter(topic => 
+        !topic.targetClass || topic.targetClass.includes(selectedClass)
+      )
+    : subject.topics;
   return (
     <div className="relative min-h-screen grainy">
       <div className="max-w-7xl mx-auto px-6 py-24">
@@ -93,7 +99,7 @@ const SubjectPage: React.FC<SubjectPageProps> = ({
               </h2>
               <div className="flex items-center gap-3 mt-4">
                 <div className="h-px w-8 bg-primary" />
-                <p className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.4em]">Laboratory Modules / {subject.topics.length} Units</p>
+                <p className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.4em]">Laboratory Modules / {displayedTopics.length} Units</p>
               </div>
             </div>
           </motion.div>
@@ -111,7 +117,7 @@ const SubjectPage: React.FC<SubjectPageProps> = ({
         </header>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {subject.topics.map((topic, index) => (
+          {displayedTopics.map((topic, index) => (
             <motion.button
               key={topic.id}
               initial={{ opacity: 0, y: 20 }}

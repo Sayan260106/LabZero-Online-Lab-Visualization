@@ -24,6 +24,7 @@ import VectorCalculusLab from './components/VectorCalculusLab';
 import PiVisualizationLab from './components/PiVisualizationLab';
 import ComplexNumbersLab from './components/ComplexNumbersLab';
 import PythagorasLab from './components/PythagorasLab';
+import RealExperimentLab from './components/RealExperimentLab';
 
 
 import LandingPage from './components/LandingPage';
@@ -315,6 +316,12 @@ case TopicId.CELL_BIOLOGY:
   return (
     <div className="h-full overflow-hidden p-4 md:p-8 bg-[#020617]">
       <PythagorasLab />
+    </div>
+  );
+  case TopicId.REAL_EXPERIMENT:
+  return (
+    <div className="h-full overflow-y-auto p-4 md:p-8 bg-[#020617]">
+      <RealExperimentLab />
     </div>
   );
   

@@ -109,6 +109,24 @@ Electron configuration is the distribution of electrons of an atom or molecule i
 - **Pauli Exclusion Principle**: An orbital can hold a maximum of two electrons with opposite spins.
 - **Hund's Rule**: Electrons fill degenerate orbitals singly before pairing up.
         `
+      },
+      {
+        id: TopicId.REAL_EXPERIMENT,
+        name: 'Real Experiment Lab',
+        description: 'Perform real-time chemical reactions and observe temperature effects.',
+        targetClass: ['Class 11', 'Class 12'],
+        theory: `
+# Real Experiment Lab
+Chemical reactions often involve the exchange of energy, usually in the form of heat.
+
+## Reaction Speed
+The rate of a chemical reaction is influenced by several factors:
+1. **Temperature**: Increasing temperature typically speeds up a reaction.
+2. **Concentration**: Higher concentration of reactants increases the frequency of collisions.
+3. **Catalysts**: Substances that speed up a reaction without being consumed.
+
+In this lab, you can adjust the temperature and start a reaction to see how it behaves.
+        `
       }
     ]
   },

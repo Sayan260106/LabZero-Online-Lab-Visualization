@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Sparkles, MessageSquare, X, Settings, Eye, Moon, Sun, Languages, BookOpen
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import AtomVisualizer from './components/AtomicVisualizer';
 import PeriodicTable from './components/PeriodicTable';
 import AufbauChart from './components/AufbauChart';
@@ -354,7 +354,7 @@ const AppContent: React.FC = () => {
       default:
         return <div className="p-10 text-center">Coming Soon</div>;
     }
-  }, [elements, selectedElement, atomRotation]);
+  }, [elements, selectedElement, atomRotation, atomZoom, moleculeRotation, moleculeZoom]);
 
   // ================= GESTURES =================
   const handleGestureSelect = () => {

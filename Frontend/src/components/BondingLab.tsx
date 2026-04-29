@@ -1,19 +1,27 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 import { ElementData } from '../types/types';
-import { ELEMENTS } from '../utils/constants';
 
-const BondingLab: React.FC = () => {
-  const [elA, setElA] = useState<ElementData>(ELEMENTS.find(e => e.symbol === 'Na') || ELEMENTS[10]);
-  const [elB, setElB] = useState<ElementData>(ELEMENTS.find(e => e.symbol === 'Cl') || ELEMENTS[16]);
+interface BondingLabProps {
+  elements: ElementData[];
+}
+
+const BondingLab: React.FC<BondingLabProps> = ({ elements }) => {
+  const [elA, setElA] = useState<ElementData | null>(null);
+  const [elB, setElB] = useState<ElementData | null>(null);
   const [status, setStatus] = useState<'IDLE' | 'BONDED'>('IDLE');
   const [bondType, setBondType] = useState<'Ionic' | 'Covalent' | 'Polar Covalent' | null>(null);
 
   const svgRef = useRef<SVGSVGElement | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
 
-  const electronegativityDiff = Math.abs(elA.electronegativity - elB.electronegativity);
+  useEffect(() => {
+    if (elements.length > 0) {
+      setElA(prev => elements.find(e => e.number === prev?.number) || elements.find(e => e.symbol === 'Na') || elements[10]);
+      setElB(prev => elements.find(e => e.number === prev?.number) || elements.find(e => e.symbol === 'Cl') || elements[16] || elements[1]);
+    }
+  }, [elements]);
+
+  const electronegativityDiff = elA && elB ? Math.abs(elA.electronegativity - elB.electronegativity) : 0;
 
   const determineBondType = () => {
     if (electronegativityDiff >= 1.7) return 'Ionic';
@@ -22,12 +30,10 @@ const BondingLab: React.FC = () => {
   };
 
   useEffect(() => {
-    if (!svgRef.current) return;
+    if (!svgRef.current || !elA || !elB) return;
     const svg = d3.select(svgRef.current);
     svg.selectAll("*").remove();
 
-    const width = 800;
-    const height = 400;
     const type = determineBondType();
 
     const defs = svg.append("defs");
@@ -181,6 +187,8 @@ const BondingLab: React.FC = () => {
     setBondType(null);
   };
 
+  if (!elements || elements.length === 0 || !elA || !elB) return null;
+
   return (
     <div className="flex flex-col gap-8">
       <div className="glass-panel rounded-[32px] p-10 border border-white/10 relative overflow-hidden">
@@ -251,10 +259,10 @@ const BondingLab: React.FC = () => {
                   <span className="text-xs text-white/60">Atom A: {elA.name}</span>
                   <select
                     value={elA.number}
-                    onChange={e => { setStatus('IDLE'); setElA(ELEMENTS.find(x => x.number === +e.target.value)!); }}
+                    onChange={e => { setStatus('IDLE'); setElA(elements.find(x => x.number === +e.target.value)!); }}
                     className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[10px] font-bold text-white focus:outline-none"
                   >
-                    {ELEMENTS.map(e => (
+                    {elements.map(e => (
                       <option key={e.number} value={e.number} className="bg-slate-900 text-white">
                         {e.symbol}
                       </option>
@@ -266,10 +274,10 @@ const BondingLab: React.FC = () => {
                   <span className="text-xs text-white/60">Atom B: {elB.name}</span>
                   <select
                     value={elB.number}
-                    onChange={e => { setStatus('IDLE'); setElB(ELEMENTS.find(x => x.number === +e.target.value)!); }}
+                    onChange={e => { setStatus('IDLE'); setElB(elements.find(x => x.number === +e.target.value)!); }}
                     className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[10px] font-bold text-white focus:outline-none"
                   >
-                    {ELEMENTS.map(e => (
+                    {elements.map(e => (
                       <option key={e.number} value={e.number} className="bg-slate-900 text-white">
                         {e.symbol}
                       </option>
@@ -300,4 +308,4 @@ const BondingLab: React.FC = () => {
       );
 };
 
-      export default BondingLab;
+export default BondingLab;

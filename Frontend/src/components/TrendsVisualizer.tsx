@@ -1,24 +1,29 @@
-
 import React, { useState, useMemo } from 'react';
-import { ELEMENTS } from '../utils/constants';
 import { ElementData } from '../types/types';
 
 type Property = 'radius' | 'ionization' | 'electronegativity';
 
-const TrendsVisualizer: React.FC = () => {
+interface TrendsVisualizerProps {
+  elements: ElementData[];
+}
+
+const TrendsVisualizer: React.FC<TrendsVisualizerProps> = ({ elements }) => {
   const [activeProperty, setActiveProperty] = useState<Property>('radius');
   const [hoveredElement, setHoveredElement] = useState<ElementData | null>(null);
 
   const stats = useMemo(() => {
-    const values = ELEMENTS.map(e => e[activeProperty]).filter(v => v > 0);
+    if (!elements || elements.length === 0) return { min: 0, max: 0 };
+    const values = elements.map(e => e[activeProperty]).filter(v => v > 0);
+    if (values.length === 0) return { min: 0, max: 0 };
     return {
       min: Math.min(...values),
       max: Math.max(...values),
     };
-  }, [activeProperty]);
+  }, [activeProperty, elements]);
 
   const getColor = (value: number) => {
     if (value === 0 || isNaN(value)) return 'rgba(255, 255, 255, 0.05)';
+    if (stats.max === stats.min) return 'rgba(255, 255, 255, 0.05)';
     const normalized = (value - stats.min) / (stats.max - stats.min);
     
     switch (activeProperty) {
@@ -36,6 +41,8 @@ const TrendsVisualizer: React.FC = () => {
     ionization: { name: 'Ionization Energy', unit: 'kJ/mol', desc: 'The minimum amount of energy required to remove the most loosely bound electron of an isolated neutral gaseous atom.' },
     electronegativity: { name: 'Electronegativity', unit: 'χ', desc: 'A chemical property that describes the tendency of an atom to attract a shared pair of electrons towards itself.' },
   };
+
+  if (!elements || elements.length === 0) return null;
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
@@ -72,7 +79,7 @@ const TrendsVisualizer: React.FC = () => {
               Array.from({ length: 18 }).map((_, groupIdx) => {
                 const period = periodIdx + 1;
                 const group = groupIdx + 1;
-                const el = ELEMENTS.find(e => e.period === period && e.group === group);
+                const el = elements.find(e => e.period === period && e.group === group);
 
                 if (!el) return <div key={`empty-${period}-${group}`} className="w-full aspect-square opacity-[0.03] bg-white rounded-lg"></div>;
 
@@ -99,7 +106,7 @@ const TrendsVisualizer: React.FC = () => {
                       <span className="text-[7px] text-white/50 absolute top-1 left-1.5 font-mono">{el.number}</span>
                       <span className="text-[12px] font-black text-white">{el.symbol}</span>
                       
-                      {activeProperty === 'radius' && val > 0 && (
+                      {activeProperty === 'radius' && val > 0 && stats.max > 0 && (
                         <div 
                           className="absolute inset-0 m-auto rounded-full bg-white/5 border border-white/10 pointer-events-none"
                           style={{ 
@@ -119,7 +126,7 @@ const TrendsVisualizer: React.FC = () => {
           <div className="mt-10 pt-10 border-t border-white/5 grid grid-cols-18 gap-1.5 min-w-[1200px] w-full">
              <div className="col-span-2"></div>
              {Array.from({ length: 15 }).map((_, i) => {
-                const el = ELEMENTS.find(e => e.number === 57 + i);
+                const el = elements.find(e => e.number === 57 + i);
                 if (!el) return <div key={`f1-${i}`} className="w-full aspect-square opacity-0"></div>;
                 return <TrendCell key={el.symbol} el={el} activeProperty={activeProperty} getColor={getColor} stats={stats} setHovered={setHoveredElement} hovered={hoveredElement} />;
              })}
@@ -129,7 +136,7 @@ const TrendsVisualizer: React.FC = () => {
                 <div className="h-px w-full bg-white/10"></div>
              </div>
              {Array.from({ length: 15 }).map((_, i) => {
-                const el = ELEMENTS.find(e => e.number === 89 + i);
+                const el = elements.find(e => e.number === 89 + i);
                 if (!el) return <div key={`f2-${i}`} className="w-full aspect-square opacity-0"></div>;
                 return <TrendCell key={el.symbol} el={el} activeProperty={activeProperty} getColor={getColor} stats={stats} setHovered={setHoveredElement} hovered={hoveredElement} />;
              })}

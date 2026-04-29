@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls, PerspectiveCamera, Float, Text, ContactShadows, Environment } from '@react-three/drei';
 import * as THREE from 'three';
-import { MOLECULES } from '../utils/constants';
 import { Molecule } from '../types/types';
 
 // --- Sub-Components ---
@@ -63,10 +62,11 @@ const LonePair = ({ pos }: { pos: [number, number, number] }) => (
 interface GeometryLabProps {
   rotation?: { dx: number; dy: number };
   zoom?: number;
+  molecules: Molecule[];
 }
 
-const GeometryLab: React.FC<GeometryLabProps> = ({ rotation, zoom = 1 }) => {
-  const [selectedMolecule, setSelectedMolecule] = useState<Molecule>(MOLECULES[0]);
+const GeometryLab: React.FC<GeometryLabProps> = ({ rotation, zoom = 1, molecules }) => {
+  const [selectedMolecule, setSelectedMolecule] = useState<Molecule | null>(null);
   const [mode, setMode] = useState<'Real' | 'Model'>('Real');
   const [showLonePairs, setShowLonePairs] = useState(true);
   const [showBondAngles, setShowBondAngles] = useState(true);
@@ -76,6 +76,12 @@ const GeometryLab: React.FC<GeometryLabProps> = ({ rotation, zoom = 1 }) => {
     O: '#ef4444', H: '#f1f5f9', C: '#334155', N: '#3b82f6',Cl: '#84cc16',P: '#f97316',Be: '#94a3b8',
     Br: '#991b1b',F: '#10b981', Xe: '#a855f7', S: '#facc15', B: '#8b5cf6', central: '#f97316'
   };
+
+  useEffect(() => {
+    if (molecules.length > 0) {
+      setSelectedMolecule(prev => molecules.find(m => m.formula === prev?.formula) || molecules[0]);
+    }
+  }, [molecules]);
 
   useEffect(() => {
     if (!rotation || !moleculeGroupRef.current) return;
@@ -89,6 +95,14 @@ const GeometryLab: React.FC<GeometryLabProps> = ({ rotation, zoom = 1 }) => {
 
     moleculeGroupRef.current.scale.setScalar(zoom);
   }, [zoom]);
+
+  if (!molecules || molecules.length === 0 || !selectedMolecule) {
+    return (
+      <div className="glass-panel rounded-[40px] p-8 border border-white/10 flex items-center justify-center h-[600px]">
+        <div className="text-white text-xl font-mono">Loading Molecule Data...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="glass-panel rounded-[40px] p-8 border border-white/10 space-y-10 select-none animate-in fade-in duration-1000 bg-slate-900/50">
@@ -107,10 +121,10 @@ const GeometryLab: React.FC<GeometryLabProps> = ({ rotation, zoom = 1 }) => {
           <div className="relative group">
             <select 
               value={selectedMolecule.formula}
-              onChange={(e) => setSelectedMolecule(MOLECULES.find(m => m.formula === e.target.value)!)}
+              onChange={(e) => setSelectedMolecule(molecules.find(m => m.formula === e.target.value)!)}
               className="appearance-none bg-slate-950/90 border border-white/10 rounded-2xl pl-12 pr-14 py-3 text-sm font-black text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all shadow-xl min-w-[240px] cursor-pointer"
             >
-              {MOLECULES.map(m => <option key={m.formula} value={m.formula}>{m.formula} ({m.name})</option>)}
+              {molecules.map(m => <option key={m.formula} value={m.formula}>{m.formula} ({m.name})</option>)}
             </select>
           </div>
         </div>
@@ -138,36 +152,36 @@ const GeometryLab: React.FC<GeometryLabProps> = ({ rotation, zoom = 1 }) => {
           <Environment preset="city" />
 
           <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
-  <group ref={moleculeGroupRef}>
-    {/* Central Atom */}
-    <Atom 
-      pos={[0, 0, 0]} 
-      symbol={selectedMolecule.centralAtom} 
-      color={atomColors[selectedMolecule.centralAtom] || atomColors.central} 
-      size={0.8} 
-    />
+            <group ref={moleculeGroupRef}>
+              {/* Central Atom */}
+              <Atom 
+                pos={[0, 0, 0]} 
+                symbol={selectedMolecule.centralAtom} 
+                color={atomColors[selectedMolecule.centralAtom] || atomColors.central} 
+                size={0.8} 
+              />
 
-    {/* Dynamic Outer Atoms and Bonds */}
-    {selectedMolecule.atoms.map((atom, i) => {
-      // Logic: Model mode uses a standard spacing (2.5), 
-      // Real mode adds a slight offset to simulate electronic distortion
-      const multiplier = mode === 'Model' ? 2.5 : 2.7; 
-      const pos: [number, number, number] = [atom.pos.x * multiplier, atom.pos.y * multiplier, atom.pos.z * multiplier];
-      
-      return (
-        <React.Fragment key={i}>
-          <Bond from={[0, 0, 0]} to={pos} />
-          <Atom pos={pos} symbol={atom.symbol} color={atomColors[atom.symbol]} size={0.5} />
-        </React.Fragment>
-      );
-    })}
+              {/* Dynamic Outer Atoms and Bonds */}
+              {selectedMolecule.atoms.map((atom, i) => {
+                // Logic: Model mode uses a standard spacing (2.5), 
+                // Real mode adds a slight offset to simulate electronic distortion
+                const multiplier = mode === 'Model' ? 2.5 : 2.7; 
+                const pos: [number, number, number] = [atom.pos.x * multiplier, atom.pos.y * multiplier, atom.pos.z * multiplier];
+                
+                return (
+                  <React.Fragment key={i}>
+                    <Bond from={[0, 0, 0]} to={pos} />
+                    <Atom pos={pos} symbol={atom.symbol} color={atomColors[atom.symbol]} size={0.5} />
+                  </React.Fragment>
+                );
+              })}
 
-    {/* Lone Pairs */}
-    {showLonePairs && selectedMolecule.lonePairs.map((lp, i) => (
-      <LonePair key={i} pos={[lp.x * 2, lp.y * 2, lp.z * 2]} />
-    ))}
-  </group>
-</Float>
+              {/* Lone Pairs */}
+              {showLonePairs && selectedMolecule.lonePairs.map((lp, i) => (
+                <LonePair key={i} pos={[lp.x * 2, lp.y * 2, lp.z * 2]} />
+              ))}
+            </group>
+          </Float>
 
           <ContactShadows opacity={0.4} scale={15} blur={2.5} far={4.5} />
         </Canvas>

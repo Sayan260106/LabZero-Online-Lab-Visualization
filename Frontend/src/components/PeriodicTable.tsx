@@ -1,6 +1,5 @@
 
 import React from 'react';
-import { ELEMENTS } from '../utils/constants';
 import { ElementData } from '../types/types';
 import { motion } from 'motion/react';
 

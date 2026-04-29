@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Topic, TopicView, Resource } from '../types/types';
+import { Topic, TopicView, Resource, TopicId } from '../types/types';
 import { ArrowLeft, BookOpen, Play, Sparkles, FileText, Trash2, Download, Presentation, GraduationCap, Volume2, VolumeX, Zap } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import ResourceUpload from './ResourceUpload';
@@ -20,7 +20,22 @@ interface TopicPageProps {
 
 const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, language, onStartQuiz }) => {
   const { user } = useAuth();
-  const [activeView, setActiveView] = useState<TopicView>(TopicView.THEORY);
+  const isLab = [
+    TopicId.REAL_EXPERIMENT,
+    TopicId.QUANTUM_CONFIG,
+    TopicId.WAVE_OPTICS,
+    TopicId.THERMODYNAMICS,
+    TopicId.MECHANICS,
+    TopicId.ELECTROMAGNETISM,
+    TopicId.MICROBIOLOGY,
+    TopicId.CELL_BIOLOGY,
+    TopicId.VECTOR_CALCULUS,
+    TopicId.PI_APPROXIMATION,
+    TopicId.COMPLEX_NUMBERS,
+    TopicId.PYTHAGORAS_THEOREM
+  ].includes(topic.id);
+
+  const [activeView, setActiveView] = useState<TopicView>(isLab ? TopicView.VISUALIZATION : TopicView.THEORY);
   const t = (key: string) => translations[key]?.[language] || key;
   const [resources, setResources] = useState<Resource[]>([]);
   const [viewingResource, setViewingResource] = useState<Resource | null>(null);

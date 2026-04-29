@@ -25,6 +25,8 @@ import PiVisualizationLab from './components/PiVisualizationLab';
 import ComplexNumbersLab from './components/ComplexNumbersLab';
 import PythagorasLab from './components/PythagorasLab';
 import RealExperimentLab from './components/RealExperimentLab';
+import WaveOpticsVisualizer from './components/WaveOpticsVisualizer';
+import ThermodynamicsVisualizer from './components/ThermodynamicsVisualizer';
 
 
 import LandingPage from './components/LandingPage';
@@ -40,6 +42,8 @@ import AuthPage from './components/AuthPage';
 
 import QuizPage from './components/Quiz';
 import { generateQuizAI } from './data/quizData';
+import FloatingBrain from './components/MemoryMap/FloatingBrain';
+import MemoryMapOverlay from './components/MemoryMap/MemoryMapOverlay';
 
 import { ELEMENTS } from './utils/constants';
 import { ElementData, Subject, Topic, ViewState, TopicId } from './types/types';
@@ -112,6 +116,9 @@ const AppContent: React.FC = () => {
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizQuestions, setQuizQuestions] = useState<any[]>([]);
   const [quizLevel, setQuizLevel] = useState<'basic' | 'intermediate' | 'difficult'>('basic');
+
+  // ================= MEMORY MAP =================
+  const [showMemoryMap, setShowMemoryMap] = useState(false);
 
   // ================= FETCH =================
   useEffect(() => {
@@ -282,48 +289,67 @@ const AppContent: React.FC = () => {
         );
       
       case TopicId.MICROBIOLOGY:
-  return (
-    <div className="p-8 space-y-8 h-[700px]">
-      <MicrobiologyLab />
-    </div>
-  );
+        return (
+          <div className="p-8 space-y-8 h-[700px]">
+            <MicrobiologyLab />
+          </div>
+        );
 
-case TopicId.CELL_BIOLOGY:
-  return (
-    <div className="p-8 space-y-8 h-[700px]">
-      <CellBiologyLab />
-    </div>
-  );
-    case TopicId.VECTOR_CALCULUS:
-  return (
-    <div className="p-8 space-y-8 h-[700px]">
-      <VectorCalculusLab/>
-    </div>
-  );
-  case TopicId.PI_APPROXIMATION:
-  return (
-    <div className="p-8 space-y-8 h-[700px]">
-      <PiVisualizationLab/>
-    </div>
-  );
-  case TopicId.COMPLEX_NUMBERS:
-  return (
-    <div className="h-full overflow-hidden p-4 md:p-8 bg-[#020617]">
-      <ComplexNumbersLab />
-    </div>
-  );
-  case TopicId.PYTHAGORAS_THEOREM:
-  return (
-    <div className="h-full overflow-hidden p-4 md:p-8 bg-[#020617]">
-      <PythagorasLab />
-    </div>
-  );
-  case TopicId.REAL_EXPERIMENT:
-  return (
-    <div className="h-full overflow-y-auto p-4 md:p-8 bg-[#020617]">
-      <RealExperimentLab />
-    </div>
-  );
+      case TopicId.CELL_BIOLOGY:
+        return (
+          <div className="p-8 space-y-8 h-[700px]">
+            <CellBiologyLab />
+          </div>
+        );
+
+      case TopicId.VECTOR_CALCULUS:
+        return (
+          <div className="p-8 space-y-8 h-[700px]">
+            <VectorCalculusLab/>
+          </div>
+        );
+
+      case TopicId.PI_APPROXIMATION:
+        return (
+          <div className="p-8 space-y-8 h-[700px]">
+            <PiVisualizationLab/>
+          </div>
+        );
+
+      case TopicId.COMPLEX_NUMBERS:
+        return (
+          <div className="h-full overflow-hidden p-4 md:p-8 bg-[#020617]">
+            <ComplexNumbersLab />
+          </div>
+        );
+
+      case TopicId.PYTHAGORAS_THEOREM:
+        return (
+          <div className="h-full overflow-hidden p-4 md:p-8 bg-[#020617]">
+            <PythagorasLab />
+          </div>
+        );
+
+      case TopicId.REAL_EXPERIMENT:
+        return (
+          <div className="h-full overflow-y-auto p-4 md:p-8 bg-[#020617]">
+            <RealExperimentLab />
+          </div>
+        );
+
+      case TopicId.WAVE_OPTICS:
+        return (
+          <div className="h-full overflow-y-auto">
+            <WaveOpticsVisualizer />
+          </div>
+        );
+
+      case TopicId.THERMODYNAMICS:
+        return (
+          <div className="h-full overflow-y-auto">
+            <ThermodynamicsVisualizer />
+          </div>
+        );
   
       default:
         return <div className="p-10 text-center">Coming Soon</div>;
@@ -425,6 +451,16 @@ case TopicId.CELL_BIOLOGY:
         )}
       </AnimatePresence>
 
+      {/* ================= MEMORY MAP SCREEN ================= */}
+      <AnimatePresence>
+        {showMemoryMap && (
+          <MemoryMapOverlay
+            onClose={() => setShowMemoryMap(false)}
+            initialSubject={selectedSubject}
+          />
+        )}
+      </AnimatePresence>
+
       {!showQuiz && (
         <>
           <AnimatePresence mode="wait">
@@ -486,6 +522,8 @@ case TopicId.CELL_BIOLOGY:
           >
             <Settings size={24} className={showSettings ? 'text-white' : 'text-slate-400'} />
           </button>
+
+          <FloatingBrain onClick={() => setShowMemoryMap(true)} />
 
           <AnimatePresence>
             {showSettings && (

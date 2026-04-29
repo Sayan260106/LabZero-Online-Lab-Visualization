@@ -16,18 +16,22 @@ export const SUBJECTS: Subject[] = [
         targetClass: ['Class 11'],
         theory: `
 # Atomic Structure
-The atom is the basic unit of matter. It consists of a central **nucleus** surrounded by a cloud of **electrons**.
+The fundamental study of matter's composition and the behavior of subatomic particles.
 
 ## Subatomic Particles
-1. **Protons**: Positively charged particles in the nucleus. The number of protons defines the element (Atomic Number).
-2. **Neutrons**: Neutral particles in the nucleus. They provide stability to the nucleus.
-3. **Electrons**: Negatively charged particles that orbit the nucleus in specific energy levels.
+- **Protons**: Positively charged (+1) particles located in the nucleus; determines atomic number (Z).
+- **Neutrons**: Neutral particles in the nucleus; contributes to atomic mass and nuclear stability.
+- **Electrons**: Negatively charged (-1) particles orbiting the nucleus in defined energy levels.
 
-## Orbitals and Energy Levels
-Electrons don't move in simple circles. They exist in **orbitals**, which are regions of space where there is a high probability of finding an electron.
-- **s-orbitals**: Spherical shape.
-- **p-orbitals**: Dumbbell shape.
-- **d and f orbitals**: More complex shapes.
+## Atomic Models
+- **Bohr Model**: Electrons move in fixed circular orbits (shells) with quantized energy levels.
+- **Quantum Model**: Electrons exist in probability regions called 'orbitals' (s, p, d, f).
+- **Heisenberg Principle**: Impossible to know both position and momentum of an electron simultaneously.
+
+## Key Principles
+- **Aufbau Principle**: Electrons occupy the lowest energy orbitals first.
+- **Pauli Exclusion**: An orbital can hold max 2 electrons with opposite spins.
+- **Hund's Rule**: Degenerate orbitals are singly occupied before pairing.
         `
       },
       {
@@ -37,101 +41,141 @@ Electrons don't move in simple circles. They exist in **orbitals**, which are re
         targetClass: ['Class 11'],
         theory: `
 # Molecular Structure
-Molecules are formed when two or more atoms bond together. The shape of a molecule is determined by the arrangement of its atoms in space.
+Analysis of chemical bonding and the spatial arrangement of atoms in molecules.
+
+## Chemical Bonding
+- **Ionic Bond**: Electrostatic attraction between oppositely charged ions (electron transfer).
+- **Covalent Bond**: Sharing of electron pairs between atoms to achieve stability.
+- **Metallic Bond**: Attraction between metal ions and a "sea" of delocalized electrons.
 
 ## VSEPR Theory
-Valence Shell Electron Pair Repulsion (VSEPR) theory predicts the geometry of molecules based on the idea that electron pairs around a central atom stay as far apart as possible to minimize repulsion.
+- **Linear**: 2 bonding pairs, 180° angle (e.g., BeCl₂, CO₂).
+- **Trigonal Planar**: 3 bonding pairs, 120° angle (e.g., BF₃).
+- **Tetrahedral**: 4 bonding pairs, 109.5° angle (e.g., CH₄).
+- **Bent/V-Shape**: Presence of lone pairs reduces bond angles (e.g., H₂O, SO₂).
 
-## Common Geometries
-- **Linear**: 180° angle (e.g., CO₂)
-- **Bent**: < 120° or 109.5° (e.g., H₂O)
-- **Trigonal Planar**: 120° (e.g., BF₃)
-- **Tetrahedral**: 109.5° (e.g., CH₄)
-        `
-      },
-      {
-        id: TopicId.QUANTUM_NUMBERS,
-        name: 'Quantum Numbers',
-        description: 'Learn the four quantum numbers that describe the unique state of an electron.',
-        targetClass: ['Class 11'],
-        theory: `
-# Quantum Numbers
-Quantum numbers are like the "address" of an electron in an atom. No two electrons in the same atom can have the same set of four quantum numbers.
-
-1. **Principal Quantum Number (n)**: Describes the energy level (1, 2, 3...).
-2. **Angular Momentum (l)**: Describes the shape of the orbital (0 to n-1).
-3. **Magnetic (ml)**: Describes the orientation of the orbital (-l to +l).
-4. **Spin (ms)**: Describes the direction of electron spin (+1/2 or -1/2).
+## Hybridization
+- **sp**: Linear geometry (alkynes).
+- **sp²**: Trigonal planar geometry (alkenes).
+- **sp³**: Tetrahedral geometry (alkanes).
         `
       },
       {
         id: TopicId.PERIODIC_TRENDS,
         name: 'Periodic Trends',
-        description: 'Discover how properties like atomic radius and electronegativity change across the periodic table.',
+        description: 'Discover how properties change across the periodic table.',
         targetClass: ['Class 12'],
         theory: `
 # Periodic Trends
-The periodic table is organized such that elements with similar properties fall into the same columns (groups).
+Systematic variations in physical and chemical properties of elements across periods and groups.
 
-## Key Trends
-- **Atomic Radius**: Decreases across a period (left to right) and increases down a group.
-- **Electronegativity**: Increases across a period and decreases down a group.
-- **Ionization Energy**: Increases across a period and decreases down a group.
+## Physical Properties
+- **Atomic Radius**: Decreases across a period (nuclear charge); increases down a group (new shells).
+- **Ionic Radius**: Cations are smaller than atoms; anions are larger than atoms.
+
+## Chemical Properties
+- **Electronegativity**: Ability to attract shared electrons; increases across, decreases down.
+- **Ionization Energy**: Energy to remove an electron; increases across, decreases down.
+- **Electron Affinity**: Energy change when adding an electron; becomes more negative across.
         `
       },
       {
         id: TopicId.HISTORICAL_MODELS,
         name: 'Historical Models',
-        description: 'Trace the evolution of atomic theory from Dalton to the modern Quantum Mechanical model.',
-        targetClass: ['Class 12'],
+        description: 'Explore how our understanding of the atom evolved from Dalton to Bohr.',
+        targetClass: ['Class 11'],
         theory: `
 # Historical Atomic Models
-Our understanding of the atom has changed significantly over time.
+The journey of discovery from solid spheres to quantized energy levels.
 
-1. **Dalton's Model**: Solid sphere.
-2. **Thomson's Plum Pudding**: Electrons in a positive "soup".
-3. **Rutherford's Model**: Small, dense nucleus with orbiting electrons.
-4. **Bohr's Model**: Electrons in fixed circular orbits.
-5. **Quantum Mechanical Model**: Electrons in probability "clouds" (orbitals).
+## Dalton's Billiard Ball Model (1803)
+- **Concept**: Atoms are indivisible, indestructible solid spheres.
+- **Key Feature**: Atoms of the same element are identical.
+
+## Thomson's Plum Pudding Model (1904)
+- **Concept**: Positive sphere with embedded negative electrons.
+- **Key Feature**: Discovery of subatomic particles (electrons).
+
+## Rutherford's Nuclear Model (1911)
+- **Concept**: Tiny, dense, positive nucleus with electrons in empty space.
+- **Key Feature**: Atoms are mostly empty space.
+
+## Bohr's Planetary Model (1913)
+- **Concept**: Electrons orbit the nucleus in fixed, quantized energy levels.
+- **Key Feature**: Energy shells explain spectral lines.
+        `
+      },
+      {
+        id: TopicId.QUANTUM_NUMBERS,
+        name: 'Quantum Numbers',
+        description: 'Learn the "address" of an electron using the four quantum numbers.',
+        targetClass: ['Class 11'],
+        theory: `
+# Quantum Numbers
+Mathematical coordinates that describe the location and energy of electrons.
+
+## Principal Quantum Number (n)
+- **Defines**: Main energy level or shell.
+- **Values**: n = 1, 2, 3...
+
+## Azimuthal Quantum Number (l)
+- **Defines**: Shape of the orbital (s, p, d, f).
+- **Values**: 0 to (n-1).
+
+## Magnetic Quantum Number (mₗ)
+- **Defines**: Orientation of the orbital in space.
+- **Values**: -l to +l.
+
+## Spin Quantum Number (mₛ)
+- **Defines**: Direction of electron spin.
+- **Values**: +½ or -½.
         `
       },
       {
         id: TopicId.QUANTUM_CONFIG,
         name: 'Quantum Configuration',
-        description: 'Master the rules for filling electron shells and writing electron configurations.',
-        targetClass: ['Class 12'],
+        description: 'Master the rules for filling electrons in orbitals.',
+        targetClass: ['Class 11'],
         theory: `
 # Electron Configuration
-Electron configuration is the distribution of electrons of an atom or molecule in atomic or molecular orbitals.
+The distribution of electrons in an atom's orbitals.
 
-## Key Principles
-- **Aufbau Principle**: Electrons fill lower-energy orbitals first.
-- **Pauli Exclusion Principle**: An orbital can hold a maximum of two electrons with opposite spins.
-- **Hund's Rule**: Electrons fill degenerate orbitals singly before pairing up.
+## Aufbau Principle
+Electrons fill the lowest energy orbitals first (1s < 2s < 2p...).
+
+## Pauli Exclusion Principle
+An orbital can hold max 2 electrons with opposite spins.
+
+## Hund's Rule
+Degenerate orbitals are singly occupied before pairing occurs.
+
+## Stability of Half-filled/Full Shells
+Extra stability is observed in d⁵ and d¹⁰ configurations (e.g., Cr and Cu).
         `
       },
       {
         id: TopicId.REAL_EXPERIMENT,
-        name: 'Real Experiment Lab',
-        description: 'Perform real-time chemical reactions and observe temperature effects.',
+        name: 'Advanced Experiment Lab',
+        description: 'Interactive laboratory for studying reaction dynamics and kinetics.',
         targetClass: ['Class 11', 'Class 12'],
         theory: `
-# Real Experiment Lab
-Chemical reactions often involve the exchange of energy, usually in the form of heat.
+# Advanced Chemistry Lab
+Dynamic simulation environment for exploring chemical reactions.
 
-## Reaction Speed
-The rate of a chemical reaction is influenced by several factors:
-1. **Temperature**: Increasing temperature typically speeds up a reaction.
-2. **Concentration**: Higher concentration of reactants increases the frequency of collisions.
-3. **Catalysts**: Substances that speed up a reaction without being consumed.
+## Reaction Dynamics
+- **Concentration Effects**: Observing how reactant quantity impacts speed.
+- **Thermal Energy**: Analyzing the role of temperature in molecular collisions.
+- **pH Monitoring**: Real-time tracking of acidity changes during reactions.
 
-In this lab, you can adjust the temperature and start a reaction to see how it behaves.
+## Lab Safety
+- Always monitor temperature to prevent thermal breach.
+- Be careful when mixing strong acids and bases.
+- Capacity is limited to 500ml for optimal simulation accuracy.
         `
       }
     ]
   },
-
-{
+  {
     id: SubjectId.PHYSICS,
     name: 'Physics',
     icon: 'Zap',
@@ -142,188 +186,385 @@ In this lab, you can adjust the temperature and start a reaction to see how it b
         id: TopicId.MECHANICS,
         name: 'Classical Mechanics',
         description: 'Study motion, forces, and energy in the macroscopic world.',
-        targetClass: ['Class 12'],
+        targetClass: ['Class 11'],
         theory: `
 # Classical Mechanics
-Classical mechanics mathematically describes the motion of macroscopic objects, from projectiles to planets. The entire interactive visualization engine is driven by these fundamental equations.
+The branch of physics dealing with the motion of bodies under the action of forces.
 
-## Kinematics (Equations of Motion)
-Valid for constant acceleration in a straight line.
-- **Velocity-Time**: v = u + at
-- **Displacement-Time**: s = ut + ½at²
-- **Velocity-Displacement**: v² = u² + 2as
+## Newton's Laws
+- **Inertia (1st)**: Objects resist changes in their state of motion.
+- **Force (2nd)**: F = ma; force equals mass times acceleration.
+- **Action-Reaction (3rd)**: For every action, there is an equal and opposite reaction.
 
-## Newton's Laws of Motion
-- **First Law (Inertia)**: An object at rest stays at rest, and an object in motion stays in motion with the same speed and in the same direction unless acted upon by an unbalanced force.
-- **Second Law (Force)**: The rate of change of momentum of a body is directly proportional to the applied force. (F = ma)
-- **Third Law (Action/Reaction)**: For every action, there is an equal and opposite reaction.
+## Work and Energy
+- **Work**: W = Fd cos(θ); energy transferred by a force acting through a distance.
+- **Kinetic Energy**: K = ½mv²; energy due to an object's motion.
+- **Potential Energy**: U = mgh; energy stored due to position in a field.
 
-## Conservation Principles
-- **Kinetic Energy**: The energy an object possesses due to its motion. (Ek = ½mv²)
-- **Momentum**: The quantity of motion of a moving body. (p = mv)
-      
-`
+## Linear Momentum
+- **Momentum**: p = mv; product of mass and velocity.
+- **Impulse**: Change in momentum caused by a force over time.
+- **Conservation**: Total momentum is conserved in the absence of external forces.
+        `
       },
       {
         id: TopicId.ELECTROMAGNETISM,
-        targetClass: ['Class 11'],
         name: 'Electromagnetism',
-        description: 'Explore electric fields, magnetic forces, and the fundamental laws of circuits.',
+        description: 'Explore electric fields, magnetic forces, and circuits.',
+        targetClass: ['Class 12'],
         theory: `
 # Electromagnetism
-Electromagnetism deals with the electromagnetic force that occurs between electrically charged particles. It is one of the four fundamental forces of nature and governs everything from simple circuits to light waves.
+The interaction of electric currents or fields and magnetic fields.
 
-## Electrostatics & Electric Fields
-- **Coulomb's Law**: Calculates the electric force between two point charges. (F = k|q₁q₂| / r²)
-- **Electric Field (E)**: The force per unit charge experienced by a positive test charge placed in the field. (E = F / q)
-- **Electric Potential**: The potential energy per unit charge, often called voltage.
+## Electrostatics
+- **Coulomb's Law**: Force between charges (F = kq₁q₂/r²).
+- **Electric Field**: E = F/q; region where a charge experiences a force.
+- **Gauss's Law**: Net electric flux through a closed surface is related to enclosed charge.
 
-## Current & Circuits
-- **Ohm's Law**: The current through a conductor between two points is directly proportional to the voltage across the two points. (V = IR)
-- **Electrical Power**: The rate at which electrical energy is transferred by an electric circuit. (P = VI = I²R)
-- **Kirchhoff's Laws**: Rules governing the conservation of charge and energy in complex electrical circuits.
+## Magnetostatics
+- **Biot-Savart Law**: Magnetic field produced by a steady current.
+- **Ampere's Law**: Relation between integrated magnetic field and current.
+- **Lorentz Force**: Total force on a charge in E and B fields (F = qE + qv×B).
 
-## Magnetism & Induction
-- **Magnetic Field (B)**: A vector field that describes the magnetic influence on moving electric charges and magnetic materials.
-- **Lorentz Force**: The total force exerted on a charged particle moving through both an electric and magnetic field. (F = qE + qv × B)
-- **Faraday's Law**: A changing magnetic environment will induce an electromotive force (EMF) in a wire loop.
+## Induction
+- **Faraday's Law**: Changing magnetic flux induces electromotive force (EMF).
+- **Lenz's Law**: Induced current opposes the change in flux that produced it.
+        `
+      },
+      {
+        id: TopicId.WAVE_OPTICS,
+        name: 'Wave Optics',
+        description: 'Study of light as a wave and phenomena like interference and diffraction.',
+        targetClass: ['Class 12'],
+        theory: `
+# Wave Optics
+The study of light phenomena that cannot be explained by ray optics.
+
+## Interference
+- **Coherence**: Two sources must have a constant phase difference.
+- **Constructive**: Waves add up (maxima); path difference = nλ.
+- **Destructive**: Waves cancel out (minima); path difference = (n+½)λ.
+
+## Diffraction
+- **Single Slit**: Bending of light around edges or through narrow apertures.
+- **Resolution**: Rayleigh criterion for the limit of optical instruments.
+
+## Polarization
+- **Transverse Nature**: Restriction of wave vibrations to a single plane.
+- **Brewster's Law**: Relation between refractive index and polarizing angle.
+        `
+      },
+      {
+        id: TopicId.THERMODYNAMICS,
+        name: 'Thermodynamics',
+        description: 'Heat, work, and the laws governing energy transformation.',
+        targetClass: ['Class 11'],
+        theory: `
+# Thermodynamics
+Study of heat, work, temperature, and their relation to energy and physical properties.
+
+## Laws of Thermodynamics
+- **Zeroth Law**: Defines thermal equilibrium and temperature.
+- **First Law**: Energy conservation; ΔU = Q - W.
+- **Second Law**: Entropy of an isolated system always increases.
+
+## Heat Engines
+- **Carnot Cycle**: Theoretical ideal reversible cycle with maximum efficiency.
+- **Efficiency**: Ratio of net work done to total heat absorbed.
+- **Refrigerators**: Devices that transfer heat from cold to hot reservoirs.
         `
       }
     ]
   },
-{
-  id: SubjectId.MATH,
-  name: 'Mathematics',
-  icon: 'Calculator',
-  color: 'indigo',
-  targetClass: ['Class 9', 'Class 10', 'Class 11', 'Class 12'],
-  topics: [
-    {
-      id: TopicId.VECTOR_CALCULUS,
-      name: 'Vector Algebra',
-      description: 'Visualize 3D vectors, cross products, and orthogonal planes.',
-      targetClass: ['Class 12'],
-      theory: `
-# Vector Cross Product
-In 3D space, the cross product of two vectors **A** and **B** is a new vector **C** that is perfectly perpendicular (90 degrees) to both of them.
-
-## Geometric Properties
-- **Direction**: Determined by the **Right-Hand Rule**. If you curl your fingers from A to B, your thumb points in the direction of the Cross Product.
-- **Magnitude**: The length of the resulting vector represents the area of the parallelogram formed by vectors A and B.
-- **Formula**: **A × B = |A| |B| sin(θ) n**
-
-## CSE Applications
-This is the backbone of 3D lighting! It is used to calculate "surface normals" to determine how light bounces off a 3D model.
-      `
-    },
-    {
-  id: TopicId.PI_APPROXIMATION,
-  name: 'Approximating Pi',
-  description: 'Use the Archimedes method to calculate π by increasing polygon sides.',
-  targetClass: ['Class 10'],
-  theory: `
-# Archimedes' Method
-Archimedes discovered that you could find the value of **π** by "trapping" a circle between two polygons.
-
-## The Limit Concept
-- A **Hexagon** (n = 6) is a poor approximation of a circle.
-- A **Myriagon** (n = 10,000) is almost indistinguishable from a circle.
-- As the number of sides (n) approaches infinity, the ratio of the Perimeter to the Diameter approaches **π**.
-
-## The Calculation
-For a circle with radius r = 1:
-
-**Perimeter = n × sin(180/n) × 2**
-
-As n approaches infinity, **Perimeter → 2π**.
-  `
-},
-
-{
-    id: TopicId.COMPLEX_NUMBERS,
-    targetClass: ['Class 11'],
-    name: 'Complex Numbers & Rotation',
-    description: 'Explore the Argand plane and watch how multiplying by imaginary numbers rotates space.',
-    theory: `
-# The Argand Plane
-A complex number like **Z = a + bi** has two parts: a Real part (a) and an Imaginary part (b). Instead of a standard XY graph, we plot these on the **Argand Plane**, where the X-axis is Real and the Y-axis is Imaginary.
-
-## The Magic of 'i'
-The imaginary unit **i** is defined as the square root of -1 (**i² = -1**). 
-But geometrically, multiplying any number by **i** does exactly one thing: it rotates that number perfectly **90 degrees counter-clockwise** around the origin!
-
-* 1 × i = **i** (90° rotation)
-* i × i = **-1** (180° rotation)
-* -1 × i = **-i** (270° rotation)
-* -i × i = **1** (360° back to the start)
-
-## CSE Application
-Complex numbers are the mathematical engine behind signal processing (Fourier Transforms). Every time your phone compresses an MP3 file or processes a JPEG image, it is using complex numbers to analyze frequencies!
-    `
-  },
   {
-    id: TopicId.PYTHAGORAS_THEOREM,
-    targetClass: ['Class 9'],
-    name: 'Pythagorean Theorem',
-    description: 'Adjust the base and height of a triangle to visualize how the hypotenuse is calculated.',
-    theory: `
-# The Pythagorean Theorem
-In any right-angled triangle, the square of the longest side (the hypotenuse) is equal to the sum of the squares of the other two sides.
+    id: SubjectId.MATH,
+    name: 'Mathematics',
+    icon: 'Calculator',
+    color: 'indigo',
+    targetClass: ['Class 9', 'Class 10', 'Class 11', 'Class 12'],
+    topics: [
+      {
+        id: TopicId.CALCULUS,
+        name: 'Calculus',
+        description: 'Master derivatives, integrals, and the study of continuous change.',
+        targetClass: ['Class 11', 'Class 12'],
+        theory: `
+# Calculus
+The mathematical study of continuous change, encompassing limits, derivatives, and integrals.
 
-## The Formula
-**a² + b² = c²**
+## Differential Calculus
+- **Limits**: Behavior of a function as it approaches a specific input.
+- **Derivative**: Represents the instantaneous rate of change (slope of tangent).
+- **Chain Rule**: Differentiation of composite functions.
 
-* **a** = Base (horizontal side)
-* **b** = Height (vertical side)
-* **c** = Hypotenuse (the long diagonal side)
+## Integral Calculus
+- **Definite Integral**: Represents the net area under a curve.
+- **Indefinite Integral**: Antiderivative of a function.
+- **Fundamental Theorem**: Connects differentiation and integration.
 
-To find the exact length of the hypotenuse, we just take the square root of that sum:
-**c = √(a² + b²)**
+## Applications
+- **Optimization**: Finding maximum or minimum values of functions.
+- **Related Rates**: Calculating changes in one variable relative to another.
+        `
+      },
+      {
+        id: TopicId.PROBABILITY,
+        name: 'Probability',
+        description: 'The science of uncertainty and data analysis.',
+        targetClass: ['Class 10', 'Class 12'],
+        theory: `
+# Probability
+The branch of mathematics concerning numerical descriptions of how likely an event is to occur.
 
-## CSE Application
-In video game development, this exact math is used every single frame to calculate the "Distance" between two players or objects on a 2D map. It is the absolute foundation of spatial programming!
-    `
+## Basic Concepts
+- **Sample Space**: The set of all possible outcomes of an experiment.
+- **Events**: Subsets of the sample space (Simple, Compound, Independent).
+- **Classical Definition**: P(E) = Number of favorable outcomes / Total outcomes.
+
+## Conditional Probability
+- **Bayes' Theorem**: Describes the probability of an event based on prior knowledge.
+- **Multiplication Rule**: Probability of both events A and B occurring.
+
+## Distributions
+- **Binomial**: Probability of 'k' successes in 'n' independent trials.
+- **Normal**: Bell-shaped curve representing continuous random variables.
+        `
+      },
+      {
+        id: TopicId.TRIGONOMETRY,
+        name: 'Trigonometry',
+        description: 'Relationships between side lengths and angles of triangles.',
+        targetClass: ['Class 10', 'Class 11'],
+        theory: `
+# Trigonometry
+Study of the relationships involving lengths and angles of triangles.
+
+## Functions
+- **Sine (sin)**: Opposite / Hypotenuse.
+- **Cosine (cos)**: Adjacent / Hypotenuse.
+- **Tangent (tan)**: Opposite / Adjacent.
+
+## Identities
+- **Pythagorean**: sin²θ + cos²θ = 1.
+- **Double Angle**: sin(2θ) = 2sinθcosθ.
+- **Addition Formulas**: sin(A+B) = sinAcosB + cosAsinB.
+
+## Graphs
+- **Amplitude**: Maximum displacement from the x-axis.
+- **Period**: Length of one complete cycle of the function.
+        `
+      },
+      {
+        id: TopicId.LINEAR_ALGEBRA,
+        name: 'Linear Algebra',
+        description: 'Study of vectors, matrices, and linear transformations.',
+        targetClass: ['Class 11', 'Class 12'],
+        theory: `
+# Linear Algebra
+The branch of mathematics concerning linear equations, vectors, and matrices.
+
+## Vectors
+- **Magnitude**: Length of the vector.
+- **Dot Product**: Scalar result (A·B = |A||B|cosθ).
+- **Cross Product**: Vector result perpendicular to both inputs.
+
+## Matrices
+- **Determinant**: Scalar value that can be computed from a square matrix.
+- **Inverse**: Matrix that, when multiplied by the original, yields identity.
+- **Eigenvalues**: Scalars associated with linear transformations.
+        `
+      },
+      {
+        id: TopicId.VECTOR_CALCULUS,
+        name: 'Vector Calculus',
+        description: 'Analyze vector fields and their properties in 3D space.',
+        targetClass: ['Class 12'],
+        theory: `
+# Vector Calculus
+Exploration of vector fields, gradients, divergence, and curl.
+
+## Vector Fields
+- **Definition**: Mapping each point in space to a vector value.
+- **Visualization**: Arrows representing magnitude and direction at every point.
+
+## Operators
+- **Gradient (∇f)**: Represents the direction of steepest increase of a scalar field.
+- **Divergence (∇·F)**: Measures the magnitude of a field's source or sink at a point.
+- **Curl (∇×F)**: Measures the rotation or "swirl" of a vector field.
+        `
+      },
+      {
+        id: TopicId.PI_APPROXIMATION,
+        name: 'Pi Approximation',
+        description: 'Discover the beauty of Pi through geometric approximations.',
+        targetClass: ['Class 9', 'Class 10'],
+        theory: `
+# Pi Approximation
+Methods for calculating the ratio of a circle's circumference to its diameter.
+
+## Archimedes' Method
+- Approximating Pi using inscribed and circumscribed polygons.
+- As the number of sides increases, the polygon's perimeter approaches the circle's circumference.
+
+## Monte Carlo Method
+- Using random sampling to estimate the value of Pi.
+- Ratio of points inside a circle to points inside a square.
+        `
+      },
+      {
+        id: TopicId.COMPLEX_NUMBERS,
+        name: 'Complex Numbers',
+        description: 'Visualize the imaginary unit and the complex plane.',
+        targetClass: ['Class 11'],
+        theory: `
+# Complex Numbers
+Numbers consisting of a real part and an imaginary part.
+
+## The Complex Plane
+- **Real Axis**: Horizontal axis for the real part.
+- **Imaginary Axis**: Vertical axis for the imaginary part.
+
+## Operations
+- **Addition**: Vector-like addition in the complex plane.
+- **Multiplication**: Rotations and scaling in the complex plane.
+        `
+      },
+      {
+        id: TopicId.PYTHAGORAS_THEOREM,
+        name: 'Pythagoras Theorem',
+        description: 'Interactive visualization of the fundamental theorem of geometry.',
+        targetClass: ['Class 9', 'Class 10'],
+        theory: `
+# Pythagoras Theorem
+In a right-angled triangle, the square of the hypotenuse is equal to the sum of the squares of the other two sides.
+
+## Formula
+- a² + b² = c²
+
+## Proofs
+- **Geometric Proof**: Rearranging squares to show area equivalence.
+- **Algebraic Proof**: Using similar triangles or area calculations.
+        `
+      }
+    ]
   },
-  ]
-},
   {
     id: SubjectId.BIOLOGY,
     name: 'Biology',
-    icon: 'Beaker', 
+    icon: 'Dna',
     color: 'emerald',
     targetClass: ['Class 11', 'Class 12'],
     topics: [
       {
-        id: TopicId.MICROBIOLOGY,
-        name: 'Microorganisms',
-        description: 'Analyze the 3D structure and movement mechanisms of a single-celled bacterium.',
+        id: TopicId.CELL_BIOLOGY,
+        name: 'Cell Biology',
+        description: 'The study of cell structure and function.',
         targetClass: ['Class 11'],
         theory: `
-# Microorganisms: The Bacterium
-Bacteria are prokaryotic microorganisms. They are incredibly resilient and exist in almost every environment on Earth.
+# Cell Biology
+The fundamental unit of life; studying structural and functional components.
 
-## Structural Anatomy
-Unlike complex cells, bacteria lack a membrane-bound nucleus.
-- **Capsule & Cell Wall**: The rigid outer layers that provide structural support and protection from the environment.
-- **Nucleoid**: An irregularly shaped region within the cell where the genetic material (circular DNA) is localized.
-- **Flagella**: Long, whip-like appendages driven by a biological motor used for cellular locomotion.
-- **Pili**: Hair-like structures on the surface used for attachment to surfaces and DNA transfer.
+## Organelles
+- **Nucleus**: Contains genetic material (DNA); controls cellular activities.
+- **Mitochondria**: Site of ATP production via cellular respiration.
+- **Ribosomes**: Protein synthesis machinery.
+- **Endoplasmic Reticulum**: Protein (rough) and lipid (smooth) synthesis.
+
+## Cell Division
+- **Mitosis**: Process of equational division producing two identical daughter cells.
+- **Meiosis**: Reductional division producing four genetically diverse gametes.
+
+## Membrane Transport
+- **Diffusion**: Movement of solutes from high to low concentration.
+- **Osmosis**: Diffusion of water across a semi-permeable membrane.
+- **Active Transport**: Energy-requiring movement against concentration gradient.
         `
       },
       {
-        id: TopicId.CELL_BIOLOGY,
-        name: 'Cellular Anatomy',
-        description: 'Explore a 3D cross-section of a eukaryotic cell and its organelles.',
+        id: TopicId.GENETICS,
+        name: 'Genetics',
+        description: 'Study of genes, genetic variation, and heredity.',
         targetClass: ['Class 12'],
         theory: `
-# Cellular Anatomy
-Eukaryotic cells are the complex building blocks of animals and plants. They are defined by having a true, membrane-bound nucleus and specialized organelles.
+# Genetics
+The study of heredity and the variation of inherited characteristics.
 
-## Key Organelles
-- **Nucleus**: The control center. It houses the cell's linear DNA and coordinates cell activities like growth and reproduction.
-- **Mitochondria**: The site of cellular respiration, generating the cell's supply of adenosine triphosphate (ATP) used as a source of chemical energy.
-- **Cytoplasm**: The jelly-like substance filling the cell, providing a medium for chemical reactions and suspending the organelles.
-- **Cell Membrane**: The selectively permeable barrier that controls the movement of substances in and out of the cell.
+## Mendelian Principles
+- **Law of Dominance**: Dominant alleles mask recessive ones in heterozygotes.
+- **Law of Segregation**: Allele pairs separate during gamete formation.
+- **Independent Assortment**: Genes for different traits segregate independently.
+
+## DNA Structure
+- **Double Helix**: Two anti-parallel strands of nucleotides.
+- **Base Pairing**: Adenine-Thymine (A-T) and Guanine-Cytosine (G-C).
+
+## Biotechnology
+- **PCR**: Technique to amplify small segments of DNA.
+- **CRISPR**: Tool for precise gene editing and modification.
+        `
+      },
+      {
+        id: TopicId.PLANT_PHYSIOLOGY,
+        name: 'Plant Physiology',
+        description: 'Functional processes occurring in plants.',
+        targetClass: ['Class 11'],
+        theory: `
+# Plant Physiology
+Study of plant function, including photosynthesis and nutrient transport.
+
+## Photosynthesis
+- **Light Reaction**: Occurs in thylakoids; produces ATP and NADPH.
+- **Calvin Cycle**: Occurs in stroma; fixes CO₂ into glucose.
+
+## Transport
+- **Xylem**: Conducts water and minerals from roots to leaves.
+- **Phloem**: Transports organic nutrients (sugars) throughout the plant.
+- **Transpiration**: Evaporation of water from leaf stomata.
+
+## Hormones
+- **Auxins**: Promote cell elongation and apical dominance.
+- **Gibberellins**: Stimulate stem growth and seed germination.
+        `
+      },
+      {
+        id: TopicId.HUMAN_REPRODUCTION,
+        name: 'Human Reproduction',
+        description: 'Biological processes of human life cycle.',
+        targetClass: ['Class 12'],
+        theory: `
+# Human Reproduction
+The process of producing offspring through sexual reproduction.
+
+## Reproductive Systems
+- **Male**: Production of sperm in testes and delivery via ducts.
+- **Female**: Production of ova in ovaries and gestation in the uterus.
+
+## Gametogenesis
+- **Spermatogenesis**: Continuous production of sperm in males.
+- **Oogenesis**: Cyclic production of mature eggs in females.
+
+## Embryonic Development
+- **Fertilization**: Fusion of sperm and egg to form a zygote.
+- **Implantation**: Attachment of the blastocyst to the uterine wall.
+- **Gestation**: The 9-month period of fetal development.
+        `
+      },
+      {
+        id: TopicId.MICROBIOLOGY,
+        name: 'Microbiology',
+        description: 'Study of microscopic organisms like bacteria and viruses.',
+        targetClass: ['Class 11', 'Class 12'],
+        theory: `
+# Microbiology
+The study of microorganisms and their impact on life and environment.
+
+## Bacteria
+- **Structure**: Prokaryotic cells with various shapes (cocci, bacilli, spirilla).
+- **Function**: Roles in decomposition, nitrogen fixation, and disease.
+
+## Viruses
+- **Nature**: Non-living infectious agents that require a host cell to replicate.
+- **Reproduction**: Lytic and lysogenic cycles.
         `
       }
     ]

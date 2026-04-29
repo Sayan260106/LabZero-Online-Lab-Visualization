@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { 
-  Users, 
-  BookOpen, 
-  Clock, 
-  BarChart, 
+import {
+  Users,
+  BookOpen,
+  Clock,
+  BarChart,
   Calendar,
   MessageSquare,
   Plus,
@@ -18,9 +18,11 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useAuth } from '../context/AuthContext';
+import { Skeleton } from 'boneyard-js/react';
 
 interface TeacherDashboardProps {
   onBack?: () => void;
+  skeletonDebug?: boolean;
 }
 
 const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onBack }) => {
@@ -46,7 +48,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onBack }) => {
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 max-w-7xl mx-auto relative z-10 w-full">
         <div className="flex items-center gap-4">
           {onBack && (
-            <button 
+            <button
               onClick={onBack}
               className="p-3 bg-white/5 border border-white/10 rounded-xl hover:bg-white/10 text-white transition-all shadow-md mt-6 md:mt-0 self-start"
             >
@@ -56,7 +58,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onBack }) => {
           <div className="space-y-2">
             <div className="flex items-center gap-3 text-cyan-300 font-mono text-[10px] uppercase tracking-[0.3em] drop-shadow-sm">
               <div className="p-1.5 rounded-lg bg-cyan-500/20 border border-cyan-400/30">
-                  <Sparkles size={12} className="drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
+                <Sparkles size={12} className="drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]" />
               </div>
               Professional Dashboard
             </div>
@@ -78,23 +80,25 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onBack }) => {
       </header>
 
       {/* Stats Grid */}
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto relative z-10">
-        {stats.map((stat, i) => (
-          <motion.div
-            key={stat.label}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.1 }}
-            className="p-8 rounded-[32px] bg-black/40 border border-white/10 backdrop-blur-xl group hover:border-white/20 hover:bg-black/60 transition-all shadow-lg"
-          >
-            <div className={`w-12 h-12 rounded-2xl ${stat.bg} ${stat.border} border ${stat.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-inner`}>
-              <stat.icon size={24} className="drop-shadow-md" />
-            </div>
-            <div className="text-3xl font-display font-medium text-white mb-1 drop-shadow-sm group-hover:text-cyan-300 transition-colors">{stat.value}</div>
-            <div className="text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] leading-none">{stat.label}</div>
-          </motion.div>
-        ))}
-      </section>
+      <Skeleton name="teacher-stats" loading={false}>
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto relative z-10">
+          {stats.map((stat, i) => (
+            <motion.div
+              key={stat.label}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.1 }}
+              className="p-8 rounded-[32px] bg-black/40 border border-white/10 backdrop-blur-xl group hover:border-white/20 hover:bg-black/60 transition-all shadow-lg"
+            >
+              <div className={`w-12 h-12 rounded-2xl ${stat.bg} ${stat.border} border ${stat.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform shadow-inner`}>
+                <stat.icon size={24} className="drop-shadow-md" />
+              </div>
+              <div className="text-3xl font-display font-medium text-white mb-1 drop-shadow-sm group-hover:text-cyan-300 transition-colors">{stat.value}</div>
+              <div className="text-[10px] font-mono text-white/40 uppercase tracking-[0.2em] leading-none">{stat.label}</div>
+            </motion.div>
+          ))}
+        </section>
+      </Skeleton>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 max-w-7xl mx-auto relative z-10">
         {/* Main Content: Upcoming Classes */}
@@ -109,41 +113,43 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onBack }) => {
             </button>
           </div>
 
-          <div className="space-y-4">
-            {recentClasses.map((item, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 + i * 0.1 }}
-                className="group p-6 rounded-[28px] bg-black/40 backdrop-blur-md border border-white/10 hover:border-cyan-500/30 hover:bg-cyan-500/5 transition-all flex items-center justify-between shadow-lg"
-              >
-                <div className="flex items-center gap-6">
-                  <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border shadow-inner ${
-                    item.status === 'In Progress' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400/30 animate-pulse shadow-[0_0_15px_rgba(34,211,238,0.2)]' : 'bg-black/50 text-white/30 border-white/5'
-                  }`}>
-                    <Play size={20} className={item.status === 'In Progress' ? 'drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]' : ''} />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-sans font-medium text-white mb-1 group-hover:text-cyan-100 transition-colors drop-shadow-sm">{item.name}</h3>
-                    <div className="flex items-center gap-4 text-[10px] font-mono text-white/40 uppercase tracking-widest">
-                      <span className="flex items-center gap-1.5"><Clock size={12} /> {item.time}</span>
-                      <span className="flex items-center gap-1.5"><Users size={12} /> {item.students} Students</span>
+          <div>
+            <Skeleton name="teacher-classes" loading={false}>
+              <div className="space-y-4">
+                {recentClasses.map((item, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 + i * 0.1 }}
+                    className="group p-6 rounded-[28px] bg-black/40 backdrop-blur-md border border-white/10 hover:border-cyan-500/30 hover:bg-cyan-500/5 transition-all flex items-center justify-between shadow-lg"
+                  >
+                    <div className="flex items-center gap-6">
+                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center border shadow-inner ${item.status === 'In Progress' ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400/30 animate-pulse shadow-[0_0_15px_rgba(34,211,238,0.2)]' : 'bg-black/50 text-white/30 border-white/5'
+                        }`}>
+                        <Play size={20} className={item.status === 'In Progress' ? 'drop-shadow-[0_0_8px_rgba(34,211,238,0.8)]' : ''} />
+                      </div>
+                      <div>
+                        <h3 className="text-sm font-sans font-medium text-white mb-1 group-hover:text-cyan-100 transition-colors drop-shadow-sm">{item.name}</h3>
+                        <div className="flex items-center gap-4 text-[10px] font-mono text-white/40 uppercase tracking-widest">
+                          <span className="flex items-center gap-1.5"><Clock size={12} /> {item.time}</span>
+                          <span className="flex items-center gap-1.5"><Users size={12} /> {item.students} Students</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <span className={`text-[9px] font-mono uppercase tracking-[0.2em] px-3 py-1.5 rounded-lg border ${
-                    item.status === 'In Progress' ? 'bg-cyan-500/10 text-cyan-300 border-cyan-400/20 shadow-inner' : 'bg-black/50 text-white/40 border-white/10 shadow-inner'
-                  }`}>
-                    {item.status}
-                  </span>
-                  <button className="w-10 h-10 rounded-xl bg-black/40 border border-white/10 flex items-center justify-center text-white/30 opacity-0 group-hover:opacity-100 transition-all hover:bg-white/10 hover:text-white shadow-inner">
-                    <ChevronRight size={18} />
-                  </button>
-                </div>
-              </motion.div>
-            ))}
+                    <div className="flex items-center gap-4">
+                      <span className={`text-[9px] font-mono uppercase tracking-[0.2em] px-3 py-1.5 rounded-lg border ${item.status === 'In Progress' ? 'bg-cyan-500/10 text-cyan-300 border-cyan-400/20 shadow-inner' : 'bg-black/50 text-white/40 border-white/10 shadow-inner'
+                        }`}>
+                        {item.status}
+                      </span>
+                      <button className="w-10 h-10 rounded-xl bg-black/40 border border-white/10 flex items-center justify-center text-white/30 opacity-0 group-hover:opacity-100 transition-all hover:bg-white/10 hover:text-white shadow-inner">
+                        <ChevronRight size={18} />
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </Skeleton>
           </div>
         </div>
 
@@ -151,7 +157,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onBack }) => {
         <div className="lg:col-span-4 space-y-8">
           <div className="p-8 rounded-[40px] bg-gradient-to-br from-cyan-600/90 to-violet-800/90 backdrop-blur-2xl text-white relative overflow-hidden group shadow-[0_8px_32px_rgba(34,211,238,0.2)] border border-white/20">
             <div className="absolute -right-8 -bottom-8 opacity-20 group-hover:scale-110 transition-transform duration-1000 mix-blend-overlay">
-                <Sparkles size={200} />
+              <Sparkles size={200} />
             </div>
             <div className="relative z-10 space-y-6">
               <div className="flex items-center justify-between">

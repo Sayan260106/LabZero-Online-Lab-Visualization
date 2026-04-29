@@ -39,6 +39,7 @@ import AuthPage from './components/AuthPage';
 
 import QuizPage from './components/Quiz';
 import { generateQuizAI } from './data/quizData';
+import { Skeleton } from 'boneyard-js/react';
 
 import { ELEMENTS } from './utils/constants';
 import { ElementData, Subject, Topic, ViewState, TopicId } from './types/types';
@@ -94,7 +95,7 @@ const AppContent: React.FC = () => {
   const [showAITutor, setShowAITutor] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [showGlossary, setShowGlossary] = useState(false);
-  const [showAuth, setShowAuth] = useState(false);
+  const [showAuth, setShowAuth] = useState(() => new URLSearchParams(window.location.search).get('auth') === '1');
 
   const [theme, setTheme] = useState<'dark' | 'light'>('light');
   const [colorBlindMode, setColorBlindMode] = useState(false);
@@ -395,10 +396,10 @@ case TopicId.CELL_BIOLOGY:
   }, [moleculeZoom, atomZoom, selectedTopic]);
 
   // ================= AUTH =================
-  if (isLoading) return null;
 
   return (
-    <div className={`h-screen w-full flex flex-col bg-transparent overflow-hidden relative transition-colors duration-500 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
+    <Skeleton name="labzero-main" loading={isLoading}>
+      <div className={`h-screen w-full flex flex-col bg-transparent overflow-hidden relative transition-colors duration-500 ${theme === 'dark' ? 'text-white' : 'text-slate-900'}`}>
       <BackgroundLayer theme={theme} />
 
       {/* ================= QUIZ SCREEN ================= */}
@@ -465,7 +466,11 @@ case TopicId.CELL_BIOLOGY:
 
             {viewState === ViewState.DASHBOARD && user && (
               <motion.div key="dashboard" className="h-full w-full">
-                {user.role === 'teacher' ? <TeacherDashboard onBack={handleBackToLanding} /> : <InstituteDashboard onBack={handleBackToLanding} />}
+                {user.role === 'teacher' ? (
+                  <TeacherDashboard onBack={handleBackToLanding} />
+                ) : (
+                  <InstituteDashboard onBack={handleBackToLanding} />
+                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -566,6 +571,8 @@ case TopicId.CELL_BIOLOGY:
                       Open
                     </button>
                   </div>
+
+                  {/* SKELETON DEBUG TOGGLE */}
                 </div>
               </motion.div>
             )}
@@ -630,6 +637,7 @@ case TopicId.CELL_BIOLOGY:
         </>
       )}
     </div>
+    </Skeleton>
   );
 };
 

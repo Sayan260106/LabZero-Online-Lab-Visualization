@@ -9,6 +9,7 @@ import { getResourcesByTopic, deleteResource } from '../services/resourceService
 import { motion, AnimatePresence } from 'motion/react';
 import { Language, translations } from '../services/translations';
 import { useAuth } from '../context/AuthContext';
+import { Skeleton } from 'boneyard-js/react';
 
 interface TopicPageProps {
   topic: Topic;
@@ -16,6 +17,7 @@ interface TopicPageProps {
   visualization: React.ReactNode;
   language: Language;
   onStartQuiz: () => void;
+  skeletonDebug?: boolean;
 }
 
 const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, language, onStartQuiz }) => {
@@ -96,7 +98,7 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
               <div className="flex items-center gap-2">
                 <div className="w-1 h-1 rounded-full bg-primary animate-pulse" />
                 <span className="text-[9px] font-mono text-slate-500 uppercase tracking-[0.3em]">
-                  Module ID: {topic.id.split('_').join('-')}
+                  Module ID: {String(topic.id).split('_').join('-')}
                 </span>
               </div>
             </div>
@@ -193,8 +195,9 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
                       <h2 className="text-xl font-display font-bold text-white uppercase tracking-tight">{t('referenceMaterials')}</h2>
                     </div>
 
+                    <Skeleton name="topic-resources" loading={false}>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {resources.map((resource) => (
+                        {resources.map((resource) => (
                         <motion.div 
                           key={resource.id} 
                           initial={{ opacity: 0, x: 20 }}
@@ -240,13 +243,8 @@ const TopicPage: React.FC<TopicPageProps> = ({ topic, onBack, visualization, lan
                           </div>
                         </motion.div>
                       ))}
-                      
-                      {resources.length === 0 && (
-                        <div className="col-span-full py-16 text-center border-2 border-dashed border-white/5 rounded-[40px]">
-                          <p className="text-[10px] font-mono text-slate-600 uppercase tracking-[0.3em]">No materials archived for this module</p>
-                        </div>
-                      )}
                     </div>
+                    </Skeleton>
                   </section>
  
                   <section className="space-y-8">

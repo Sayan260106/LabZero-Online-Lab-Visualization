@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'lab_api',
     'users',
     'glossary',
+    'classrooms',
 ]
 
 AUTH_USER_MODEL = 'users.CustomUser'
@@ -64,7 +65,7 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': dj_database_url.config(
         default = os.getenv("DATABASE_URL"),
-        conn_max_age = 600, 
+        conn_max_age = 0, 
         ssl_require = True,
     )
 }
@@ -95,6 +96,9 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 CORS_ALLOW_ALL_ORIGINS = False
 cors_origins = os.environ.get("CORS_ALLOWED_ORIGINS", "")

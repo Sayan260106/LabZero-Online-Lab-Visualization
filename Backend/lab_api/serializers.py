@@ -1,5 +1,21 @@
 from rest_framework import serializers
-from .models import Element, Molecule, AtomPosition, LonePair
+from .models import Element, Molecule, AtomPosition, LonePair, Subject, Topic
+
+class TopicSerializer(serializers.ModelSerializer):
+    targetClass = serializers.JSONField(source='target_class')
+
+    class Meta:
+        model = Topic
+        fields = ['id', 'slug', 'name', 'description', 'targetClass', 'theory']
+
+class SubjectSerializer(serializers.ModelSerializer):
+    topics = TopicSerializer(many=True, read_only=True)
+    targetClass = serializers.JSONField(source='target_class')
+
+    class Meta:
+        model = Subject
+        fields = ['id', 'slug', 'name', 'icon', 'color', 'targetClass', 'topics']
+
 
 class ElementSerializer(serializers.ModelSerializer):
     class Meta:

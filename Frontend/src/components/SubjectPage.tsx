@@ -3,6 +3,7 @@ import { Subject, Topic } from '../types/types';
 import { ArrowLeft, ArrowRight, Beaker, Zap, Calculator, Dna } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Language, translations } from '../services/translations';
+import { Skeleton } from 'boneyard-js/react';
 
 interface SubjectPageProps {
   subject: Subject;
@@ -13,6 +14,7 @@ interface SubjectPageProps {
   quizLevel: 'basic' | 'intermediate' | 'difficult';
   onLevelChange: (level: 'basic' | 'intermediate' | 'difficult') => void;
   selectedClass?: string | null;
+  skeletonDebug?: boolean;
 }
 
 const iconMap: Record<string, any> = {
@@ -30,7 +32,8 @@ const SubjectPage: React.FC<SubjectPageProps> = ({
   onStartQuiz,
   quizLevel,
   onLevelChange,
-  selectedClass
+  selectedClass,
+  skeletonDebug = false
 }) => {
   const Icon = iconMap[subject.icon] || Beaker;
   const t = (key: string) => translations[key]?.[language] || key;
@@ -116,8 +119,9 @@ const SubjectPage: React.FC<SubjectPageProps> = ({
           </motion.button>
         </header>
 
+        <Skeleton name="subject-topics" loading={false}>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {displayedTopics.map((topic, index) => (
+            {displayedTopics.map((topic, index) => (
             <motion.button
               key={topic.id}
               initial={{ opacity: 0, y: 20 }}
@@ -164,6 +168,7 @@ const SubjectPage: React.FC<SubjectPageProps> = ({
             </motion.button>
           ))}
         </div>
+        </Skeleton>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import { ElementData, Molecule, Subject, SubjectId, TopicId } from '../types/typ
 export const SUBJECTS: Subject[] = [
   {
     id: SubjectId.CHEMISTRY,
+    slug: 'chemistry',
     name: 'Chemistry',
     icon: 'Beaker',
     color: 'emerald',
@@ -11,6 +12,7 @@ export const SUBJECTS: Subject[] = [
     topics: [
       {
         id: TopicId.ATOMIC_STRUCTURE,
+        slug: 'atomic_structure',
         name: 'Atomic Structure',
         description: 'Explore the building blocks of matter, from subatomic particles to electron orbitals.',
         targetClass: ['Class 11'],
@@ -32,6 +34,7 @@ Electrons don't move in simple circles. They exist in **orbitals**, which are re
       },
       {
         id: TopicId.MOLECULAR_STRUCTURE,
+        slug: 'molecular_structure',
         name: 'Molecular Structure',
         description: 'Understand how atoms bond together to form molecules and their 3D shapes.',
         targetClass: ['Class 11'],
@@ -51,6 +54,7 @@ Valence Shell Electron Pair Repulsion (VSEPR) theory predicts the geometry of mo
       },
       {
         id: TopicId.QUANTUM_NUMBERS,
+        slug: 'quantum_numbers',
         name: 'Quantum Numbers',
         description: 'Learn the four quantum numbers that describe the unique state of an electron.',
         targetClass: ['Class 11'],
@@ -66,6 +70,7 @@ Quantum numbers are like the "address" of an electron in an atom. No two electro
       },
       {
         id: TopicId.PERIODIC_TRENDS,
+        slug: 'periodic_trends',
         name: 'Periodic Trends',
         description: 'Discover how properties like atomic radius and electronegativity change across the periodic table.',
         targetClass: ['Class 12'],
@@ -81,6 +86,7 @@ The periodic table is organized such that elements with similar properties fall 
       },
       {
         id: TopicId.HISTORICAL_MODELS,
+        slug: 'historical_models',
         name: 'Historical Models',
         description: 'Trace the evolution of atomic theory from Dalton to the modern Quantum Mechanical model.',
         targetClass: ['Class 12'],
@@ -97,6 +103,7 @@ Our understanding of the atom has changed significantly over time.
       },
       {
         id: TopicId.QUANTUM_CONFIG,
+        slug: 'quantum_config',
         name: 'Quantum Configuration',
         description: 'Master the rules for filling electron shells and writing electron configurations.',
         targetClass: ['Class 12'],
@@ -113,8 +120,9 @@ Electron configuration is the distribution of electrons of an atom or molecule i
     ]
   },
 
-{
+  {
     id: SubjectId.PHYSICS,
+    slug: 'physics',
     name: 'Physics',
     icon: 'Zap',
     color: 'blue',
@@ -122,6 +130,7 @@ Electron configuration is the distribution of electrons of an atom or molecule i
     topics: [
       {
         id: TopicId.MECHANICS,
+        slug: 'mechanics',
         name: 'Classical Mechanics',
         description: 'Study motion, forces, and energy in the macroscopic world.',
         targetClass: ['Class 12'],
@@ -148,6 +157,7 @@ Valid for constant acceleration in a straight line.
       },
       {
         id: TopicId.ELECTROMAGNETISM,
+        slug: 'Electromagnetism',
         targetClass: ['Class 11'],
         name: 'Electromagnetism',
         description: 'Explore electric fields, magnetic forces, and the fundamental laws of circuits.',
@@ -173,8 +183,9 @@ Electromagnetism deals with the electromagnetic force that occurs between electr
       }
     ]
   },
-{
+  {
   id: SubjectId.MATH,
+  slug: 'math',
   name: 'Mathematics',
   icon: 'Calculator',
   color: 'indigo',
@@ -182,6 +193,7 @@ Electromagnetism deals with the electromagnetic force that occurs between electr
   topics: [
     {
       id: TopicId.VECTOR_CALCULUS,
+      slug: 'VECTOR_CALCULUS',
       name: 'Vector Algebra',
       description: 'Visualize 3D vectors, cross products, and orthogonal planes.',
       targetClass: ['Class 12'],
@@ -200,6 +212,7 @@ This is the backbone of 3D lighting! It is used to calculate "surface normals" t
     },
     {
   id: TopicId.PI_APPROXIMATION,
+  slug: 'PI_APPROXIMATION',
   name: 'Approximating Pi',
   description: 'Use the Archimedes method to calculate π by increasing polygon sides.',
   targetClass: ['Class 10'],
@@ -223,6 +236,7 @@ As n approaches infinity, **Perimeter → 2π**.
 
 {
     id: TopicId.COMPLEX_NUMBERS,
+    slug: 'COMPLEX_NUMBERS',
     targetClass: ['Class 11'],
     name: 'Complex Numbers & Rotation',
     description: 'Explore the Argand plane and watch how multiplying by imaginary numbers rotates space.',
@@ -245,6 +259,7 @@ Complex numbers are the mathematical engine behind signal processing (Fourier Tr
   },
   {
     id: TopicId.PYTHAGORAS_THEOREM,
+    slug: 'PYTHAGORAS_THEOREM',
     targetClass: ['Class 9'],
     name: 'Pythagorean Theorem',
     description: 'Adjust the base and height of a triangle to visualize how the hypotenuse is calculated.',
@@ -270,6 +285,7 @@ In video game development, this exact math is used every single frame to calcula
 },
   {
     id: SubjectId.BIOLOGY,
+    slug: 'biology',
     name: 'Biology',
     icon: 'Beaker', 
     color: 'emerald',
@@ -277,6 +293,7 @@ In video game development, this exact math is used every single frame to calcula
     topics: [
       {
         id: TopicId.MICROBIOLOGY,
+        slug: 'MICROBIOLOGY',
         name: 'Microorganisms',
         description: 'Analyze the 3D structure and movement mechanisms of a single-celled bacterium.',
         targetClass: ['Class 11'],
@@ -294,6 +311,7 @@ Unlike complex cells, bacteria lack a membrane-bound nucleus.
       },
       {
         id: TopicId.CELL_BIOLOGY,
+        slug: 'CELL_BIOLOGY',
         name: 'Cellular Anatomy',
         description: 'Explore a 3D cross-section of a eukaryotic cell and its organelles.',
         targetClass: ['Class 12'],

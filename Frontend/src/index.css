@@ -1,43 +1,123 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @import "tailwindcss";
 
 :root {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
-  --font-display: "Space Grotesk", sans-serif;
+  --font-display: "Sora", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
   --grid-template-columns-18: repeat(18, minmax(0, 1fr));
-  
+
+  /* Standard Colors - Light Pastel Theme */
+  --color-primary: #7DD3FC;
+  /* Sky 300 */
+  --color-primary-rgb: 125, 211, 252;
+  --color-secondary: #86EFAC;
+  /* Mint 300 */
+  --color-secondary-rgb: 134, 239, 172;
+  --color-accent: #FDBA74;
+  /* Peach 300 */
+
+  /* Dark Mode (Default) - Deep Midnight Navy scheme */
+  --bg-deep: #020617;
+  --bg-panel: rgba(15, 23, 42, 0.6);
+  --text-primary: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-glass: rgba(255, 255, 255, 0.08);
+
   /* Standard Colors */
-  --color-primary: #6366f1; /* Indigo 500 */
+  --color-primary: #6366f1;
+  /* Indigo 500 */
   --color-primary-rgb: 99, 102, 241;
-  --color-secondary: #f43f5e; /* Rose 500 */
+  --color-secondary: #f43f5e;
+  /* Rose 500 */
   --color-secondary-rgb: 244, 63, 94;
-  --color-accent: #10b981; /* Emerald 500 */
-  --color-warning: #f59e0b; /* Amber 500 */
+  --color-accent: #10b981;
+  /* Emerald 500 */
+  --color-warning: #f59e0b;
+  /* Amber 500 */
+}
+
+.light-mode {
+  /* Light Mode - Refined Slate & White */
+  --bg-deep: #fafaf8;
+  --bg-panel: rgba(255, 255, 255, 0.8);
+  --text-primary: #0f172a;
+  --text-muted: #64748b;
+  --border-glass: rgba(15, 23, 42, 0.08);
+
+  /* Standard Colors */
+  --color-primary: #6366f1;
+  /* Indigo 500 */
+  --color-primary-rgb: 99, 102, 241;
+  --color-secondary: #f43f5e;
+  /* Rose 500 */
+  --color-secondary-rgb: 244, 63, 94;
+  --color-accent: #10b981;
+  /* Emerald 500 */
+  --color-warning: #f59e0b;
+  /* Amber 500 */
+}
+
+@layer base {
+  body {
+    background-color: var(--bg-deep);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    transition: background-color 0.5s ease, color 0.5s ease;
+  }
 }
 
 /* Colorblind Mode Overrides */
 .colorblind-mode {
-  --color-primary: #0072b2; /* Blue (Safe) */
+  --color-primary: #0072b2;
+  /* Blue (Safe) */
   --color-primary-rgb: 0, 114, 178;
-  --color-secondary: #e69f00; /* Orange (Safe) */
+  --color-secondary: #e69f00;
+  /* Orange (Safe) */
   --color-secondary-rgb: 230, 159, 0;
-  --color-accent: #56b4e9; /* Sky Blue (Safe) */
-  --color-warning: #f0e442; /* Yellow (Safe) */
+  --color-accent: #56b4e9;
+  /* Sky Blue (Safe) */
+  --color-warning: #f0e442;
+  /* Yellow (Safe) */
 }
 
 /* Apply variables to common utilities */
-.text-primary { color: var(--color-primary); }
-.bg-primary { background-color: var(--color-primary); }
-.border-primary { border-color: var(--color-primary); }
+.text-primary {
+  color: var(--color-primary);
+}
 
-.text-secondary { color: var(--color-secondary); }
-.bg-secondary { background-color: var(--color-secondary); }
-.border-secondary { border-color: var(--color-secondary); }
+.bg-primary {
+  background-color: var(--color-primary);
+}
 
-.text-accent { color: var(--color-accent); }
-.bg-accent { background-color: var(--color-accent); }
-.border-accent { border-color: var(--color-accent); }
+.border-primary {
+  border-color: var(--color-primary);
+}
+
+.text-secondary {
+  color: var(--color-secondary);
+}
+
+.bg-secondary {
+  background-color: var(--color-secondary);
+}
+
+.border-secondary {
+  border-color: var(--color-secondary);
+}
+
+.text-accent {
+  color: var(--color-accent);
+}
+
+.bg-accent {
+  background-color: var(--color-accent);
+}
+
+.border-accent {
+  border-color: var(--color-accent);
+}
 
 /* High Contrast Helpers for Colorblind Mode */
 .colorblind-mode .glass-panel {
@@ -88,15 +168,20 @@
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
-/* Prose Styles for Markdown */
+/* Prose Styles for Markdown (Dark Mode) */
 .prose {
-  color: #94a3b8;
+  color: var(--text-muted);
   max-width: 65ch;
 }
 
-.prose h1 {
-  color: #f8fafc;
+.prose h1,
+.prose h2,
+.prose h3 {
+  color: var(--text-primary);
   font-family: var(--font-display);
+}
+
+.prose h1 {
   font-weight: 700;
   font-size: 2.5rem;
   margin-top: 0;
@@ -106,8 +191,6 @@
 }
 
 .prose h2 {
-  color: #f8fafc;
-  font-family: var(--font-display);
   font-weight: 600;
   font-size: 1.75rem;
   margin-top: 3rem;
@@ -122,7 +205,7 @@
 }
 
 .prose strong {
-  color: #818cf8;
+  color: var(--color-primary);
   font-weight: 700;
 }
 
@@ -144,13 +227,13 @@
   content: "→";
   position: absolute;
   left: 0;
-  color: #6366f1;
+  color: var(--color-primary);
   font-weight: bold;
 }
 
 .prose code {
-  color: #818cf8;
-  background-color: rgba(129, 140, 248, 0.1);
+  color: var(--color-primary);
+  background-color: rgba(var(--color-primary-rgb), 0.1);
   padding: 0.2rem 0.4rem;
   border-radius: 0.375rem;
   font-family: var(--font-mono);
@@ -159,10 +242,11 @@
 
 /* Glassmorphism Panel */
 .glass-panel {
-  background: rgba(15, 23, 42, 0.6);
+  background: var(--bg-panel);
   backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  border: 1px solid var(--border-glass);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+  color: var(--text-primary);
 }
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -176,9 +260,17 @@
 
 /* Radial Track Animation */
 @keyframes radial-track {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .radial-track {
@@ -188,6 +280,6 @@
 }
 
 .light-mode .glass-panel {
-  background: rgba(255, 255, 255, 0.8);
-  border-color: rgba(15, 23, 42, 0.08);
+  background: var(--bg-panel);
+  border-color: var(--border-glass);
 }

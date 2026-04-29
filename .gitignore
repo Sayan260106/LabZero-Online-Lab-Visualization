@@ -14,13 +14,13 @@ db.sqlite3
 venv/
 .env
 staticfiles/
+seed*
+management/
 
 # Extras
 Extras/
 
 .DS_Store
-.codex/
-
+.codex
 .sixth/
-
 .bg-shell/

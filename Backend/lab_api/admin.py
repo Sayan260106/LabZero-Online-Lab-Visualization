@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Element, Molecule, AtomPosition, LonePair
+from .models import Element, Molecule, AtomPosition, LonePair, Subject, Topic
 
 @admin.register(Element)
 class ElementAdmin(admin.ModelAdmin):
@@ -25,3 +25,16 @@ class AtomPositionAdmin(admin.ModelAdmin):
 @admin.register(LonePair)
 class LonePairAdmin(admin.ModelAdmin):
     list_display = ('molecule', 'x', 'y', 'z')
+
+class TopicInline(admin.StackedInline):
+    model = Topic
+    extra = 1
+
+@admin.register(Subject)
+class SubjectAdmin(admin.ModelAdmin):
+    list_display = ('name', 'icon', 'color', 'target_class')
+    inlines = [TopicInline]
+
+@admin.register(Topic)
+class TopicAdmin(admin.ModelAdmin):
+    list_display = ('name', 'subject', 'target_class')

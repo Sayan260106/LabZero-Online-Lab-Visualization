@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework import generics
-from .models import Element, Molecule
-from .serializers import ElementSerializer, MoleculeSerializer
+from .models import Element, Molecule, Subject
+from .serializers import ElementSerializer, MoleculeSerializer, SubjectSerializer
 from rest_framework.response import Response
 
 class APIStatus(APIView):
@@ -20,3 +20,7 @@ class ElementDetail(generics.RetrieveAPIView):
 class MoleculeList(generics.ListAPIView):
     queryset = Molecule.objects.all()
     serializer_class = MoleculeSerializer
+
+class SubjectList(generics.ListAPIView):
+    queryset = Subject.objects.all()
+    serializer_class = SubjectSerializer

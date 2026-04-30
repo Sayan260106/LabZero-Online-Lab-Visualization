@@ -3,13 +3,13 @@ import { Play, RotateCcw, Pause } from 'lucide-react';
 
 const MechanicsVisualizer: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  
+
   // Physics State
   const [angle, setAngle] = useState(45);
   const [velocity, setVelocity] = useState(25);
   const [gravity, setGravity] = useState(9.8);
   const [mass, setMass] = useState(10);
-  
+
   // Simulation State
   const [isRunning, setIsRunning] = useState(false);
   const [time, setTime] = useState(0);
@@ -40,16 +40,16 @@ const MechanicsVisualizer: React.FC = () => {
 
     // Convert angle to radians
     const theta = (angle * Math.PI) / 180;
-    
+
     // Scale for canvas (pixels per meter)
-    const scale = 5; 
+    const scale = 5;
     const groundY = canvas.height - 40;
     const originX = 40;
 
     // Kinematic Equations
     const currentX = velocity * Math.cos(theta) * t;
     const currentY = (velocity * Math.sin(theta) * t) - (0.5 * gravity * t * t);
-    
+
     // Stop at ground
     if (currentY < 0 && t > 0) {
       setIsRunning(false);
@@ -83,7 +83,7 @@ const MechanicsVisualizer: React.FC = () => {
     // Draw Velocity Vector
     const vx = velocity * Math.cos(theta);
     const vy = velocity * Math.sin(theta) - (gravity * t);
-    
+
     ctx.shadowBlur = 0;
     ctx.beginPath();
     ctx.moveTo(drawX, drawY);
@@ -122,17 +122,17 @@ const MechanicsVisualizer: React.FC = () => {
     <div className="w-full h-full flex flex-col gap-6 text-white">
       {/* Canvas Container */}
       <div className="flex-1 bg-black/40 rounded-3xl border border-white/10 overflow-hidden relative">
-        <canvas 
-          ref={canvasRef} 
-          width={1000} 
-          height={400} 
+        <canvas
+          ref={canvasRef}
+          width={1000}
+          height={400}
           className="w-full h-full object-contain"
         />
       </div>
 
       {/* Control Panel */}
       <div className="bg-white/5 p-6 rounded-3xl border border-white/10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        
+
         {/* Sliders */}
         <div className="flex flex-col gap-2">
           <label className="text-[10px] font-mono text-slate-400 uppercase tracking-widest flex justify-between">
@@ -157,14 +157,14 @@ const MechanicsVisualizer: React.FC = () => {
 
         {/* Buttons */}
         <div className="flex items-end gap-3">
-          <button 
+          <button
             onClick={toggleSim}
             className="flex-1 h-10 rounded-xl bg-indigo-600 hover:bg-indigo-500 transition-colors flex items-center justify-center gap-2 text-sm font-bold tracking-wider"
           >
             {isRunning ? <Pause size={16} /> : <Play size={16} />}
             {isRunning ? 'PAUSE' : 'LAUNCH'}
           </button>
-          <button 
+          <button
             onClick={resetSim}
             className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center text-slate-300"
           >

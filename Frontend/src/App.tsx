@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Sparkles, MessageSquare, X, Settings, Eye, Moon, Sun, Languages, BookOpen
 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import AtomVisualizer from './components/AtomicVisualizer';
 import PeriodicTable from './components/PeriodicTable';
 import AufbauChart from './components/AufbauChart';
@@ -24,6 +24,9 @@ import VectorCalculusLab from './components/VectorCalculusLab';
 import PiVisualizationLab from './components/PiVisualizationLab';
 import ComplexNumbersLab from './components/ComplexNumbersLab';
 import PythagorasLab from './components/PythagorasLab';
+import RealExperimentLab from './components/RealExperimentLab';
+import WaveOpticsVisualizer from './components/WaveOpticsVisualizer';
+import ThermodynamicsVisualizer from './components/ThermodynamicsVisualizer';
 
 
 import LandingPage from './components/LandingPage';
@@ -40,6 +43,8 @@ import AuthPage from './components/AuthPage';
 
 import QuizPage from './components/Quiz';
 import { generateQuizAI } from './data/quizData';
+import FloatingBrain from './components/MemoryMap/FloatingBrain';
+import MemoryMapOverlay from './components/MemoryMap/MemoryMapOverlay';
 import { Skeleton } from 'boneyard-js/react';
 
 import { Molecule, ElementData, Subject, Topic, ViewState, TopicId } from './types/types';
@@ -116,6 +121,9 @@ const AppContent: React.FC = () => {
   const [showQuiz, setShowQuiz] = useState(false);
   const [quizQuestions, setQuizQuestions] = useState<any[]>([]);
   const [quizLevel, setQuizLevel] = useState<'basic' | 'intermediate' | 'difficult'>('basic');
+
+  // ================= MEMORY MAP =================
+  const [showMemoryMap, setShowMemoryMap] = useState(false);
 
   // ================= FETCH =================
   useEffect(() => {
@@ -294,7 +302,7 @@ const AppContent: React.FC = () => {
           </div>
         );
 
-      case 'Electromagnetism':
+      case 'electromagnetism':
         return (
           <div className="h-full overflow-y-auto p-4 md:p-8 bg-[#020617]">
             <div className="max-w-7xl mx-auto">
@@ -303,48 +311,78 @@ const AppContent: React.FC = () => {
           </div>
         );
 
-      case 'MICROBIOLOGY':
+      case 'microbiology':
         return (
           <div className="p-8 space-y-8 h-[700px]">
             <MicrobiologyLab />
           </div>
         );
 
-      case 'CELL_BIOLOGY':
+      case 'cell_biology':
         return (
           <div className="p-8 space-y-8 h-[700px]">
             <CellBiologyLab />
           </div>
         );
-      case 'VECTOR_CALCULUS':
+      case 'vector_calculus':
         return (
           <div className="p-8 space-y-8 h-[700px]">
             <VectorCalculusLab />
           </div>
         );
-      case 'PI_APPROXIMATION':
+      case 'pi_approximation':
         return (
           <div className="p-8 space-y-8 h-[700px]">
             <PiVisualizationLab />
           </div>
         );
-      case 'COMPLEX_NUMBERS':
+      case 'complex_numbers':
         return (
           <div className="h-full overflow-hidden p-4 md:p-8 bg-[#020617]">
             <ComplexNumbersLab />
           </div>
         );
-      case 'PYTHAGORAS_THEOREM':
+      case 'pythagoras_theorem':
         return (
           <div className="h-full overflow-hidden p-4 md:p-8 bg-[#020617]">
             <PythagorasLab />
           </div>
         );
 
+      case 'advanced_lab':
+        return (
+          <div className="h-full overflow-y-auto p-4 md:p-8 bg-[#020617]">
+            <RealExperimentLab />
+          </div>
+        );
+
+      case 'wave_optics':
+        return (
+          <div className="h-full overflow-y-auto">
+            <WaveOpticsVisualizer />
+          </div>
+        );
+
+      case 'thermodynamics':
+        return (
+          <div className="h-full overflow-y-auto">
+            <ThermodynamicsVisualizer />
+          </div>
+        );
+
+      case 'electromagnetism':
+        return (
+          <div className="h-full overflow-y-auto p-4 md:p-8 bg-[#020617]">
+            <div className="max-w-7xl mx-auto">
+              <ElectromagnetismVisualizer />
+            </div>
+          </div>
+        );
+
       default:
         return <div className="p-10 text-center">Coming Soon</div>;
     }
-  }, [elements, selectedElement, atomRotation]);
+  }, [elements, selectedElement, atomRotation, atomZoom, moleculeRotation, moleculeZoom]);
 
   // ================= GESTURES =================
   const handleGestureSelect = () => {
@@ -441,6 +479,16 @@ const AppContent: React.FC = () => {
           )}
         </AnimatePresence>
 
+        {/* ================= MEMORY MAP SCREEN ================= */}
+        <AnimatePresence>
+          {showMemoryMap && (
+            <MemoryMapOverlay
+              onClose={() => setShowMemoryMap(false)}
+              initialSubject={selectedSubject}
+            />
+          )}
+        </AnimatePresence>
+
         {!showQuiz && (
           <>
             <AnimatePresence mode="wait">
@@ -460,7 +508,6 @@ const AppContent: React.FC = () => {
                   />
                 </motion.div>
               )}
-
               {viewState === ViewState.SUBJECT && selectedSubject && (
                 <motion.div key="subject" className="h-full w-full overflow-y-auto">
                   <SubjectPage
@@ -474,7 +521,6 @@ const AppContent: React.FC = () => {
                   />
                 </motion.div>
               )}
-
               {viewState === ViewState.TOPIC && selectedTopic && (
                 <motion.div key="topic" className="h-full w-full">
                   <TopicPage
@@ -486,28 +532,20 @@ const AppContent: React.FC = () => {
                   />
                 </motion.div>
               )}
-
               {viewState === ViewState.DASHBOARD && user && (
                 <motion.div key="dashboard" className="h-full w-full">
-                  {user.role === 'teacher' ? (
-                    <TeacherDashboard onBack={handleBackToLanding} />
-                  ) : user.role === 'institute' ? (
-                    <InstituteDashboard onBack={handleBackToLanding} />
-                  ) : (
-                    <StudentDashboard onBack={handleBackToLanding} />
-                  )}
+                  {user.role === 'teacher' ? <TeacherDashboard onBack={handleBackToLanding} /> : user.role === 'institute' ? <InstituteDashboard onBack={handleBackToLanding} /> : <StudentDashboard onBack={handleBackToLanding} />}
                 </motion.div>
               )}
             </AnimatePresence>
 
-            {/* SETTINGS */}
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className={`fixed bottom-8 right-28 w-16 h-16 rounded-2xl hidden md:flex items-center justify-center transition-all duration-500 z-[110] ${showSettings ? 'bg-indigo-500 rotate-90' : 'bg-white/5 border border-white/10 hover:bg-white/10'
-                }`}
+              className={`fixed bottom-8 right-28 w-16 h-16 rounded-2xl hidden md:flex items-center justify-center transition-all duration-500 z-[110] ${showSettings ? 'bg-indigo-500 rotate-90' : 'bg-white/5 border border-white/10 hover:bg-white/10'}`}
             >
               <Settings size={24} className={showSettings ? 'text-white' : 'text-slate-400'} />
             </button>
+            <FloatingBrain onClick={() => setShowMemoryMap(true)} />
 
             <AnimatePresence>
               {showSettings && (
@@ -518,26 +556,17 @@ const AppContent: React.FC = () => {
                   className="fixed bottom-24 md:bottom-28 left-4 right-4 md:left-auto md:right-28 md:w-72 glass-panel p-6 rounded-3xl z-[110] border border-white/10 origin-bottom-right mx-auto max-w-[calc(100vw-32px)]"
                 >
                   <h3 className="text-xs font-mono uppercase tracking-[0.3em] text-indigo-400 mb-6 flex items-center gap-2">
-                    <Eye size={12} />
-                    {t('accessibility')}
+                    <Eye size={12} /> {t('accessibility')}
                   </h3>
-
                   <div className="space-y-4">
                     <div className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
                       <div className="flex flex-col">
                         <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300">{t('colorblindMode')}</span>
-                        <span className="text-[8px] font-mono text-slate-500">{t('enhancedContrast')}</span>
                       </div>
-                      <button
-                        onClick={() => setColorBlindMode(!colorBlindMode)}
-                        className={`w-10 h-5 rounded-full relative transition-colors duration-300 ${colorBlindMode ? 'bg-indigo-500' : 'bg-slate-800'
-                          }`}
-                      >
-                        <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-all duration-300 ${colorBlindMode ? 'left-6' : 'left-1'
-                          }`} />
+                      <button onClick={() => setColorBlindMode(!colorBlindMode)} className={`w-10 h-5 rounded-full relative transition-colors duration-300 ${colorBlindMode ? 'bg-indigo-500' : 'bg-slate-800'}`}>
+                        <div className={`absolute top-1 w-3 h-3 rounded-full bg-white transition-all duration-300 ${colorBlindMode ? 'left-6' : 'left-1'}`} />
                       </button>
                     </div>
-
                     <div className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/5">
                       <div className="flex flex-col">
                         <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300">{t('theme')}</span>
@@ -579,7 +608,6 @@ const AppContent: React.FC = () => {
                         </div>
                         <div className="flex flex-col">
                           <span className="text-[10px] font-mono uppercase tracking-widest text-slate-300">Glossary</span>
-                          <span className="text-[8px] font-mono text-slate-500">Open quick science definitions</span>
                         </div>
                       </div>
                       <button
@@ -592,8 +620,6 @@ const AppContent: React.FC = () => {
                         Open
                       </button>
                     </div>
-
-                    {/* SKELETON DEBUG TOGGLE */}
                   </div>
                 </motion.div>
               )}
@@ -605,11 +631,7 @@ const AppContent: React.FC = () => {
               onOpenGlossary={() => setShowGlossary(!showGlossary)}
               onOpenSettings={() => setShowSettings(!showSettings)}
               onOpenProfile={() => setShowAuth(!showAuth)}
-              onToggleGesture={() => {
-                if (user?.role !== 'student') {
-                  setIsGestureActive(!isGestureActive);
-                }
-              }}
+              onToggleGesture={() => { if (user?.role !== 'student') setIsGestureActive(!isGestureActive); }}
               isGestureActive={isGestureActive}
               showSettings={showSettings}
               showGlossary={showGlossary}
@@ -625,11 +647,7 @@ const AppContent: React.FC = () => {
 
             <GestureController
               isActive={isGestureActive && user?.role !== 'student'}
-              onToggle={() => {
-                if (user?.role !== 'student') {
-                  setIsGestureActive(!isGestureActive);
-                }
-              }}
+              onToggle={() => { if (user?.role !== 'student') setIsGestureActive(!isGestureActive); }}
               onBack={handleGestureBack}
               onScroll={handleGestureScroll}
               onRotate={handleGestureRotate}
@@ -642,18 +660,11 @@ const AppContent: React.FC = () => {
 
             {isGestureActive && gesturePos && user?.role !== 'student' && (
               <motion.div
-                className="fixed w-8 h-8 rounded-full border-2 border-indigo-500 bg-indigo-500/20 pointer-events-none z-[200] flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.5)]"
-                animate={{
-                  left: `${gesturePos.x * 100}%`,
-                  top: `${gesturePos.y * 100}%`
-                }}
+                className="fixed w-4 h-4 rounded-full bg-indigo-500 pointer-events-none z-[200] shadow-[0_0_20px_rgba(99,102,241,0.5)]"
+                animate={{ left: `${gesturePos.x * 100}%`, top: `${gesturePos.y * 100}%` }}
                 transition={{ type: 'spring', stiffness: 1000, damping: 60, mass: 1 }}
-                style={{
-                  transform: 'translate(-50%, -50%)'
-                }}
-              >
-                <div className="w-1 h-1 bg-white rounded-full" />
-              </motion.div>
+                style={{ transform: 'translate(-50%, -50%)' }}
+              />
             )}
           </>
         )}

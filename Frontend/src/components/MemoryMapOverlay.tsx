@@ -1,12 +1,13 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { X, Brain, ChevronRight, ArrowLeft, Lightbulb, Link as LinkIcon, Sparkles, BookOpen, Layers, Target } from 'lucide-react';
-import { SUBJECTS } from '../../utils/constants';
-import { Subject, Topic } from '../../types/types';
+import { SUBJECTS } from '../utils/constants';
+import { Subject, Topic } from '../types/types';
 
 interface MemoryMapOverlayProps {
   onClose: () => void;
   initialSubject?: Subject | null;
+  subjects: Subject[];
 }
 
 interface MapNode {
@@ -17,7 +18,16 @@ interface MapNode {
   children?: MapNode[];
 }
 
-const MemoryMapOverlay: React.FC<MemoryMapOverlayProps> = ({ onClose, initialSubject }) => {
+const COLOR_MAP: Record<string, string> = {
+  emerald: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+  purple: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+  blue: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+  indigo: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+  rose: 'bg-rose-500/10 text-rose-400 border-rose-500/20',
+  amber: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
+};
+
+const MemoryMapOverlay: React.FC<MemoryMapOverlayProps> = ({ onClose, initialSubject, subjects }) => {
   const [step, setStep] = useState<'subject' | 'chapter' | 'map'>(initialSubject ? 'chapter' : 'subject');
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(initialSubject || null);
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
@@ -58,17 +68,17 @@ const MemoryMapOverlay: React.FC<MemoryMapOverlayProps> = ({ onClose, initialSub
         const description = parts[1]?.trim();
         currentMain.children?.push({ id: `sub-${index}`, label, type: 'sub', description });
       } else if (trimmed.startsWith('### ') && currentMain) {
-         const label = trimmed.replace('### ', '');
-         currentMain.children?.push({ id: `sub-${index}`, label, type: 'sub' });
+        const label = trimmed.replace('### ', '');
+        currentMain.children?.push({ id: `sub-${index}`, label, type: 'sub' });
       }
     });
 
     if (nodes[0].children?.length === 0) {
-      nodes[0].children?.push({ 
-        id: 'gen-1', 
-        label: 'Key Concepts', 
-        type: 'main', 
-        children: [{ id: 'sub-gen-1', label: 'Fundamental Principles', type: 'sub' }] 
+      nodes[0].children?.push({
+        id: 'gen-1',
+        label: 'Key Concepts',
+        type: 'main',
+        children: [{ id: 'sub-gen-1', label: 'Fundamental Principles', type: 'sub' }]
       });
     }
 
@@ -149,24 +159,24 @@ const MemoryMapOverlay: React.FC<MemoryMapOverlayProps> = ({ onClose, initialSub
               </div>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-4">
-             {step === 'map' && (
-               <div className="hidden lg:flex items-center gap-6 mr-8 px-6 py-2 rounded-2xl bg-white/5 border border-white/5">
-                 <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
-                   <div className="w-2 h-2 rounded-full bg-purple-500" />
-                   Core Module
-                 </div>
-                 <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
-                   <div className="w-2 h-2 rounded-full bg-indigo-400" />
-                   Key Concepts
-                 </div>
-                 <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
-                   <div className="w-2 h-2 rounded-full bg-slate-500" />
-                   Technical Details
-                 </div>
-               </div>
-             )}
+            {step === 'map' && (
+              <div className="hidden lg:flex items-center gap-6 mr-8 px-6 py-2 rounded-2xl bg-white/5 border border-white/5">
+                <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
+                  <div className="w-2 h-2 rounded-full bg-purple-500" />
+                  Core Module
+                </div>
+                <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
+                  <div className="w-2 h-2 rounded-full bg-indigo-400" />
+                  Key Concepts
+                </div>
+                <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
+                  <div className="w-2 h-2 rounded-full bg-slate-500" />
+                  Technical Details
+                </div>
+              </div>
+            )}
             <button
               onClick={onClose}
               className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-red-500/20 hover:text-red-400 transition-all"
@@ -187,27 +197,30 @@ const MemoryMapOverlay: React.FC<MemoryMapOverlayProps> = ({ onClose, initialSub
                 exit={{ opacity: 0, y: -30 }}
                 className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
               >
-                {SUBJECTS.map((subject, idx) => (
-                  <button
-                    key={subject.id}
-                    onClick={() => handleSubjectSelect(subject)}
-                    className="group p-10 rounded-[40px] bg-white/[0.02] border border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all duration-700 text-left relative overflow-hidden flex flex-col h-[320px]"
-                  >
-                    <div className={`w-20 h-20 rounded-3xl bg-${subject.color === 'emerald' ? 'emerald' : subject.color}-500/10 flex items-center justify-center text-${subject.color === 'emerald' ? 'emerald' : subject.color}-400 mb-8 group-hover:scale-110 transition-transform duration-500`}>
-                      <Brain size={40} />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-purple-400 transition-colors uppercase">{subject.name}</h3>
-                      <p className="text-sm text-slate-500 leading-relaxed">
-                        Master {subject.name.toLowerCase()} through interactive visual architectures.
-                      </p>
-                    </div>
-                    <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/5">
-                       <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">{subject.topics.length} Chapters</span>
-                       <ChevronRight className="text-slate-700 group-hover:text-purple-500 transition-colors" />
-                    </div>
-                  </button>
-                ))}
+                {subjects.map((subject, idx) => {
+                  const colorClasses = COLOR_MAP[subject.color] || COLOR_MAP.purple;
+                  return (
+                    <button
+                      key={subject.id}
+                      onClick={() => handleSubjectSelect(subject)}
+                      className="group p-10 rounded-[40px] bg-white/[0.02] border border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all duration-700 text-left relative overflow-hidden flex flex-col h-[320px]"
+                    >
+                      <div className={`w-20 h-20 rounded-3xl ${colorClasses.split(' ')[0]} flex items-center justify-center ${colorClasses.split(' ')[1]} mb-8 group-hover:scale-110 transition-transform duration-500`}>
+                        <Brain size={40} />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-purple-400 transition-colors uppercase">{subject.name}</h3>
+                        <p className="text-sm text-slate-500 leading-relaxed">
+                          Master {subject.name.toLowerCase()} through interactive visual architectures.
+                        </p>
+                      </div>
+                      <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/5">
+                        <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">{subject.topics?.length || 0} Chapters</span>
+                        <ChevronRight className="text-slate-700 group-hover:text-purple-500 transition-colors" />
+                      </div>
+                    </button>
+                  );
+                })}
               </motion.div>
             )}
 
@@ -317,11 +330,11 @@ const VisualMap: React.FC<{ node: MapNode }> = ({ node }) => {
               <motion.div
                 initial={{ opacity: 0, scale: 0, x: 0, y: 0 }}
                 animate={{ opacity: 1, scale: 1, x, y }}
-                transition={{ 
-                  delay: idx * 0.15 + 0.5, 
-                  type: 'spring', 
-                  stiffness: 70, 
-                  damping: 12 
+                transition={{
+                  delay: idx * 0.15 + 0.5,
+                  type: 'spring',
+                  stiffness: 70,
+                  damping: 12
                 }}
                 whileHover={{ scale: 1.1, zIndex: 40 }}
                 className="absolute pointer-events-auto group/node"
@@ -329,14 +342,14 @@ const VisualMap: React.FC<{ node: MapNode }> = ({ node }) => {
                 <div className="p-7 rounded-[32px] bg-[#0f172a]/95 border border-white/10 backdrop-blur-3xl hover:border-purple-500/60 transition-all cursor-pointer min-w-[240px] shadow-2xl relative overflow-hidden">
                   {/* Glowing background */}
                   <div className="absolute -top-10 -left-10 w-24 h-24 bg-purple-600/20 rounded-full blur-3xl opacity-0 group-hover/node:opacity-100 transition-opacity" />
-                  
+
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 group-hover/node:bg-purple-500 group-hover/node:text-white transition-all duration-500">
                       <Target size={20} />
                     </div>
                     <h5 className="text-lg font-bold text-white group-hover/node:text-purple-400 transition-colors uppercase tracking-tight">{child.label}</h5>
                   </div>
-                  
+
                   {/* Technical Sub-points */}
                   <div className="space-y-2 relative z-10">
                     {child.children?.map((sub, sIdx) => (
@@ -348,18 +361,18 @@ const VisualMap: React.FC<{ node: MapNode }> = ({ node }) => {
                         className="group/sub relative"
                       >
                         <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.08] hover:border-indigo-500/40 transition-all">
-                           <div className="flex items-center gap-2 mb-1">
-                             <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
-                             <span className="text-[11px] font-bold text-slate-200 group-hover/sub:text-indigo-300 transition-colors uppercase">{sub.label}</span>
-                           </div>
-                           {sub.description && (
-                             <p className="text-[9px] text-slate-500 leading-normal pl-3.5 group-hover/sub:text-slate-400 transition-colors">{sub.description}</p>
-                           )}
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-1.5 h-1.5 rounded-full bg-indigo-500" />
+                            <span className="text-[11px] font-bold text-slate-200 group-hover/sub:text-indigo-300 transition-colors uppercase">{sub.label}</span>
+                          </div>
+                          {sub.description && (
+                            <p className="text-[9px] text-slate-500 leading-normal pl-3.5 group-hover/sub:text-slate-400 transition-colors">{sub.description}</p>
+                          )}
                         </div>
                       </motion.div>
                     ))}
                   </div>
-                  
+
                   {/* Decorative corner */}
                   <div className="absolute bottom-2 right-2 text-white/5 group-hover/node:text-purple-500/20 transition-colors">
                     <Layers size={32} />

@@ -73,6 +73,8 @@ export interface Topic {
   description: string;
   theory: string;
   targetClass?: string[];
+  subject?: number;
+  order?: number;
 }
 
 export interface Subject {
@@ -91,6 +93,7 @@ export enum ViewState {
   SUBJECT = 'subject',
   TOPIC = 'topic',
   DASHBOARD = 'dashboard',
+  ADMIN = 'admin',
 }
 
 export enum TopicView {
@@ -109,10 +112,14 @@ export interface Molecule {
   formula: string;
   name: string;
   centralAtom: string;
+  central_atom?: string;
   atoms: { symbol: string; pos: Vector3 }[];
   lonePairs: Vector3[];
+  lone_pairs?: any[];
   realAngle: string;
   modelAngle: string;
+  real_angle?: string;
+  model_angle?: string;
 }
 
 export interface Resource {
@@ -150,6 +157,8 @@ export interface User {
   role: UserRole;
   first_name: string;
   last_name: string;
+  is_staff?: boolean;
+  is_superuser?: boolean;
 }
 
 export interface GlossaryTerm {

@@ -96,6 +96,10 @@ class Topic(models.Model):
     description = models.TextField()
     target_class = models.JSONField(help_text="List of target classes, e.g., ['Class 11']")
     theory = models.TextField()
+    order = models.IntegerField(default=0, help_text="Order in which this topic appears (lower numbers appear first)")
+
+    class Meta:
+        ordering = ['order', 'id']
 
     def __str__(self):
         return f"{self.name} ({self.subject.name})"

@@ -19,6 +19,7 @@ interface LandingPageProps {
   onProfileClick?: () => void;
   onOpenGlossary?: () => void;
   onDashboardClick?: () => void;
+  onAdminClick?: () => void;
   subjects: Subject[];
 }
 
@@ -28,6 +29,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
   onLoginClick,
   onProfileClick,
   onDashboardClick,
+  onAdminClick,
   theme,
   subjects
 }) => {
@@ -65,6 +67,14 @@ const LandingPage: React.FC<LandingPageProps> = ({
             </>
           ) : (
             <div className="flex items-center gap-3">
+              {(user.is_staff || user.is_superuser) && (
+                <button 
+                  onClick={onAdminClick} 
+                  className="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full text-[13px] font-bold uppercase tracking-tight transition-all shadow-md shadow-indigo-500/25 border border-indigo-400/20"
+                >
+                  Admin Panel
+                </button>
+              )}
               {user.role && (
                 <button onClick={onDashboardClick} className="px-5 py-2 bg-[var(--color-primary)] hover:bg-[var(--color-primary)]/90 text-white rounded-full text-[15px] font-medium transition-all shadow-sm hidden md:block">
                   {user.role === 'teacher' ? 'Teacher Dashboard' : user.role === 'student' ? 'My Dashboard' : 'Institute Dashboard'}
@@ -157,37 +167,76 @@ const LandingPage: React.FC<LandingPageProps> = ({
           </section>
         </Skeleton>
 
-        {/* 4 Cards Grid */}
-        <Skeleton name="landing-cards" loading={false}>
+        {/* Subject Cards Grid */}
+        <Skeleton name="landing-cards" loading={subjects.length === 0}>
           <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { name: 'Chemistry Lab', desc: 'Visualize molecules, reactions, bonding and chemical processes.', img: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&q=80&w=400', theme: 'border-[var(--border-glass)]', iconColor: 'text-[var(--color-secondary)]' },
-              { name: 'Physics Engine', desc: 'Simulate motion, waves, optics, thermodynamics and more in real-time.', img: 'https://images.unsplash.com/photo-1518152006812-edab29b069ac?auto=format&fit=crop&q=80&w=400', theme: 'border-[var(--border-glass)]', iconColor: 'text-[var(--color-primary)]' },
-              { name: 'Math Visualizer', desc: 'Graph functions, equations, matrices, vectors and surfaces interactively.', img: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=400', theme: 'border-[var(--border-glass)]', iconColor: 'text-[var(--color-accent)]' },
-              { name: 'Biology Explorer', desc: 'Explore cells, systems, anatomy and biological processes in 3D.', img: 'https://images.unsplash.com/photo-1530026405186-ed1f139313f8?auto=format&fit=crop&q=80&w=400', theme: 'border-[var(--border-glass)]', iconColor: 'text-[#8b5cf6]' },
-            ].map((card, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                onClick={() => {
-                  const slugs = ['chemistry', 'physics', 'math', 'biology'];
-                  const targetSlug = slugs[i];
-                  const subject = subjects.find(s => s.slug === targetSlug);
-                  if (subject) onSelectSubject(subject);
-                }}
-                className="bg-[var(--bg-panel)] rounded-[32px] p-6 border border-[var(--border-glass)] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)] transition-all duration-300 flex flex-col cursor-pointer group hover:-translate-y-1"
-              >
-                <div className={`w-full h-48 rounded-[24px] bg-[var(--bg-deep)]/40 mb-6 overflow-hidden border ${card.theme} flex items-center justify-center relative`}>
-                  <img src={card.img} alt={card.name} className="w-full h-full object-cover opacity-60 mix-blend-multiply group-hover:scale-105 transition-transform duration-500 saturate-50" />
-                  <div className="absolute inset-0 bg-white/5 group-hover:opacity-0 transition-opacity"></div>
-                </div>
-                <h3 className="text-xl font-display font-semibold mb-3 text-[var(--text-primary)]">{card.name}</h3>
-                <p className="text-[var(--text-muted)] text-[15px] leading-relaxed mb-8 flex-1">{card.desc}</p>
-                <div className={`flex items-center text-sm font-semibold ${card.iconColor} p-0 m-0 uppercase tracking-wide gap-2 group-hover:gap-3 transition-all`}>
-                  Explore <ArrowRight size={16} strokeWidth={2.5} />
-                </div>
-              </motion.div>
-            ))}
+            {subjects.map((subject, i) => {
+              // Metadata mapping for consistent styling
+              const meta: Record<string, any> = {
+                chemistry: { 
+                  name: 'Chemistry Lab', 
+                  desc: 'Visualize molecules, reactions, bonding and chemical processes.', 
+                  img: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&q=80&w=400', 
+                  theme: 'border-[var(--border-glass)]', 
+                  iconColor: 'text-[var(--color-secondary)]' 
+                },
+                physics: { 
+                  name: 'Physics Engine', 
+                  desc: 'Simulate motion, waves, optics, thermodynamics and more in real-time.', 
+                  img: 'https://images.unsplash.com/photo-1518152006812-edab29b069ac?auto=format&fit=crop&q=80&w=400', 
+                  theme: 'border-[var(--border-glass)]', 
+                  iconColor: 'text-[var(--color-primary)]' 
+                },
+                math: { 
+                  name: 'Math Visualizer', 
+                  desc: 'Graph functions, equations, matrices, vectors and surfaces interactively.', 
+                  img: 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&q=80&w=400', 
+                  theme: 'border-[var(--border-glass)]', 
+                  iconColor: 'text-[var(--color-accent)]' 
+                },
+                biology: { 
+                  name: 'Biology Explorer', 
+                  desc: 'Explore cells, systems, anatomy and biological processes in 3D.', 
+                  img: 'https://images.unsplash.com/photo-1530026405186-ed1f139313f8?auto=format&fit=crop&q=80&w=400', 
+                  theme: 'border-[var(--border-glass)]', 
+                  iconColor: 'text-[#8b5cf6]' 
+                },
+              };
+
+              const subjectMeta = meta[subject.slug] || {
+                name: subject.name,
+                desc: `Explore interactive 3D visualizations and virtual experiments for ${subject.name}.`,
+                img: 'https://images.unsplash.com/photo-1532187863486-abf9dbad1b69?auto=format&fit=crop&q=80&w=400',
+                theme: 'border-[var(--border-glass)]',
+                iconColor: 'text-indigo-500'
+              };
+
+              return (
+                <motion.div
+                  key={subject.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  onClick={() => onSelectSubject(subject)}
+                  className="bg-[var(--bg-panel)] rounded-[32px] p-6 border border-[var(--border-glass)] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)] transition-all duration-300 flex flex-col cursor-pointer group hover:-translate-y-1"
+                >
+                  <div className={`w-full h-48 rounded-[24px] bg-[var(--bg-deep)]/40 mb-6 overflow-hidden border ${subjectMeta.theme} flex items-center justify-center relative`}>
+                    <img 
+                      src={subjectMeta.img} 
+                      alt={subjectMeta.name} 
+                      className="w-full h-full object-cover opacity-60 mix-blend-multiply group-hover:scale-105 transition-transform duration-500 saturate-50" 
+                    />
+                    <div className="absolute inset-0 bg-white/5 group-hover:opacity-0 transition-opacity"></div>
+                  </div>
+                  <h3 className="text-xl font-display font-semibold mb-3 text-[var(--text-primary)]">{subjectMeta.name}</h3>
+                  <p className="text-[var(--text-muted)] text-[15px] leading-relaxed mb-8 flex-1">{subjectMeta.desc}</p>
+                  <div className={`flex items-center text-sm font-semibold ${subjectMeta.iconColor} p-0 m-0 uppercase tracking-wide gap-2 group-hover:gap-3 transition-all`}>
+                    Explore <ArrowRight size={16} strokeWidth={2.5} />
+                  </div>
+                </motion.div>
+              );
+            })}
           </section>
         </Skeleton>
 

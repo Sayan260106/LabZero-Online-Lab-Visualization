@@ -9,7 +9,16 @@ export const getMolecules = async (): Promise<Molecule[]> => {
     // Map backend snake_case to frontend camelCase
     return response.data.map(m => ({
       ...m,
-      centralAtom: m.central_atom || m.centralAtom
+      centralAtom: m.central_atom || m.centralAtom,
+      atoms: (m.atoms || []).map((a: any) => ({
+        symbol: a.symbol,
+        pos: { x: a.x, y: a.y, z: a.z }
+      })),
+      lonePairs: m.lonePairs || (m.lone_pairs || []).map((lp: any) => ({
+        x: lp.x, y: lp.y, z: lp.z
+      })),
+      realAngle: m.realAngle || m.real_angle,
+      modelAngle: m.modelAngle || m.model_angle
     }));
   } catch (error) {
     console.error("Error fetching molecules:", error);

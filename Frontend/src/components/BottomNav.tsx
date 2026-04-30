@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Home, Book, User as UserIcon, Settings, Sparkles, MessageSquare, X, Hand, Camera } from 'lucide-react';
+import { Home, Book, User as UserIcon, Settings, Sparkles, MessageSquare, X, Hand, Camera, Database } from 'lucide-react';
 import { ViewState, User } from '../types/types';
 
 interface BottomNavProps {
@@ -91,6 +91,18 @@ const BottomNav: React.FC<BottomNavProps> = ({
           <UserIcon size={18} />
           <span className="text-[7px] font-mono mt-1">USER</span>
         </button>
+
+        {user && (user.is_staff || user.is_superuser) && (
+          <button 
+            onClick={() => onNavigate(ViewState.ADMIN)}
+            className={`flex flex-col items-center justify-center w-12 h-12 rounded-2xl transition-all ${
+              currentView === ViewState.ADMIN ? 'bg-slate-700 text-white shadow-lg shadow-slate-700/30' : 'text-slate-500 hover:text-white hover:bg-white/5'
+            }`}
+          >
+            <Database size={18} />
+            <span className="text-[7px] font-mono mt-1">ADMIN</span>
+          </button>
+        )}
 
         <button 
           onClick={onOpenSettings}

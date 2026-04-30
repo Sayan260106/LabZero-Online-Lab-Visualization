@@ -32,6 +32,7 @@ import ThermodynamicsVisualizer from './components/ThermodynamicsVisualizer';
 import LandingPage from './components/LandingPage';
 import SubjectPage from './components/SubjectPage';
 import TopicPage from './components/TopicPage';
+import AdminDashboard from './components/AdminDashboard';
 import StudentDashboard from './components/StudentDashboard';
 import TeacherDashboard from './components/TeacherDashboard';
 import InstituteDashboard from './components/InstituteDashboard';
@@ -43,8 +44,6 @@ import AuthPage from './components/AuthPage';
 
 import QuizPage from './components/Quiz';
 import { generateQuizAI } from './data/quizData';
-import FloatingBrain from './components/MemoryMap/FloatingBrain';
-import MemoryMapOverlay from './components/MemoryMap/MemoryMapOverlay';
 import { Skeleton } from 'boneyard-js/react';
 
 import { Molecule, ElementData, Subject, Topic, ViewState, TopicId } from './types/types';
@@ -122,8 +121,6 @@ const AppContent: React.FC = () => {
   const [quizQuestions, setQuizQuestions] = useState<any[]>([]);
   const [quizLevel, setQuizLevel] = useState<'basic' | 'intermediate' | 'difficult'>('basic');
 
-  // ================= MEMORY MAP =================
-  const [showMemoryMap, setShowMemoryMap] = useState(false);
 
   // ================= FETCH =================
   useEffect(() => {
@@ -382,7 +379,7 @@ const AppContent: React.FC = () => {
       default:
         return <div className="p-10 text-center">Coming Soon</div>;
     }
-  }, [elements, selectedElement, atomRotation, atomZoom, moleculeRotation, moleculeZoom]);
+  }, [elements, molecules, selectedElement, atomRotation, atomZoom, moleculeRotation, moleculeZoom]);
 
   // ================= GESTURES =================
   const handleGestureSelect = () => {
@@ -479,15 +476,7 @@ const AppContent: React.FC = () => {
           )}
         </AnimatePresence>
 
-        {/* ================= MEMORY MAP SCREEN ================= */}
-        <AnimatePresence>
-          {showMemoryMap && (
-            <MemoryMapOverlay
-              onClose={() => setShowMemoryMap(false)}
-              initialSubject={selectedSubject}
-            />
-          )}
-        </AnimatePresence>
+
 
         {!showQuiz && (
           <>
@@ -504,6 +493,7 @@ const AppContent: React.FC = () => {
                     onProfileClick={() => setShowAuth(true)}
                     onOpenGlossary={() => setShowGlossary(true)}
                     onDashboardClick={() => setViewState(ViewState.DASHBOARD)}
+                    onAdminClick={() => setViewState(ViewState.ADMIN)}
                     subjects={subjects}
                   />
                 </motion.div>
@@ -537,6 +527,11 @@ const AppContent: React.FC = () => {
                   {user.role === 'teacher' ? <TeacherDashboard onBack={handleBackToLanding} /> : user.role === 'institute' ? <InstituteDashboard onBack={handleBackToLanding} /> : <StudentDashboard onBack={handleBackToLanding} />}
                 </motion.div>
               )}
+              {viewState === ViewState.ADMIN && user && (user.is_staff || user.is_superuser) && (
+                <motion.div key="admin" className="h-full w-full overflow-y-auto">
+                  <AdminDashboard onBack={handleBackToLanding} />
+                </motion.div>
+              )}
             </AnimatePresence>
 
             <button
@@ -545,7 +540,7 @@ const AppContent: React.FC = () => {
             >
               <Settings size={24} className={showSettings ? 'text-white' : 'text-slate-400'} />
             </button>
-            <FloatingBrain onClick={() => setShowMemoryMap(true)} />
+
 
             <AnimatePresence>
               {showSettings && (
@@ -625,20 +620,22 @@ const AppContent: React.FC = () => {
               )}
             </AnimatePresence>
 
-            <BottomNav
-              currentView={viewState}
-              onNavigate={setViewState}
-              onOpenGlossary={() => setShowGlossary(!showGlossary)}
-              onOpenSettings={() => setShowSettings(!showSettings)}
-              onOpenProfile={() => setShowAuth(!showAuth)}
-              onToggleGesture={() => { if (user?.role !== 'student') setIsGestureActive(!isGestureActive); }}
-              isGestureActive={isGestureActive}
-              showSettings={showSettings}
-              showGlossary={showGlossary}
-              showAuth={showAuth}
-              language={language}
-              user={user}
-            />
+            {viewState !== ViewState.ADMIN && (
+              <BottomNav
+                currentView={viewState}
+                onNavigate={setViewState}
+                onOpenGlossary={() => setShowGlossary(!showGlossary)}
+                onOpenSettings={() => setShowSettings(!showSettings)}
+                onOpenProfile={() => setShowAuth(!showAuth)}
+                onToggleGesture={() => { if (user?.role !== 'student') setIsGestureActive(!isGestureActive); }}
+                isGestureActive={isGestureActive}
+                showSettings={showSettings}
+                showGlossary={showGlossary}
+                showAuth={showAuth}
+                language={language}
+                user={user}
+              />
+            )}
 
             <AnimatePresence>
               {showGlossary && <Glossary language={language} onClose={() => setShowGlossary(false)} />}

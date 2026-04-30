@@ -6,7 +6,7 @@ class TopicSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Topic
-        fields = ['id', 'slug', 'name', 'description', 'targetClass', 'theory']
+        fields = ['id', 'subject', 'slug', 'name', 'description', 'targetClass', 'theory', 'order']
 
 class SubjectSerializer(serializers.ModelSerializer):
     topics = TopicSerializer(many=True, read_only=True)
@@ -23,14 +23,9 @@ class ElementSerializer(serializers.ModelSerializer):
         fields = "__all__"
 
 class AtomPositionSerializer(serializers.ModelSerializer):
-    pos = serializers.SerializerMethodField()
-
     class Meta:
         model = AtomPosition
-        fields = ['symbol', 'pos']
-
-    def get_pos(self, obj):
-        return {'x': obj.x, 'y': obj.y, 'z': obj.z}
+        fields = ['symbol', 'x', 'y', 'z']
 
 class LonePairSerializer(serializers.ModelSerializer):
     class Meta:
@@ -38,8 +33,8 @@ class LonePairSerializer(serializers.ModelSerializer):
         fields = ['x', 'y', 'z']
 
 class MoleculeSerializer(serializers.ModelSerializer):
-    atoms = AtomPositionSerializer(many=True, read_only=True)
-    lonePairs = LonePairSerializer(source='lone_pairs', many=True, read_only=True)
+    atoms = AtomPositionSerializer(many=True, required=False)
+    lonePairs = LonePairSerializer(source='lone_pairs', many=True, required=False)
 
     realAngle = serializers.CharField(source='real_angle')
     modelAngle = serializers.CharField(source='model_angle')
@@ -50,3 +45,38 @@ class MoleculeSerializer(serializers.ModelSerializer):
             'formula', 'name', 'central_atom', 
             'atoms', 'lonePairs', 'realAngle', 'modelAngle'
         ]
+
+    def create(self, validated_data):
+        atoms_data = validated_data.pop('atoms', [])
+        lone_pairs_data = validated_data.pop('lone_pairs', [])
+        molecule = Molecule.objects.create(**validated_data)
+        
+        for atom_data in atoms_data:
+            AtomPosition.objects.create(molecule=molecule, **atom_data)
+        for lp_data in lone_pairs_data:
+            LonePair.objects.create(molecule=molecule, **lp_data)
+            
+        return molecule
+
+    def update(self, instance, validated_data):
+        atoms_data = validated_data.pop('atoms', None)
+        lone_pairs_data = validated_data.pop('lone_pairs', None)
+        
+        # Update molecule fields
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+        
+        # Update atoms (simple replace for now)
+        if atoms_data is not None:
+            instance.atoms.all().delete()
+            for atom_data in atoms_data:
+                AtomPosition.objects.create(molecule=instance, **atom_data)
+                
+        # Update lone pairs (simple replace for now)
+        if lone_pairs_data is not None:
+            instance.lone_pairs.all().delete()
+            for lp_data in lone_pairs_data:
+                LonePair.objects.create(molecule=instance, **lp_data)
+                
+        return instance

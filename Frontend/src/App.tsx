@@ -70,7 +70,11 @@ const BackgroundLayer = ({ theme }: { theme: 'dark' | 'light' }) => (
 );
 
 const AppContent: React.FC = () => {
-  const { user, isLoading, logout } = useAuth();
+  const { user, isLoading, logout, handleGoogleCallback } = useAuth();
+
+  useEffect(() => {
+    handleGoogleCallback();
+  }, [handleGoogleCallback]);
 
   const [elements, setElements] = useState<ElementData[]>([]);
   const [selectedElement, setSelectedElement] = useState<ElementData | null>(null);

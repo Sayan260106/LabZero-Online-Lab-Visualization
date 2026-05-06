@@ -1,48 +1,25 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import axios from 'axios';
 import {
   Sparkles, MessageSquare, X, Settings, Eye, Moon, Sun, Languages, BookOpen
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
-import AtomVisualizer from './components/AtomicVisualizer';
-import PeriodicTable from './components/PeriodicTable';
-import AufbauChart from './components/AufbauChart';
-import TrendsVisualizer from './components/TrendsVisualizer';
-import ElementComparison from './components/ElementComparison';
-import BondingLab from './components/BondingLab';
-import GeometryLab from './components/GeometryLab';
-import HistoricalModels from './components/HistoricalModels';
-import QuantumConfigLab from './components/QuantumConfigLab';
-import QuantumNumbersLab from './components/QuantumNumbersLab';
+import LandingPage from './components/pages/LandingPage';
+import SubjectPage from './components/pages/SubjectPage';
+import TopicPage from './components/pages/TopicPage';
+import AdminDashboard from './components/dashboards/AdminDashboard';
+import StudentDashboard from './components/dashboards/StudentDashboard';
+import TeacherDashboard from './components/dashboards/TeacherDashboard';
+import InstituteDashboard from './components/dashboards/InstituteDashboard';
+import GestureController from './components/shared/GestureController';
+import BottomNav from './components/common/BottomNav';
+import Glossary from './components/shared/Glossary';
+import AuthOverlay from './components/auth/AuthOverlay';
+import AuthPage from './components/auth/AuthPage';
+import FloatingBrain from './components/common/FloatingBrain';
+import MemoryMapOverlay from './components/shared/MemoryMapOverlay';
 
-import MechanicsVisualizer from './components/MechanicsVisualizer';
-import ElectromagnetismVisualizer from './components/ElectromagnetismVisualizer';
-
-import MicrobiologyLab from './components/MicrobiologyLab';
-import CellBiologyLab from './components/CellBiologyLab';
-
-import VectorCalculusLab from './components/VectorCalculusLab';
-import PiVisualizationLab from './components/PiVisualizationLab';
-import ComplexNumbersLab from './components/ComplexNumbersLab';
-import PythagorasLab from './components/PythagorasLab';
-import RealExperimentLab from './components/RealExperimentLab';
-import WaveOpticsVisualizer from './components/WaveOpticsVisualizer';
-import ThermodynamicsVisualizer from './components/ThermodynamicsVisualizer';
-
-
-import LandingPage from './components/LandingPage';
-import SubjectPage from './components/SubjectPage';
-import TopicPage from './components/TopicPage';
-import AdminDashboard from './components/AdminDashboard';
-import StudentDashboard from './components/StudentDashboard';
-import TeacherDashboard from './components/TeacherDashboard';
-import InstituteDashboard from './components/InstituteDashboard';
-import GestureController from './components/GestureController';
-import BottomNav from './components/BottomNav';
-import Glossary from './components/Glossary';
-import AuthOverlay from './components/AuthOverlay';
-import AuthPage from './components/AuthPage';
-
-import QuizPage from './components/Quiz';
+import QuizPage from './components/shared/Quiz';
 import { generateQuizAI } from './data/quizData';
 import { Skeleton } from 'boneyard-js/react';
 
@@ -52,6 +29,10 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { getElements } from './services/elementsService';
 import { getMolecules } from './services/moleculesService';
 import { getSubjects } from './services/subjectsService';
+import { SIMULATION_REGISTRY } from './simulations/registry';
+import { Suspense } from 'react';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000/api';
 
 
 const BackgroundLayer = ({ theme }: { theme: 'dark' | 'light' }) => (
@@ -89,12 +70,20 @@ const BackgroundLayer = ({ theme }: { theme: 'dark' | 'light' }) => (
 );
 
 const AppContent: React.FC = () => {
-  const { user, isLoading, logout } = useAuth();
+  const { user, isLoading, logout, handleGoogleCallback } = useAuth();
+
+  useEffect(() => {
+    handleGoogleCallback();
+  }, [handleGoogleCallback]);
 
   const [elements, setElements] = useState<ElementData[]>([]);
   const [selectedElement, setSelectedElement] = useState<ElementData | null>(null);
   const [molecules, setMolecules] = useState<Molecule[]>([]);
-  const [subjects, setSubjects] = useState<Subject[]>([]);
+  const [subjects, setSubjects] = useState<Subject[]>(() => {
+    // Initial load from cache to prevent layout shift and provide instant results
+    const cached = localStorage.getItem('labzero_subjects_cache');
+    return cached ? JSON.parse(cached) : [];
+  });
 
   const [viewState, setViewState] = useState<ViewState>(ViewState.LANDING);
   const [selectedSubject, setSelectedSubject] = useState<Subject | null>(null);
@@ -104,6 +93,7 @@ const AppContent: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false);
   const [showGlossary, setShowGlossary] = useState(false);
   const [showAuth, setShowAuth] = useState(() => new URLSearchParams(window.location.search).get('auth') === '1');
+  const [showMindMap, setShowMindMap] = useState(false);
 
   const [theme, setTheme] = useState<'dark' | 'light'>('light');
   const [colorBlindMode, setColorBlindMode] = useState(false);
@@ -123,7 +113,7 @@ const AppContent: React.FC = () => {
 
 
   // ================= FETCH =================
-  useEffect(() => {
+  const fetchAllData = useCallback(() => {
     getElements()
       .then((data) => {
         if (data?.length) {
@@ -141,14 +131,43 @@ const AppContent: React.FC = () => {
       })
       .catch(console.error);
 
-    getSubjects()
-      .then((data) => {
-        if (data?.length) {
-          setSubjects(data);
-        }
+    // Fetch settings then subjects to ensure correct order
+    axios.get(`${API_URL}/settings/`)
+      .then(sRes => {
+        const sortMethod = sRes.data.subject_sort_method || 'order';
+        getSubjects()
+          .then((data) => {
+            if (data?.length) {
+              const sorted = [...data].sort((a, b) => {
+                if (sortMethod === 'alpha') return a.name.localeCompare(b.name);
+                return (a.order || 0) - (b.order || 0);
+              });
+              setSubjects(sorted);
+              // Save to cache
+              localStorage.setItem('labzero_subjects_cache', JSON.stringify(sorted));
+              localStorage.setItem('labzero_last_subject_count', sorted.length.toString());
+            }
+          })
+          .catch(console.error);
       })
-      .catch(console.error);
+      .catch(err => {
+        console.error("Settings fetch failed", err);
+        getSubjects()
+          .then((data) => {
+            if (data?.length) {
+              const sorted = [...data].sort((a, b) => (a.order || 0) - (b.order || 0));
+              setSubjects(sorted);
+              localStorage.setItem('labzero_subjects_cache', JSON.stringify(sorted));
+              localStorage.setItem('labzero_last_subject_count', sorted.length.toString());
+            }
+          })
+          .catch(console.error);
+      });
   }, []);
+
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
 
   // ================= THEME =================
   useEffect(() => {
@@ -206,178 +225,34 @@ const AppContent: React.FC = () => {
   };
 
   // ================= VISUALIZATION =================
-  const renderVisualization = useCallback((topicSlug: string) => {
+  const renderVisualization = useCallback((topicSlug: string, topic?: Topic) => {
+    // 1. Check the dynamic Registry first (Step 2 & 3)
+    const DynamicSim = topic?.simulation_id ? SIMULATION_REGISTRY[topic.simulation_id] : null;
+
+    if (DynamicSim) {
+      return (
+        <Suspense fallback={<div className="p-20 text-center text-white font-mono animate-pulse uppercase tracking-widest">Initialising Simulation Protocol...</div>}>
+          <DynamicSim
+            elements={elements}
+            molecules={molecules}
+            selectedElement={selectedElement}
+            onSelectElement={setSelectedElement}
+            theme={theme}
+            language={language}
+            controls={{ rotation: moleculeRotation, zoom: moleculeZoom }}
+          />
+        </Suspense>
+      );
+    }
+
+    // 2. Fallback to legacy switch for unregistered topics
     switch (topicSlug) {
-      case 'atomic_structure':
-        if (!selectedElement) return <div className="p-10 text-center text-white">Loading Element Data...</div>;
-        return (
-          <div className="flex flex-col h-full overflow-hidden">
-            <div className="flex-[3] relative min-h-[300px]">
-              <AtomVisualizer
-                element={selectedElement}
-                rotation={atomRotation}
-                zoom={atomZoom}
-              />
-            </div>
-            <div className="flex-[2] border-t border-white/5 overflow-y-auto bg-black/40">
-              <PeriodicTable
-                elements={elements}
-                onSelect={setSelectedElement}
-                selectedSymbol={selectedElement.symbol}
-              />
-            </div>
-          </div>
-        );
-
-      case 'quantum_config':
-        if (!selectedElement) return <div className="p-10 text-center text-white">Loading Element Data...</div>;
-        return (
-          <div className="flex flex-col h-full overflow-hidden">
-            <div className="flex-1 overflow-y-auto bg-black/40 border-b border-white/5">
-              <PeriodicTable
-                elements={elements}
-                onSelect={setSelectedElement}
-                selectedSymbol={selectedElement.symbol}
-              />
-            </div>
-
-            <div className="flex-[2] p-8 grid xl:grid-cols-4 gap-8 min-h-0 overflow-y-auto">
-              <div className="xl:col-span-3">
-                <QuantumConfigLab element={selectedElement} />
-              </div>
-              <div className="h-full min-h-[400px]">
-                <AufbauChart atomicNumber={selectedElement.number} />
-              </div>
-            </div>
-          </div>
-        );
-
-      case 'periodic_trends':
-        return (
-          <div className="h-full overflow-y-auto p-4 md:p-8 space-y-12 bg-[#020617]">
-            <section className="max-w-7xl mx-auto">
-              <TrendsVisualizer elements={elements} />
-            </section>
-            <section className="max-w-7xl mx-auto">
-              <ElementComparison elements={elements} />
-            </section>
-          </div>
-        );
-
-      case 'molecular_structure':
-        return (
-          <div className="h-full overflow-y-auto p-4 md:p-8 space-y-12 bg-[#020617]">
-            <section className="max-w-7xl mx-auto">
-              <BondingLab elements={elements} />
-            </section>
-            <section className="max-w-7xl mx-auto">
-              <GeometryLab rotation={moleculeRotation} zoom={moleculeZoom} molecules={molecules} />
-            </section>
-          </div>
-        );
-
-      case 'quantum_numbers':
-        return (
-          <div className="h-full overflow-y-auto">
-            <QuantumNumbersLab />
-          </div>
-        );
-
-      case 'historical_models':
-        return (
-          <div className="h-full overflow-y-auto">
-            <HistoricalModels />
-          </div>
-        );
-
-      case 'mechanics':
-        return (
-          <div className="h-full overflow-y-auto p-4 md:p-8 bg-[#020617]">
-            <div className="max-w-7xl mx-auto">
-              <MechanicsVisualizer />
-            </div>
-          </div>
-        );
-
-      case 'electromagnetism':
-        return (
-          <div className="h-full overflow-y-auto p-4 md:p-8 bg-[#020617]">
-            <div className="max-w-7xl mx-auto">
-              <ElectromagnetismVisualizer />
-            </div>
-          </div>
-        );
-
-      case 'microbiology':
-        return (
-          <div className="p-8 space-y-8 h-[700px]">
-            <MicrobiologyLab />
-          </div>
-        );
-
-      case 'cell_biology':
-        return (
-          <div className="p-8 space-y-8 h-[700px]">
-            <CellBiologyLab />
-          </div>
-        );
-      case 'vector_calculus':
-        return (
-          <div className="p-8 space-y-8 h-[700px]">
-            <VectorCalculusLab />
-          </div>
-        );
-      case 'pi_approximation':
-        return (
-          <div className="p-8 space-y-8 h-[700px]">
-            <PiVisualizationLab />
-          </div>
-        );
-      case 'complex_numbers':
-        return (
-          <div className="h-full overflow-hidden p-4 md:p-8 bg-[#020617]">
-            <ComplexNumbersLab />
-          </div>
-        );
-      case 'pythagoras_theorem':
-        return (
-          <div className="h-full overflow-hidden p-4 md:p-8 bg-[#020617]">
-            <PythagorasLab />
-          </div>
-        );
-
-      case 'advanced_lab':
-        return (
-          <div className="h-full overflow-y-auto p-4 md:p-8 bg-[#020617]">
-            <RealExperimentLab />
-          </div>
-        );
-
-      case 'wave_optics':
-        return (
-          <div className="h-full overflow-y-auto">
-            <WaveOpticsVisualizer />
-          </div>
-        );
-
-      case 'thermodynamics':
-        return (
-          <div className="h-full overflow-y-auto">
-            <ThermodynamicsVisualizer />
-          </div>
-        );
-
-      case 'electromagnetism':
-        return (
-          <div className="h-full overflow-y-auto p-4 md:p-8 bg-[#020617]">
-            <div className="max-w-7xl mx-auto">
-              <ElectromagnetismVisualizer />
-            </div>
-          </div>
-        );
-
       default:
-        return <div className="p-10 text-center">Coming Soon</div>;
+        return (
+          <div className="p-10 text-center text-white font-mono opacity-50 uppercase tracking-widest animate-pulse">
+            Simulation Protocol Pending...
+          </div>
+        );
     }
   }, [elements, molecules, selectedElement, atomRotation, atomZoom, moleculeRotation, moleculeZoom]);
 
@@ -505,6 +380,7 @@ const AppContent: React.FC = () => {
                     onSelectTopic={handleSelectTopic}
                     onBack={handleBackToLanding}
                     language={language}
+                    theme={theme}
                     onStartQuiz={startQuiz}
                     quizLevel={quizLevel}
                     onLevelChange={setQuizLevel}
@@ -516,7 +392,7 @@ const AppContent: React.FC = () => {
                   <TopicPage
                     topic={selectedTopic}
                     onBack={handleBackToSubject}
-                    visualization={renderVisualization(selectedTopic.slug)}
+                    visualization={renderVisualization(selectedTopic.slug, selectedTopic)}
                     language={language}
                     onStartQuiz={startQuiz}
                   />
@@ -529,14 +405,14 @@ const AppContent: React.FC = () => {
               )}
               {viewState === ViewState.ADMIN && user && (user.is_staff || user.is_superuser) && (
                 <motion.div key="admin" className="h-full w-full overflow-y-auto">
-                  <AdminDashboard onBack={handleBackToLanding} />
+                  <AdminDashboard onBack={handleBackToLanding} onDataUpdate={fetchAllData} />
                 </motion.div>
               )}
             </AnimatePresence>
 
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className={`fixed bottom-8 right-28 w-16 h-16 rounded-2xl hidden md:flex items-center justify-center transition-all duration-500 z-[110] ${showSettings ? 'bg-indigo-500 rotate-90' : 'bg-white/5 border border-white/10 hover:bg-white/10'}`}
+              className={`fixed bottom-20 right-24 w-16 h-16 rounded-2xl hidden md:flex items-center justify-center transition-all duration-500 z-[110] ${showSettings ? 'bg-indigo-500 rotate-90' : 'bg-white/5 border border-white/10 hover:bg-white/10'}`}
             >
               <Settings size={24} className={showSettings ? 'text-white' : 'text-slate-400'} />
             </button>
@@ -640,7 +516,12 @@ const AppContent: React.FC = () => {
             <AnimatePresence>
               {showGlossary && <Glossary language={language} onClose={() => setShowGlossary(false)} />}
               {showAuth && <AuthOverlay onClose={() => setShowAuth(false)} />}
+              {showMindMap && <MemoryMapOverlay subjects={subjects} onClose={() => setShowMindMap(false)} />}
             </AnimatePresence>
+
+            {viewState === ViewState.LANDING && !showMindMap && (
+              <FloatingBrain onClick={() => setShowMindMap(true)} />
+            )}
 
             <GestureController
               isActive={isGestureActive && user?.role !== 'student'}

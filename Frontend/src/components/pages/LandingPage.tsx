@@ -200,7 +200,7 @@ const LandingPage: React.FC<LandingPageProps> = ({
                       <img
                         src={subjectMeta.img}
                         alt={subjectMeta.name}
-                        className="w-full h-full object-cover opacity-60 mix-blend-multiply group-hover:scale-105 transition-transform duration-500 saturate-50"
+                        className="w-full h-full object-cover opacity-100 group-hover:scale-105 transition-transform duration-500 saturate-100 brightness-[1.1]"
                       />
                       <div className="absolute inset-0 bg-white/5 group-hover:opacity-0 transition-opacity"></div>
                     </div>
@@ -333,8 +333,8 @@ const LandingPage: React.FC<LandingPageProps> = ({
                       <Play size={16} fill="currentColor" className="ml-1" />
                     </div>
                   </div>
-                  <div className="absolute right-0 bottom-0 w-48 h-48 rounded-tl-full overflow-hidden opacity-30 mix-blend-multiply flex items-end justify-end group-hover:opacity-40 transition-opacity">
-                    <img src={sim.iconUrl} className="w-full h-full object-cover rounded-tl-full grayscale brightness-50" alt="sim graphic" />
+                  <div className="absolute right-0 bottom-0 w-48 h-48 rounded-tl-full overflow-hidden opacity-80 flex items-end justify-end group-hover:opacity-100 transition-opacity">
+                    <img src={sim.iconUrl} className="w-full h-full object-cover rounded-tl-full brightness-[1.1] saturate-[1.2]" alt="sim graphic" />
                   </div>
                 </div>
               ))}

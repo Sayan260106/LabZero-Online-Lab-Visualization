@@ -25,7 +25,7 @@ const Footer: React.FC = () => {
           <h5 className="text-[10px] font-black text-[var(--color-primary)] uppercase tracking-[0.4em]">Product</h5>
           <div className="flex flex-col gap-4">
             {['Simulations', 'Curriculum', 'Certification', 'Pricing'].map(link => (
-              <a key={link} href="#" className="text-sm font-bold text-[var(--text-muted)] hover:text-[var(--color-primary)] transition-all tracking-tight">{link}</a>
+              <a key={link} href="#" className="text-sm font-black text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-all tracking-tight brightness-[1.5]">{link}</a>
             ))}
           </div>
         </div>
@@ -41,7 +41,7 @@ const Footer: React.FC = () => {
 
         <div className="md:col-span-3 space-y-8">
           <h5 className="text-[10px] font-black text-[var(--color-primary)] uppercase tracking-[0.4em]">Transmission</h5>
-          <p className="text-xs text-[var(--text-muted)] leading-relaxed font-black uppercase tracking-widest">Subscribe to the latest updates in LabZero.</p>
+          <p className="text-xs text-[var(--text-muted)] leading-relaxed font-black uppercase tracking-widest brightness-[1.5]">Subscribe to the latest updates in LabZero.</p>
           <div className="flex gap-2">
             <input type="text" placeholder="EMAIL ADDRESS" className="flex-1 bg-[var(--bg-panel)] border border-[var(--border-glass)] rounded-2xl px-6 py-4 text-xs font-black text-[var(--text-primary)] focus:outline-none focus:ring-1 focus:ring-[var(--color-primary)] placeholder:text-[var(--text-muted)]/40 uppercase tracking-widest" />
             <button className="w-16 h-16 bg-[var(--color-primary)] rounded-2xl flex items-center justify-center text-white hover:scale-105 active:scale-95 transition-all shadow-xl">
@@ -52,7 +52,7 @@ const Footer: React.FC = () => {
       </div>
 
       <div className="max-w-[2000px] mx-auto pt-12 border-t border-[var(--border-glass)] flex flex-col md:flex-row justify-between items-center gap-8">
-        <p className="text-[10px] font-bold text-[var(--text-muted)]/60 uppercase tracking-[0.4em]">© 2024 LABZERO. ALL RIGHTS RESERVED IN SUB-QUANTUM DIMENSIONS.</p>
+        <p className="text-[10px] font-black text-[var(--text-muted)]/80 uppercase tracking-[0.4em] brightness-[1.2]">© 2024 LABZERO. ALL RIGHTS RESERVED IN SUB-QUANTUM DIMENSIONS.</p>
         <div className="flex items-center gap-8">
           <span className="text-[10px] font-black text-[var(--color-primary)] tracking-[0.4em] uppercase animate-pulse">Uptime: 99.99%</span>
           <div className="flex gap-8">

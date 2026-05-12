@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 // @ts-ignore
 import { GestureRecognizer } from '@mediapipe/tasks-vision';
 import { getGestureRecognizer } from '../../services/gestureService';
@@ -8,6 +8,7 @@ import {
   MessageSquare, Bookmark, ZoomIn, BookOpen, X,
 } from 'lucide-react';
 import { motion, AnimatePresence, useSpring, useTransform } from 'motion/react';
+import Receiver from "./Receiver";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types
@@ -340,6 +341,12 @@ const GestureToast: React.FC<{ gestureId: GestureId | null }> = ({ gestureId }) 
   );
 };
 
+// 🔍 Check if webcam exists
+async function hasWebcam(): Promise<boolean> {
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  return devices.some(d => d.kind === "videoinput");
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Main component
 // ─────────────────────────────────────────────────────────────────────────────
@@ -384,6 +391,16 @@ const GestureController: React.FC<GestureControllerProps> = ({
   const [holdProgress, setHoldProgress] = useState<Record<string, number>>({});
   const [fps, setFps] = useState(0);
   const fpsRef = useRef({ n: 0, last: Date.now() });
+  
+  const [cameraMode, setCameraMode] = useState<'webcam' | 'phone' | 'none'>('none');
+  const [cameraSource, setCameraSource] = useState<"local" | "remote">("local");
+
+  const handleRemoteStream = useCallback((stream: MediaStream) => {
+    if (!videoRef.current) return;
+
+    videoRef.current.srcObject = stream;
+    setCameraMode('phone');
+  }, []);
 
   // ── Init recognizer ──────────────────────────────────────────────────────
   useEffect(() => {
@@ -623,22 +640,44 @@ const GestureController: React.FC<GestureControllerProps> = ({
 
     const startCamera = async () => {
       if (!isActive || !videoRef.current) return;
+
       try {
+        videoRef.current.addEventListener('loadeddata', loop);
+
+        if (cameraSource === 'remote') {
+          setCameraMode('phone');
+          return;
+        }
+
+        const webcamAvailable = await hasWebcam();
+
+        if (!webcamAvailable) {
+          console.warn("No webcam found. Switch gesture camera to Phone mode.");
+          setCameraMode('none');
+          return;
+        }
+
         stream = await navigator.mediaDevices.getUserMedia({
           video: { width: 640, height: 480, frameRate: { ideal: TARGET_FPS } },
         });
+
         videoRef.current.srcObject = stream;
-        videoRef.current.addEventListener('loadeddata', loop);
-      } catch (e) { console.error('Camera error', e); }
+        setCameraMode('webcam');
+
+      } catch (e) {
+        console.error('Camera error', e);
+        setCameraMode('none');
+      }
     };
 
     if (isActive) startCamera();
     return () => {
       alive = false;
       cancelAnimationFrame(raf);
+      videoRef.current?.removeEventListener('loadeddata', loop);
       stream?.getTracks().forEach(t => t.stop());
     };
-  }, [isActive, onSelect, onBack, onRaiseHand, onScroll, onNextSlide, onPrevSlide,
+  }, [isActive, cameraSource, onSelect, onBack, onRaiseHand, onScroll, onNextSlide, onPrevSlide,
     onRotate, onLaserPointer, onAnnotate, onToggleTheme, onResetZoom, onZoom]);
 
   // ── Derived ──────────────────────────────────────────────────────────────
@@ -739,7 +778,8 @@ const GestureController: React.FC<GestureControllerProps> = ({
                       style={{ background: activeColor }}
                       animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.1, repeat: Infinity }} />
                     <span style={{ fontFamily: 'monospace', fontSize: 8, color: '#475569', letterSpacing: '0.22em', textTransform: 'uppercase' }}>
-                      {fps}fps · {isLoaded ? 'LIVE' : 'INIT…'}
+                      {fps}fps · {isLoaded ? 'LIVE' : 'INIT…'} · 
+                      {cameraMode === 'webcam' ? '🎥 CAM' : cameraMode === 'phone' ? '📱 PHONE' : '❌ NONE'}
                     </span>
                   </div>
                   <motion.div key={currentGesture}
@@ -889,6 +929,26 @@ const GestureController: React.FC<GestureControllerProps> = ({
             : <Camera size={17} style={{ color: '#64748b' }} />}
         </motion.button>
       </div>
+      <div className="fixed bottom-20 right-4 z-[120] hidden overflow-hidden rounded-2xl border border-white/10 bg-slate-950/90 p-1 shadow-2xl backdrop-blur-xl md:flex">
+        {(['local', 'remote'] as const).map((source) => (
+          <button
+            key={source}
+            onClick={() => setCameraSource(source)}
+            className={`px-4 py-2 text-[9px] font-mono uppercase tracking-[0.2em] transition-colors ${
+              cameraSource === source
+                ? 'rounded-xl bg-indigo-600 text-white'
+                : 'text-slate-500 hover:text-slate-200'
+            }`}
+          >
+            {source === 'local' ? 'Local' : 'Phone'}
+          </button>
+        ))}
+      </div>
+
+      <Receiver
+        isActive={isActive && cameraSource === 'remote'}
+        onStream={handleRemoteStream}
+      />
     </>
   );
 };

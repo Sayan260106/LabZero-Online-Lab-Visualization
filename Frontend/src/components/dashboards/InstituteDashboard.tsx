@@ -14,7 +14,11 @@ import {
   School,
   Database,
   PieChart,
-  Target
+  Target,
+  Trophy,
+  Flame,
+  TrendingUp,
+  Award
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useAuth } from '../../context/AuthContext';
@@ -39,6 +43,14 @@ const InstituteDashboard: React.FC<InstituteDashboardProps> = ({ onBack }) => {
     { name: 'Dr. Sarah Wilson', department: 'Chemistry', classes: 24, performance: 98 },
     { name: 'Prof. James Miller', department: 'Physics', classes: 18, performance: 95 },
     { name: 'Dr. Elena Rodriguez', department: 'Mathematics', classes: 22, performance: 97 },
+  ];
+
+  const consistentStudents = [
+    { rank: 1, name: 'Aarav Sharma', grade: 'Class 12', department: 'Physics', streak: 34, attendance: 98, labs: 42, consistency: 97, trend: '+8%' },
+    { rank: 2, name: 'Maya Banerjee', grade: 'Class 11', department: 'Chemistry', streak: 29, attendance: 96, labs: 39, consistency: 94, trend: '+6%' },
+    { rank: 3, name: 'Rohan Iyer', grade: 'Class 12', department: 'Mathematics', streak: 26, attendance: 95, labs: 37, consistency: 92, trend: '+5%' },
+    { rank: 4, name: 'Sara Khan', grade: 'Class 11', department: 'Biology', streak: 21, attendance: 93, labs: 34, consistency: 89, trend: '+4%' },
+    { rank: 5, name: 'Dev Patel', grade: 'Class 12', department: 'Chemistry', streak: 18, attendance: 91, labs: 31, consistency: 86, trend: '+3%' },
   ];
 
   return (
@@ -153,6 +165,125 @@ const InstituteDashboard: React.FC<InstituteDashboardProps> = ({ onBack }) => {
                   <div className="text-[9px] font-mono text-white/40 uppercase tracking-widest">AI compute</div>
                   <div className="text-xl font-display font-medium text-cyan-300 drop-shadow-sm">74.2% <span className="text-white/30 text-sm">Utilization</span></div>
                 </div>
+              </div>
+            </div>
+          </Skeleton>
+
+          <Skeleton name="institute-leaderboard" loading={false}>
+            <div className="p-8 md:p-10 rounded-[48px] bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-amber-500/10 via-transparent to-cyan-500/5 pointer-events-none" />
+              <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-400/20 flex items-center justify-center text-amber-300 shadow-inner">
+                      <Trophy size={22} className="drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]" />
+                    </div>
+                    <div>
+                      <h2 className="text-2xl font-display font-medium text-white uppercase tracking-tight italic drop-shadow-sm">Consistency Leaderboard</h2>
+                      <p className="text-[10px] font-mono text-white/40 uppercase tracking-widest leading-none">Students ranked by attendance, lab completion, and learning streaks</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-3 gap-3 text-center">
+                  <div className="px-4 py-3 rounded-2xl bg-black/40 border border-white/10 shadow-inner">
+                    <div className="text-lg font-display text-amber-300">5</div>
+                    <div className="text-[8px] font-mono uppercase tracking-widest text-white/40">Top Cohort</div>
+                  </div>
+                  <div className="px-4 py-3 rounded-2xl bg-black/40 border border-white/10 shadow-inner">
+                    <div className="text-lg font-display text-emerald-300">94%</div>
+                    <div className="text-[8px] font-mono uppercase tracking-widest text-white/40">Avg Attend</div>
+                  </div>
+                  <div className="px-4 py-3 rounded-2xl bg-black/40 border border-white/10 shadow-inner">
+                    <div className="text-lg font-display text-cyan-300">25d</div>
+                    <div className="text-[8px] font-mono uppercase tracking-widest text-white/40">Avg Streak</div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="relative z-10 overflow-x-auto">
+                <table className="w-full min-w-[760px] border-separate border-spacing-y-3">
+                  <thead>
+                    <tr className="text-left text-[9px] font-mono uppercase tracking-[0.25em] text-white/35">
+                      <th className="px-4 pb-2">Rank</th>
+                      <th className="px-4 pb-2">Student</th>
+                      <th className="px-4 pb-2">Focus</th>
+                      <th className="px-4 pb-2">Streak</th>
+                      <th className="px-4 pb-2">Attendance</th>
+                      <th className="px-4 pb-2">Labs</th>
+                      <th className="px-4 pb-2 text-right">Score</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {consistentStudents.map((student, index) => (
+                      <motion.tr
+                        key={student.name}
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.08 }}
+                        className="group"
+                      >
+                        <td className="rounded-l-3xl bg-black/35 border-y border-l border-white/10 px-4 py-4">
+                          <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border font-display text-sm shadow-inner ${
+                            student.rank === 1
+                              ? 'bg-amber-500/15 border-amber-400/30 text-amber-300'
+                              : student.rank === 2
+                                ? 'bg-cyan-500/10 border-cyan-400/25 text-cyan-300'
+                                : student.rank === 3
+                                  ? 'bg-violet-500/10 border-violet-400/25 text-violet-300'
+                                  : 'bg-white/5 border-white/10 text-white/60'
+                          }`}>
+                            {student.rank}
+                          </div>
+                        </td>
+                        <td className="bg-black/35 border-y border-white/10 px-4 py-4">
+                          <div className="flex items-center gap-4">
+                            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-violet-500/20 border border-white/10 flex items-center justify-center text-white font-display text-xs shadow-inner">
+                              {student.name.split(' ').map(part => part[0]).join('')}
+                            </div>
+                            <div>
+                              <div className="text-sm font-sans font-medium text-white group-hover:text-cyan-200 transition-colors">{student.name}</div>
+                              <div className="text-[9px] font-mono uppercase tracking-widest text-white/35 mt-1">{student.grade}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="bg-black/35 border-y border-white/10 px-4 py-4">
+                          <span className="rounded-xl bg-cyan-500/10 border border-cyan-400/20 px-3 py-1.5 text-[9px] font-mono uppercase tracking-widest text-cyan-200">
+                            {student.department}
+                          </span>
+                        </td>
+                        <td className="bg-black/35 border-y border-white/10 px-4 py-4">
+                          <div className="flex items-center gap-2 text-amber-300 font-mono text-xs">
+                            <Flame size={14} className="drop-shadow-[0_0_8px_rgba(251,191,36,0.6)]" />
+                            {student.streak} days
+                          </div>
+                        </td>
+                        <td className="bg-black/35 border-y border-white/10 px-4 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="h-2 w-20 rounded-full bg-white/5 border border-white/5 overflow-hidden">
+                              <div className="h-full rounded-full bg-emerald-400" style={{ width: `${student.attendance}%` }} />
+                            </div>
+                            <span className="text-xs font-mono text-emerald-300">{student.attendance}%</span>
+                          </div>
+                        </td>
+                        <td className="bg-black/35 border-y border-white/10 px-4 py-4">
+                          <div className="flex items-center gap-2 text-white/70 font-mono text-xs">
+                            <Award size={14} className="text-violet-300" />
+                            {student.labs}
+                          </div>
+                        </td>
+                        <td className="rounded-r-3xl bg-black/35 border-y border-r border-white/10 px-4 py-4 text-right">
+                          <div className="flex items-center justify-end gap-3">
+                            <div>
+                              <div className="text-lg font-display text-white leading-none">{student.consistency}</div>
+                              <div className="text-[8px] font-mono uppercase tracking-widest text-emerald-300 mt-1">{student.trend}</div>
+                            </div>
+                            <TrendingUp size={16} className="text-emerald-300" />
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
           </Skeleton>

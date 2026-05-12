@@ -94,18 +94,19 @@ export default function VectorCalculusLab() {
     el.appendChild(renderer.domElement);
 
     // lights + grid
-    scene.add(new THREE.GridHelper(30, 30));
-    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const isLight = document.body.classList.contains('light-mode');
+    const gridColor1 = isLight ? 0xcbd5e1 : 0x1e293b;
+    const gridColor2 = isLight ? 0x94a3b8 : 0x0f172a;
+    scene.add(new THREE.GridHelper(30, 30, gridColor1, gridColor2));
+    scene.add(new THREE.AmbientLight(0xffffff, isLight ? 0.8 : 0.6));
 
     const light = new THREE.DirectionalLight(0xffffff, 1);
     light.position.set(10, 20, 10);
     scene.add(light);
-
     // vector group
     const group = new THREE.Group();
     arrowsRef.current = group;
     scene.add(group);
-
     const controls = createOrbitControls(camera, renderer.domElement);
 
     let raf: number;
@@ -120,7 +121,7 @@ export default function VectorCalculusLab() {
       cancelAnimationFrame(raf);
       controls.dispose();
       renderer.dispose();
-      el.removeChild(renderer.domElement);
+      if (el.contains(renderer.domElement)) el.removeChild(renderer.domElement);
     };
   }, []);
 
@@ -165,56 +166,56 @@ export default function VectorCalculusLab() {
     color: string;
   }) => (
     <div className="flex flex-col gap-1">
-      <span className={`text-[9px] uppercase ${color}`}>{label}</span>
+      <span className={`text-[9px] font-bold uppercase ${color}`}>{label}</span>
       <input
         type="number"
         value={value}
         onChange={(e) => onChange(Number(e.target.value) || 0)}
-        className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-xs"
+        className="bg-[var(--bg-deep)] border border-[var(--border-glass)] rounded-lg px-2 py-1 text-xs text-[var(--text-primary)] outline-none focus:ring-1 focus:ring-[var(--color-primary)] font-mono"
       />
     </div>
   );
 
   // ─── UI ─────────────────────────────────────────────────────────────
   return (
-    <div className="relative w-full h-full bg-[#020617] rounded-3xl overflow-hidden flex">
+    <div className="relative w-full h-full bg-[var(--bg-deep)] rounded-3xl overflow-hidden flex transition-colors duration-500">
 
       <div ref={mountRef} className="flex-1" />
 
       {/* Control Panel */}
-      <div className="absolute top-6 left-6 bg-black/60 p-6 rounded-2xl w-[300px] space-y-6">
-        <div className="flex items-center gap-2 text-indigo-400 text-xs uppercase">
+      <div className="absolute top-6 left-6 bg-[var(--bg-panel)] backdrop-blur-xl border border-[var(--border-glass)] p-6 rounded-2xl w-[300px] space-y-6 shadow-2xl">
+        <div className="flex items-center gap-2 text-[var(--color-primary)] text-xs uppercase font-bold tracking-widest">
           <Move3d size={14} /> Coordinates
         </div>
 
         {/* Vector A */}
-        <div>
-          <p className="text-blue-400 text-xs mb-2">Vector A</p>
+        <div className="space-y-2">
+          <p className="text-blue-500 text-xs font-bold uppercase tracking-wider">Vector A</p>
           <div className="grid grid-cols-3 gap-2">
-            <InputField label="X" value={vecA.x} onChange={(v) => setVecA({ ...vecA, x: v })} color="text-blue-400"/>
-            <InputField label="Y" value={vecA.y} onChange={(v) => setVecA({ ...vecA, y: v })} color="text-blue-400"/>
-            <InputField label="Z" value={vecA.z} onChange={(v) => setVecA({ ...vecA, z: v })} color="text-blue-400"/>
+            <InputField label="X" value={vecA.x} onChange={(v) => setVecA({ ...vecA, x: v })} color="text-blue-500"/>
+            <InputField label="Y" value={vecA.y} onChange={(v) => setVecA({ ...vecA, y: v })} color="text-blue-500"/>
+            <InputField label="Z" value={vecA.z} onChange={(v) => setVecA({ ...vecA, z: v })} color="text-blue-500"/>
           </div>
         </div>
 
         {/* Vector B */}
-        <div>
-          <p className="text-emerald-400 text-xs mb-2">Vector B</p>
+        <div className="space-y-2">
+          <p className="text-emerald-500 text-xs font-bold uppercase tracking-wider">Vector B</p>
           <div className="grid grid-cols-3 gap-2">
-            <InputField label="X" value={vecB.x} onChange={(v) => setVecB({ ...vecB, x: v })} color="text-emerald-400"/>
-            <InputField label="Y" value={vecB.y} onChange={(v) => setVecB({ ...vecB, y: v })} color="text-emerald-400"/>
-            <InputField label="Z" value={vecB.z} onChange={(v) => setVecB({ ...vecB, z: v })} color="text-emerald-400"/>
+            <InputField label="X" value={vecB.x} onChange={(v) => setVecB({ ...vecB, x: v })} color="text-emerald-500"/>
+            <InputField label="Y" value={vecB.y} onChange={(v) => setVecB({ ...vecB, y: v })} color="text-emerald-500"/>
+            <InputField label="Z" value={vecB.z} onChange={(v) => setVecB({ ...vecB, z: v })} color="text-emerald-500"/>
           </div>
         </div>
 
         {/* Result */}
-        <div className="text-rose-400 text-xs border-t pt-3">
-          C = [{cross.x.toFixed(1)}, {cross.y.toFixed(1)}, {cross.z.toFixed(1)}]
+        <div className="text-rose-500 text-[11px] font-mono font-bold border-t border-[var(--border-glass)] pt-4 tracking-tight">
+          C (A × B) = [{cross.x.toFixed(1)}, {cross.y.toFixed(1)}, {cross.z.toFixed(1)}]
         </div>
       </div>
 
       {/* Helper */}
-      <div className="absolute bottom-6 right-6 text-[10px] text-gray-500 flex items-center gap-2">
+      <div className="absolute bottom-6 right-6 text-[10px] text-[var(--text-muted)] flex items-center gap-2 font-bold uppercase tracking-widest bg-[var(--bg-panel)]/50 backdrop-blur-sm px-4 py-2 rounded-full border border-[var(--border-glass)]">
         <MousePointer2 size={12}/> Drag to rotate
       </div>
 

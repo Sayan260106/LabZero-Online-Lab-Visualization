@@ -125,34 +125,34 @@ const QuantumConfigLab: React.FC<QuantumConfigLabProps> = ({ element }) => {
 
   return (
     <div className="space-y-10">
-      <div className="glass-panel p-10 rounded-[48px] border border-white/5 shadow-2xl relative overflow-hidden bg-[#020617]/40">
-        <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none font-display font-black text-[12rem] uppercase select-none leading-none">
+      <div className="bg-[var(--bg-panel)] p-10 rounded-[48px] border border-[var(--border-glass)] shadow-2xl relative overflow-hidden">
+        <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none font-display font-black text-[12rem] uppercase select-none leading-none text-[var(--text-primary)]">
           Quantum
         </div>
 
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-10 mb-16 relative z-10">
           <div className="space-y-3">
             <div className="flex items-center gap-2 mb-1">
-              <Binary size={12} className="text-indigo-500" />
-              <h4 className="text-[10px] font-mono font-bold text-indigo-400 uppercase tracking-[0.4em]">Electronic Configuration Lab / v2.0</h4>
+              <Binary size={12} className="text-[var(--color-primary)]" />
+              <h4 className="text-[10px] font-mono font-bold text-[var(--color-primary)] uppercase tracking-[0.4em]">Electronic Configuration Lab / v2.0</h4>
             </div>
-            <h2 className="text-5xl font-display font-bold text-white tracking-tighter uppercase leading-none">Orbital Box Simulation</h2>
-            <p className="text-slate-500 text-sm mt-4 max-w-2xl font-light leading-relaxed">
-              Manually place electrons to explore the fundamental principles of quantum mechanics. Achieve the target <span className="text-indigo-400 font-bold font-mono">Z={element.number}</span> for <span className="text-white font-bold">{element.name}</span>.
+            <h2 className="text-5xl font-display font-bold text-[var(--text-primary)] tracking-tighter uppercase leading-none">Orbital Box Simulation</h2>
+            <p className="text-[var(--text-muted)] text-sm mt-4 max-w-2xl font-medium leading-relaxed">
+              Manually place electrons to explore the fundamental principles of quantum mechanics. Achieve the target <span className="text-[var(--color-primary)] font-bold font-mono">Z={element.number}</span> for <span className="text-[var(--text-primary)] font-bold">{element.name}</span>.
             </p>
           </div>
           
-          <div className="flex gap-4 bg-[#020617]/60 p-2 rounded-2xl border border-white/10 shadow-2xl">
+          <div className="flex gap-4 bg-[var(--bg-deep)] p-2 rounded-2xl border border-[var(--border-glass)] shadow-2xl">
             <button 
               onClick={autoFill}
-              className="px-8 py-4 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-[10px] font-mono font-bold uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(99,102,241,0.3)] active:scale-95 flex items-center gap-2"
+              className="px-8 py-4 bg-[var(--color-primary)] hover:opacity-90 rounded-xl text-[10px] font-mono font-bold uppercase tracking-widest transition-all shadow-[0_0_20px_rgba(var(--color-primary-rgb),0.3)] active:scale-95 flex items-center gap-2 text-white"
             >
               <Zap size={14} />
               Auto-Fill
             </button>
             <button 
               onClick={reset}
-              className="px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-mono font-bold uppercase tracking-widest transition-all active:scale-95 flex items-center gap-2"
+              className="px-8 py-4 bg-[var(--bg-panel)] hover:bg-[var(--bg-panel)]/80 border border-[var(--border-glass)] rounded-xl text-[10px] font-mono font-bold uppercase tracking-widest transition-all active:scale-95 flex items-center gap-2 text-[var(--text-primary)]"
             >
               <RefreshCw size={14} />
               Reset
@@ -161,26 +161,26 @@ const QuantumConfigLab: React.FC<QuantumConfigLabProps> = ({ element }) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16 relative z-10">
-          <div className="p-8 bg-[#020617]/60 rounded-[32px] border border-white/5 shadow-inner group">
+          <div className="p-8 bg-[var(--bg-deep)] rounded-[32px] border border-[var(--border-glass)] shadow-inner group">
             <div className="flex items-center gap-2 mb-4">
-              <Activity size={12} className="text-slate-600" />
-              <p className="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-widest">Target Atomic Number</p>
+              <Activity size={12} className="text-[var(--text-muted)]" />
+              <p className="text-[10px] font-mono font-bold text-[var(--text-muted)] uppercase tracking-widest">Target Atomic Number</p>
             </div>
-            <p className="text-5xl font-display font-bold text-white tracking-tighter">{element.number}</p>
+            <p className="text-5xl font-display font-bold text-[var(--text-primary)] tracking-tighter">{element.number}</p>
           </div>
-          <div className={`p-8 rounded-[32px] border transition-all duration-500 shadow-inner ${totalElectrons === element.number ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-[#020617]/60 border-white/5'}`}>
+          <div className={`p-8 rounded-[32px] border transition-all duration-500 shadow-inner ${totalElectrons === element.number ? 'bg-emerald-500/10 border-emerald-500/30' : 'bg-[var(--bg-deep)] border-[var(--border-glass)]'}`}>
             <div className="flex items-center gap-2 mb-4">
-              <Activity size={12} className={totalElectrons === element.number ? 'text-emerald-500' : 'text-slate-600'} />
-              <p className={`text-[10px] font-mono font-bold uppercase tracking-widest ${totalElectrons === element.number ? 'text-emerald-500/60' : 'text-slate-600'}`}>Electrons Placed</p>
+              <Activity size={12} className={totalElectrons === element.number ? 'text-emerald-500' : 'text-[var(--text-muted)]'} />
+              <p className={`text-[10px] font-mono font-bold uppercase tracking-widest ${totalElectrons === element.number ? 'text-emerald-500/60' : 'text-[var(--text-muted)]'}`}>Electrons Placed</p>
             </div>
-            <p className={`text-5xl font-display font-bold tracking-tighter ${totalElectrons > element.number ? 'text-red-500' : totalElectrons === element.number ? 'text-emerald-400' : 'text-indigo-400'}`}>
+            <p className={`text-5xl font-display font-bold tracking-tighter ${totalElectrons > element.number ? 'text-red-500' : totalElectrons === element.number ? 'text-emerald-400' : 'text-[var(--color-primary)]'}`}>
               {totalElectrons}
             </p>
           </div>
-          <div className={`p-8 rounded-[32px] border transition-all duration-500 shadow-inner ${violations.length > 0 ? 'bg-red-500/10 border-red-500/30' : 'bg-[#020617]/60 border-white/5'}`}>
+          <div className={`p-8 rounded-[32px] border transition-all duration-500 shadow-inner ${violations.length > 0 ? 'bg-red-500/10 border-red-500/30' : 'bg-[var(--bg-deep)] border-[var(--border-glass)]'}`}>
             <div className="flex items-center gap-2 mb-4">
-              <AlertTriangle size={12} className={violations.length > 0 ? 'text-red-500' : 'text-slate-600'} />
-              <p className={`text-[10px] font-mono font-bold uppercase tracking-widest ${violations.length > 0 ? 'text-red-500/60' : 'text-slate-600'}`}>Rule Status</p>
+              <AlertTriangle size={12} className={violations.length > 0 ? 'text-red-500' : 'text-[var(--text-muted)]'} />
+              <p className={`text-[10px] font-mono font-bold uppercase tracking-widest ${violations.length > 0 ? 'text-red-500/60' : 'text-[var(--text-muted)]'}`}>Rule Status</p>
             </div>
             <div className="flex items-center gap-3">
               {violations.length === 0 ? (
@@ -216,17 +216,17 @@ const QuantumConfigLab: React.FC<QuantumConfigLabProps> = ({ element }) => {
           )}
         </AnimatePresence>
 
-        <div className="flex flex-col-reverse gap-6 p-12 bg-[#020617]/60 rounded-[48px] border border-white/5 relative z-10 shadow-2xl">
+        <div className="flex flex-col-reverse gap-6 p-12 bg-[var(--bg-deep)] rounded-[48px] border border-[var(--border-glass)] relative z-10 shadow-2xl">
           {ORBITAL_LAYOUT.map((level) => {
             const isTarget = totalElectrons > 0 && Object.keys(userConfig).some(k => k.startsWith(level.id));
             
             return (
               <div key={level.id} className="flex items-center gap-12 group">
                 <div className="w-20 flex flex-col items-center">
-                  <span className={`text-[11px] font-mono font-bold transition-all duration-500 ${isTarget ? 'text-indigo-400 scale-110' : 'text-slate-700'}`}>
+                  <span className={`text-[11px] font-mono font-bold transition-all duration-500 ${isTarget ? 'text-[var(--color-primary)] scale-110' : 'text-[var(--text-muted)]/40'}`}>
                     {level.id.toUpperCase()}
                   </span>
-                  <div className={`w-1 h-6 rounded-full mt-2 transition-all duration-500 ${isTarget ? 'bg-indigo-500/40' : 'bg-white/5'}`}></div>
+                  <div className={`w-1 h-6 rounded-full mt-2 transition-all duration-500 ${isTarget ? 'bg-[var(--color-primary)]/40' : 'bg-[var(--border-glass)]'}`}></div>
                 </div>
 
                 <div className="flex gap-4">
@@ -239,8 +239,8 @@ const QuantumConfigLab: React.FC<QuantumConfigLabProps> = ({ element }) => {
                         className={`
                           w-16 h-16 rounded-2xl border-2 transition-all duration-300 flex items-center justify-center gap-2 relative overflow-hidden
                           ${spins.length > 0 
-                            ? 'bg-indigo-600/10 border-indigo-500/50 shadow-[0_0_20px_rgba(99,102,241,0.15)]' 
-                            : 'bg-white/5 border-white/5 hover:border-white/20 hover:bg-white/[0.08]'
+                            ? 'bg-[var(--color-primary)]/10 border-[var(--color-primary)]/50 shadow-[0_0_20px_rgba(var(--color-primary-rgb),0.15)]' 
+                            : 'bg-[var(--bg-panel)] border-[var(--border-glass)] hover:border-[var(--color-primary)]/30 hover:bg-[var(--bg-panel)]/80'
                           }
                         `}
                       >
@@ -250,7 +250,7 @@ const QuantumConfigLab: React.FC<QuantumConfigLabProps> = ({ element }) => {
                               initial={{ opacity: 0, y: 10 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: 10 }}
-                              className="text-indigo-400"
+                              className="text-[var(--color-primary)]"
                             >
                               <ArrowUp size={24} strokeWidth={3} />
                             </motion.div>
@@ -260,7 +260,7 @@ const QuantumConfigLab: React.FC<QuantumConfigLabProps> = ({ element }) => {
                               initial={{ opacity: 0, y: -10 }}
                               animate={{ opacity: 1, y: 0 }}
                               exit={{ opacity: 0, y: -10 }}
-                              className="text-indigo-300"
+                              className="text-[var(--color-cyan)]"
                             >
                               <ArrowDown size={24} strokeWidth={3} />
                             </motion.div>
@@ -268,14 +268,14 @@ const QuantumConfigLab: React.FC<QuantumConfigLabProps> = ({ element }) => {
                         </AnimatePresence>
                         
                         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 flex items-center justify-center pointer-events-none transition-opacity">
-                           {spins.length === 0 && <span className="text-[8px] font-mono font-bold text-slate-700 uppercase tracking-widest">Add</span>}
+                           {spins.length === 0 && <span className="text-[8px] font-mono font-bold text-[var(--text-muted)] uppercase tracking-widest font-bold">Add</span>}
                         </div>
                       </button>
                     );
                   })}
                 </div>
 
-                <div className="ml-auto text-[9px] font-mono text-slate-800 font-bold tracking-widest group-hover:text-slate-600 transition-colors">
+                <div className="ml-auto text-[9px] font-mono text-[var(--text-muted)]/40 font-black tracking-widest group-hover:text-[var(--text-muted)] transition-colors">
                    CAPACITY: {level.boxes * 2}
                 </div>
               </div>
@@ -283,10 +283,10 @@ const QuantumConfigLab: React.FC<QuantumConfigLabProps> = ({ element }) => {
           })}
         </div>
 
-        <div className="mt-16 p-10 bg-[#020617] rounded-[40px] border border-white/5 overflow-x-auto whitespace-nowrap shadow-2xl relative z-10">
+        <div className="mt-16 p-10 bg-[var(--bg-deep)] rounded-[40px] border border-[var(--border-glass)] overflow-x-auto whitespace-nowrap shadow-2xl relative z-10">
            <div className="flex items-center gap-3 mb-6">
-             <Layers size={14} className="text-slate-600" />
-             <span className="text-[10px] font-mono font-bold text-slate-600 uppercase tracking-[0.3em]">Computed Configuration String</span>
+             <Layers size={14} className="text-[var(--text-muted)]" />
+             <span className="text-[10px] font-mono font-bold text-[var(--text-muted)] uppercase tracking-[0.3em] font-bold">Computed Configuration String</span>
            </div>
            <div className="inline-flex gap-6 items-center">
              {ORBITAL_LAYOUT.map(level => {
@@ -302,12 +302,12 @@ const QuantumConfigLab: React.FC<QuantumConfigLabProps> = ({ element }) => {
                    animate={{ opacity: 1, scale: 1 }}
                    className="flex items-baseline"
                  >
-                   <span className="text-3xl font-display font-bold text-white tracking-tight">{level.id}</span>
-                   <sup className="text-lg font-mono font-black text-indigo-400 ml-0.5">{count}</sup>
+                   <span className="text-3xl font-display font-bold text-[var(--text-primary)] tracking-tight">{level.id}</span>
+                   <sup className="text-lg font-mono font-black text-[var(--color-primary)] ml-0.5">{count}</sup>
                  </motion.div>
                );
              })}
-             {totalElectrons === 0 && <span className="text-2xl font-display font-bold text-slate-800 italic uppercase tracking-widest">Awaiting Input...</span>}
+             {totalElectrons === 0 && <span className="text-2xl font-display font-bold text-[var(--text-muted)]/20 italic uppercase tracking-widest">Awaiting Input...</span>}
            </div>
         </div>
       </div>
@@ -334,14 +334,14 @@ const QuantumConfigLab: React.FC<QuantumConfigLabProps> = ({ element }) => {
 };
 
 const TheoryCard = ({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) => (
-  <div className="glass-panel p-10 rounded-[40px] border border-white/5 bg-[#020617]/40 hover:bg-[#020617]/60 transition-all duration-500 group">
-    <div className="w-14 h-14 rounded-2xl bg-indigo-600/20 flex items-center justify-center mb-8 shadow-inner group-hover:bg-indigo-600/30 transition-all duration-500">
-      <div className="text-indigo-400 group-hover:scale-110 transition-transform duration-500">
+  <div className="bg-[var(--bg-panel)] p-10 rounded-[40px] border border-[var(--border-glass)] hover:bg-[var(--bg-panel)]/80 transition-all duration-500 group shadow-md">
+    <div className="w-14 h-14 rounded-2xl bg-[var(--color-primary)]/20 flex items-center justify-center mb-8 shadow-inner group-hover:bg-[var(--color-primary)]/30 transition-all duration-500">
+      <div className="text-[var(--color-primary)] group-hover:scale-110 transition-transform duration-500">
         {icon}
       </div>
     </div>
-    <h4 className="text-xl font-display font-bold text-white mb-4 tracking-tight uppercase">{title}</h4>
-    <p className="text-xs text-slate-500 leading-relaxed font-light">{desc}</p>
+    <h4 className="text-xl font-display font-bold text-[var(--text-primary)] mb-4 tracking-tight uppercase">{title}</h4>
+    <p className="text-xs text-[var(--text-muted)] leading-relaxed font-medium">{desc}</p>
   </div>
 );
 

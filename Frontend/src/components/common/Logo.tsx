@@ -56,7 +56,7 @@ export const Logo: React.FC<LogoProps> = ({
             strokeWidth={current.stroke}
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="text-[#0F172A]"
+            className="text-[var(--text-primary)]"
             variants={{
               initial: { pathLength: 1 },
               hover: { color: "var(--color-primary)" }
@@ -108,7 +108,7 @@ export const Logo: React.FC<LogoProps> = ({
           <motion.span
             className={`${current.text} font-display font-black tracking-tighter leading-none flex items-center`}
           >
-            <span className={lightText ? 'text-white' : 'text-[#0F172A]'}>LAB</span>
+            <span className="text-[var(--text-primary)]">LAB</span>
             <span className="relative ml-0.5">
               <span className="text-transparent bg-clip-text bg-gradient-to-br from-[var(--color-primary)] to-[var(--color-secondary)]">ZERO</span>
               <motion.div
@@ -122,7 +122,7 @@ export const Logo: React.FC<LogoProps> = ({
           </motion.span>
           {size === 'lg' && (
             <motion.span
-              className={`text-[10px] font-bold tracking-[0.4em] uppercase mt-1.5 ${lightText ? 'text-white/40' : 'text-[#94A3B8]'}`}
+              className="text-[10px] font-bold tracking-[0.4em] uppercase mt-1.5 text-[var(--text-muted)]"
             >
               Synthesis of Thought
             </motion.span>

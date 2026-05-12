@@ -109,9 +109,10 @@ const HistoricalModels: React.FC = () => {
       // Chaotic Orbits
       for (let i = 0; i < 3; i++) {
         const rot = i * 60;
+        const isLight = document.body.classList.contains('light-mode');
         g.append("ellipse")
           .attr("rx", 180).attr("ry", 60)
-          .attr("fill", "none").attr("stroke", "rgba(255,255,255,0.1)").attr("stroke-width", 1)
+          .attr("fill", "none").attr("stroke", isLight ? "rgba(15, 23, 42, 0.2)" : "rgba(255,255,255,0.1)").attr("stroke-width", 1)
           .attr("transform", `rotate(${rot})`);
         
         const electron = g.append("circle").attr("r", 4).attr("fill", "#38bdf8").style("filter", "url(#glow)");
@@ -127,8 +128,9 @@ const HistoricalModels: React.FC = () => {
       // Nucleus
       g.append("circle").attr("r", 15).attr("fill", "#ef4444").style("filter", "url(#glow)");
       // Orbits
+      const isLight = document.body.classList.contains('light-mode');
       [60, 110, 160].forEach((r, idx) => {
-        g.append("circle").attr("r", r).attr("fill", "none").attr("stroke", "rgba(255,255,255,0.1)").attr("stroke-dasharray", "4,4");
+        g.append("circle").attr("r", r).attr("fill", "none").attr("stroke", isLight ? "rgba(15, 23, 42, 0.2)" : "rgba(255,255,255,0.1)").attr("stroke-dasharray", "4,4");
         const electron = g.append("circle").attr("r", 6).attr("fill", "#4ade80").style("filter", "url(#glow)");
         d3.timer((elapsed) => {
           const t = elapsed * (0.002 / (idx + 1));
@@ -141,20 +143,20 @@ const HistoricalModels: React.FC = () => {
   return (
     <div className="space-y-10">
       {/* Header with Timeline */}
-      <div className="glass-panel p-10 rounded-[48px] border border-white/10 shadow-2xl relative overflow-hidden">
+      <div className="bg-[var(--bg-panel)] p-10 rounded-[48px] border border-[var(--border-glass)] shadow-2xl relative overflow-hidden">
         <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none">
-          <i className="fas fa-history text-9xl text-white"></i>
+          <i className="fas fa-history text-9xl text-[var(--text-primary)]"></i>
         </div>
 
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 mb-12">
           <div>
-            <h4 className="text-[10px] font-black text-indigo-400 uppercase tracking-[0.4em] mb-2">Evolution of Theory</h4>
-            <h2 className="text-4xl font-black text-white tracking-tight">Timeline of Discovery</h2>
-            <p className="text-white/40 text-sm mt-2 max-w-xl">Scrub through history to see how our understanding of the atom evolved over a century of research.</p>
+            <h4 className="text-[10px] font-black text-[var(--color-primary)] uppercase tracking-[0.4em] mb-2 font-bold">Evolution of Theory</h4>
+            <h2 className="text-4xl font-black text-[var(--text-primary)] tracking-tight">Timeline of Discovery</h2>
+            <p className="text-[var(--text-muted)] text-sm mt-2 max-w-xl font-medium leading-relaxed">Scrub through history to see how our understanding of the atom evolved over a century of research.</p>
           </div>
           <button 
             onClick={() => setCompareMode(!compareMode)}
-            className={`px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 border ${compareMode ? 'bg-indigo-600 border-indigo-400 shadow-xl' : 'bg-white/5 border-white/10 text-white/50 hover:bg-white/10'}`}
+            className={`px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center gap-3 border ${compareMode ? 'bg-[var(--color-primary)] border-[var(--color-primary)] text-white shadow-xl' : 'bg-[var(--bg-panel)] border-[var(--border-glass)] text-[var(--text-muted)] hover:bg-[var(--bg-panel)]/80'}`}
           >
             <i className={`fas ${compareMode ? 'fa-th-large' : 'fa-columns'}`}></i> {compareMode ? 'Close Lab' : 'Compare Models'}
           </button>
@@ -171,7 +173,7 @@ const HistoricalModels: React.FC = () => {
                 step="1" 
                 value={timelineIndex} 
                 onChange={(e) => setTimelineIndex(parseInt(e.target.value))}
-                className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-indigo-500"
+                className="w-full h-1.5 bg-[var(--bg-deep)] rounded-lg appearance-none cursor-pointer accent-[var(--color-primary)] border border-[var(--border-glass)]"
               />
               <div className="flex justify-between mt-6">
                 {MODELS.map((m, i) => (
@@ -180,8 +182,8 @@ const HistoricalModels: React.FC = () => {
                     onClick={() => setTimelineIndex(i)}
                     className={`flex flex-col items-center gap-2 transition-all ${timelineIndex === i ? 'scale-110' : 'opacity-40 grayscale'}`}
                   >
-                    <span className="text-lg font-black text-white">{m.year}</span>
-                    <span className="text-[9px] font-black uppercase tracking-widest text-indigo-400">{m.scientist.split(' ')[1]}</span>
+                    <span className="text-lg font-black text-[var(--text-primary)]">{m.year}</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-[var(--color-primary)] font-mono">{m.scientist.split(' ')[1]}</span>
                   </button>
                 ))}
               </div>
@@ -189,27 +191,27 @@ const HistoricalModels: React.FC = () => {
 
             {/* Single Model View */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div className="glass-panel rounded-[40px] bg-slate-950/40 p-4 border-white/5 shadow-inner flex items-center justify-center aspect-square">
+              <div className="bg-[var(--bg-deep)] rounded-[40px] p-4 border border-[var(--border-glass)] shadow-inner flex items-center justify-center aspect-square">
                  <svg ref={canvasRef1} className="w-full h-full" viewBox="0 0 600 450" />
               </div>
               <div className="space-y-8 p-4">
-                <div className="inline-block px-5 py-2 bg-indigo-500/10 border border-indigo-500/20 rounded-full">
-                  <span className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">{activeModel.keyFeature}</span>
+                <div className="inline-block px-5 py-2 bg-[var(--color-primary)]/10 border border-[var(--color-primary)]/20 rounded-full">
+                  <span className="text-[10px] font-black text-[var(--color-primary)] uppercase tracking-widest">{activeModel.keyFeature}</span>
                 </div>
-                <h3 className="text-5xl font-black text-white tracking-tighter leading-none">{activeModel.name}</h3>
+                <h3 className="text-5xl font-black text-[var(--text-primary)] tracking-tighter leading-none">{activeModel.name}</h3>
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-white/20">
+                  <div className="w-10 h-10 rounded-xl bg-[var(--bg-panel)] flex items-center justify-center text-[var(--text-muted)] border border-[var(--border-glass)]">
                     <i className="fas fa-user-graduate"></i>
                   </div>
-                  <span className="text-xl font-bold text-white/60">{activeModel.scientist}</span>
+                  <span className="text-xl font-bold text-[var(--text-primary)]/60">{activeModel.scientist}</span>
                 </div>
-                <p className="text-lg text-white/40 leading-relaxed font-medium">"{activeModel.description}"</p>
-                <div className="p-6 bg-white/5 rounded-3xl border border-white/5 flex gap-4 items-center">
-                   <div className="w-12 h-12 rounded-2xl bg-indigo-600 flex items-center justify-center shadow-lg">
+                <p className="text-lg text-[var(--text-muted)] leading-relaxed font-medium">"{activeModel.description}"</p>
+                <div className="p-6 bg-[var(--bg-deep)] rounded-3xl border border-[var(--border-glass)] flex gap-4 items-center shadow-sm">
+                   <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary)] flex items-center justify-center shadow-lg">
                       <i className="fas fa-lightbulb text-white"></i>
                    </div>
-                   <p className="text-xs text-white/60 font-bold uppercase tracking-wide leading-relaxed">
-                     This model established the concept of <span className="text-white">{activeModel.keyFeature}</span> in modern physics.
+                   <p className="text-xs text-[var(--text-muted)] font-bold uppercase tracking-wide leading-relaxed">
+                     This model established the concept of <span className="text-[var(--text-primary)]">{activeModel.keyFeature}</span> in modern physics.
                    </p>
                 </div>
               </div>
@@ -218,27 +220,27 @@ const HistoricalModels: React.FC = () => {
         ) : (
           /* Compare Mode Lab */
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 h-[600px]">
-            <div className="glass-panel rounded-[40px] bg-slate-950/40 border border-white/5 p-8 flex flex-col gap-6 relative">
+            <div className="bg-[var(--bg-deep)] rounded-[40px] border border-[var(--border-glass)] p-8 flex flex-col gap-6 relative shadow-inner">
               <select 
                 value={activeModel1} 
                 onChange={(e) => setActiveModel1(e.target.value as ModelID)}
-                className="bg-slate-900 border border-white/10 rounded-2xl px-6 py-4 text-xl font-black text-white focus:outline-none"
+                className="bg-[var(--bg-panel)] border border-[var(--border-glass)] rounded-2xl px-6 py-4 text-xl font-black text-[var(--text-primary)] focus:outline-none focus:border-[var(--color-primary)]/50 shadow-md"
               >
-                {MODELS.map(m => <option key={m.id} value={m.id}>{m.name} ({m.year})</option>)}
+                {MODELS.map(m => <option key={m.id} value={m.id} className="bg-[var(--bg-deep)]">{m.name} ({m.year})</option>)}
               </select>
               <div className="flex-1 flex items-center justify-center">
                 <svg ref={canvasRef1} className="w-full h-full" viewBox="0 0 600 450" />
               </div>
-              <div className="absolute top-1/2 -right-4 w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white font-black shadow-lg z-10 border-4 border-[#020617]">VS</div>
+              <div className="absolute top-1/2 -right-4 w-8 h-8 rounded-full bg-[var(--color-primary)] flex items-center justify-center text-white font-black shadow-lg z-10 border-4 border-[var(--bg-deep)]">VS</div>
             </div>
 
-            <div className="glass-panel rounded-[40px] bg-slate-950/40 border border-white/5 p-8 flex flex-col gap-6">
+            <div className="bg-[var(--bg-deep)] rounded-[40px] border border-[var(--border-glass)] p-8 flex flex-col gap-6 shadow-inner">
               <select 
                 value={activeModel2} 
                 onChange={(e) => setActiveModel2(e.target.value as ModelID)}
-                className="bg-slate-900 border border-white/10 rounded-2xl px-6 py-4 text-xl font-black text-white focus:outline-none"
+                className="bg-[var(--bg-panel)] border border-[var(--border-glass)] rounded-2xl px-6 py-4 text-xl font-black text-[var(--text-primary)] focus:outline-none focus:border-[var(--color-primary)]/50 shadow-md"
               >
-                {MODELS.map(m => <option key={m.id} value={m.id}>{m.name} ({m.year})</option>)}
+                {MODELS.map(m => <option key={m.id} value={m.id} className="bg-[var(--bg-deep)]">{m.name} ({m.year})</option>)}
               </select>
               <div className="flex-1 flex items-center justify-center">
                 <svg ref={canvasRef2} className="w-full h-full" viewBox="0 0 600 450" />

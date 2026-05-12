@@ -116,26 +116,27 @@ const OrbitalVisualizer: React.FC = () => {
     // Reference Grid / Axes
     const axisLen = 220;
     const axes = [
-      { p: { x: axisLen, y: 0, z: 0 }, label: 'x', color: '#334155' },
-      { p: { x: 0, y: axisLen, z: 0 }, label: 'y', color: '#334155' },
-      { p: { x: 0, y: 0, z: axisLen }, label: 'z', color: '#64748b' }
+      { p: { x: axisLen, y: 0, z: 0 }, label: 'x' },
+      { p: { x: 0, y: axisLen, z: 0 }, label: 'y' },
+      { p: { x: 0, y: 0, z: axisLen }, label: 'z' }
     ];
-
+    const isLight = document.body.classList.contains('light-mode');
     axes.forEach(a => {
       const end = project(a.p);
       const start = project({ x: -a.p.x, y: -a.p.y, z: -a.p.z });
+      const axisColor = isLight ? '#0f172a' : (a.label === 'z' ? '#64748b' : '#334155');
       
       g.append("line")
         .attr("x1", start.x).attr("y1", start.y)
         .attr("x2", end.x).attr("y2", end.y)
-        .attr("stroke", a.color)
+        .attr("stroke", axisColor)
         .attr("stroke-width", a.label === 'z' ? 2 : 1)
         .attr("stroke-opacity", 0.3);
 
       g.append("text")
         .attr("x", end.x + (end.x > 0 ? 8 : -8))
         .attr("y", end.y + (end.y > 0 ? 8 : -8))
-        .attr("fill", a.color)
+        .attr("fill", axisColor)
         .attr("font-size", "10px")
         .attr("font-weight", "900")
         .attr("text-anchor", "middle")
@@ -212,36 +213,36 @@ const OrbitalVisualizer: React.FC = () => {
   const currentData = shellData[shell];
 
   return (
-    <div className="glass-panel p-10 rounded-[48px] border border-white/5 h-full flex flex-col min-h-[900px] shadow-2xl relative overflow-hidden bg-slate-950/20">
+    <div className="bg-[var(--bg-panel)] p-10 rounded-[48px] border border-[var(--border-glass)] h-full flex flex-col min-h-[900px] shadow-2xl relative overflow-hidden">
       {/* Background Decorative Text */}
-      <div className="absolute top-0 right-0 p-12 opacity-[0.02] pointer-events-none font-black text-[12rem] leading-none uppercase select-none -translate-y-12">
+      <div className="absolute top-0 right-0 p-12 opacity-[0.02] pointer-events-none font-black text-[12rem] leading-none uppercase select-none -translate-y-12 text-[var(--text-primary)]">
         {shell}
       </div>
 
       {/* Header Section */}
       <div className="flex flex-col md:flex-row justify-between items-start mb-12 z-10 gap-8">
         <div>
-          <h4 className="text-[11px] font-black text-white/30 uppercase tracking-[0.5em] mb-3">Quantum Orbital Physics</h4>
-          <h2 className="text-6xl font-black text-white tracking-tighter mb-2">
-            {currentData.name} <span className="text-indigo-500">(l={currentData.l})</span>
+          <h4 className="text-[11px] font-black text-[var(--text-muted)]/60 uppercase tracking-[0.5em] mb-3 font-bold">Quantum Orbital Physics</h4>
+          <h2 className="text-6xl font-black text-[var(--text-primary)] tracking-tighter mb-2">
+            {currentData.name} <span className="text-[var(--color-primary)]">(l={currentData.l})</span>
           </h2>
           <div className="flex items-center gap-6">
-            <span className="text-xs font-black text-indigo-400 uppercase tracking-widest">Angular Nodes: {currentData.nodes}</span>
-            <span className="w-1.5 h-1.5 rounded-full bg-white/10"></span>
-            <span className="text-xs font-bold text-white/40 italic">{currentData.desc}</span>
+            <span className="text-xs font-black text-[var(--color-primary)] uppercase tracking-widest font-bold">Angular Nodes: {currentData.nodes}</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--border-glass)]"></span>
+            <span className="text-xs font-bold text-[var(--text-muted)]/60 italic">{currentData.desc}</span>
           </div>
         </div>
 
-        <div className="bg-slate-900/80 p-6 rounded-[32px] border border-white/10 shadow-2xl backdrop-blur-3xl min-w-[240px]">
+        <div className="bg-[var(--bg-panel)] p-6 rounded-[32px] border border-[var(--border-glass)] shadow-2xl backdrop-blur-3xl min-w-[240px]">
            <div className="flex items-center justify-between gap-8">
               <div>
-                <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Magnetic State</p>
+                <p className="text-[10px] font-black text-[var(--color-primary)] uppercase tracking-widest mb-1 font-bold">Magnetic State</p>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-4xl font-black text-white tracking-tighter">mₗ = {ml}</span>
+                  <span className="text-4xl font-black text-[var(--text-primary)] tracking-tighter">mₗ = {ml}</span>
                 </div>
               </div>
-              <div className="w-12 h-12 rounded-2xl bg-indigo-600/20 flex items-center justify-center border border-indigo-500/30">
-                 <i className="fas fa-magnet text-indigo-400 text-xl"></i>
+              <div className="w-12 h-12 rounded-2xl bg-[var(--color-primary)]/20 flex items-center justify-center border border-[var(--color-primary)]/30">
+                 <i className="fas fa-magnet text-[var(--color-primary)] text-xl"></i>
               </div>
            </div>
         </div>
@@ -249,29 +250,29 @@ const OrbitalVisualizer: React.FC = () => {
 
       {/* Main Simulation Viewport */}
       <div 
-        className="flex-1 relative glass-panel rounded-[40px] bg-[#020617] border-white/5 overflow-hidden cursor-move mb-12 shadow-inner group"
+        className="flex-1 relative rounded-[40px] bg-[var(--bg-deep)] border border-[var(--border-glass)] overflow-hidden cursor-move mb-12 shadow-inner group"
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
       >
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.06)_0%,transparent_85%)] pointer-events-none"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(var(--color-primary-rgb),0.06)_0%,transparent_85%)] pointer-events-none"></div>
         <div className="absolute inset-0 opacity-[0.04] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]"></div>
         
         <svg ref={svgRef} className="w-full h-full" viewBox="0 0 800 550" />
         
         {/* Simulation Feedback Overlays */}
-        <div className="absolute bottom-10 left-10 flex items-center gap-6 p-6 bg-black/60 rounded-[32px] border border-white/10 backdrop-blur-3xl shadow-2xl animate-in slide-in-from-left-4">
+        <div className="absolute bottom-10 left-10 flex items-center gap-6 p-6 bg-[var(--bg-panel)]/80 rounded-[32px] border border-[var(--border-glass)] backdrop-blur-3xl shadow-2xl animate-in slide-in-from-left-4">
            <div className="relative flex h-4 w-4">
              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
              <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500"></span>
            </div>
-           <span className="text-[11px] font-mono text-white/40 uppercase tracking-[0.3em] font-black">Real-time Wavefunction Mapping</span>
+           <span className="text-[11px] font-mono text-[var(--text-muted)]/60 uppercase tracking-[0.3em] font-black">Real-time Wavefunction Mapping</span>
         </div>
 
         <div className="absolute top-10 right-10 flex flex-col items-end gap-3 opacity-20 pointer-events-none font-mono">
-           <div className="text-[9px] text-white tracking-[0.4em] uppercase bg-white/5 px-4 py-2 rounded-full border border-white/5">SYSTEM_Z_AXIS::STABLE</div>
-           <div className="text-[9px] text-white tracking-[0.4em] uppercase bg-white/5 px-4 py-2 rounded-full border border-white/5">PHI_ROT::{rotation.y.toFixed(3)}</div>
+           <div className="text-[9px] text-[var(--text-primary)] tracking-[0.4em] uppercase bg-[var(--bg-panel)] px-4 py-2 rounded-full border border-[var(--border-glass)]">SYSTEM_Z_AXIS::STABLE</div>
+           <div className="text-[9px] text-[var(--text-primary)] tracking-[0.4em] uppercase bg-[var(--bg-panel)] px-4 py-2 rounded-full border border-[var(--border-glass)]">PHI_ROT::{rotation.y.toFixed(3)}</div>
         </div>
       </div>
 
@@ -279,8 +280,8 @@ const OrbitalVisualizer: React.FC = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
         <div className="space-y-6">
           <div className="flex items-center justify-between px-2">
-            <h5 className="text-[11px] font-black text-white/30 uppercase tracking-[0.4em]">Subshell Selection (L)</h5>
-            <span className="text-[10px] font-mono text-indigo-500/60">ANGULAR_MOMENTUM</span>
+            <h5 className="text-[11px] font-black text-[var(--text-muted)]/40 uppercase tracking-[0.4em] font-bold">Subshell Selection (L)</h5>
+            <span className="text-[10px] font-mono text-[var(--color-primary)]/60 font-bold">ANGULAR_MOMENTUM</span>
           </div>
           <div className="grid grid-cols-4 gap-4">
             {(Object.keys(shellData) as ShellType[]).map((s) => (
@@ -289,8 +290,8 @@ const OrbitalVisualizer: React.FC = () => {
                 onClick={() => { setShell(s); setMl(0); }}
                 className={`group py-6 rounded-[24px] text-xl font-black uppercase transition-all border-2 ${
                   shell === s 
-                  ? 'bg-white text-slate-950 border-white shadow-[0_0_40px_rgba(255,255,255,0.3)] scale-[1.03]' 
-                  : 'bg-white/5 border-white/5 text-white/30 hover:bg-white/10 hover:text-white/60 hover:border-white/20'
+                  ? 'bg-[var(--color-primary)] text-white border-[var(--color-primary)] shadow-[0_0_40px_rgba(var(--color-primary-rgb),0.3)] scale-[1.03]' 
+                  : 'bg-[var(--bg-panel)] border-[var(--border-glass)] text-[var(--text-muted)]/40 hover:bg-[var(--bg-panel)]/80 hover:text-[var(--text-primary)]/60 hover:border-[var(--border-glass)]/60'
                 }`}
               >
                 {s}
@@ -301,8 +302,8 @@ const OrbitalVisualizer: React.FC = () => {
 
         <div className="space-y-6">
           <div className="flex items-center justify-between px-2">
-             <h5 className="text-[11px] font-black text-white/30 uppercase tracking-[0.4em]">Magnetic Orientation (Ml)</h5>
-             <span className="text-[10px] font-mono text-indigo-500/60">Z_AXIS_PROJECTION</span>
+             <h5 className="text-[11px] font-black text-[var(--text-muted)]/40 uppercase tracking-[0.4em] font-bold">Magnetic Orientation (Ml)</h5>
+             <span className="text-[10px] font-mono text-[var(--color-primary)]/60 font-bold">Z_AXIS_PROJECTION</span>
           </div>
           <div className="flex flex-wrap gap-4">
             {currentData.mlRange.map((m) => (
@@ -311,8 +312,8 @@ const OrbitalVisualizer: React.FC = () => {
                 onClick={() => setMl(m)}
                 className={`w-16 h-16 rounded-[24px] text-lg font-black transition-all border-2 flex items-center justify-center ${
                   ml === m 
-                  ? 'bg-indigo-600 border-indigo-400 text-white shadow-2xl shadow-indigo-600/40 scale-[1.08]' 
-                  : 'bg-white/5 border-white/5 text-white/30 hover:border-white/20 hover:text-white/70'
+                  ? 'bg-[var(--color-primary)] border-[var(--color-primary)] text-white shadow-2xl shadow-[var(--color-primary)]/40 scale-[1.08]' 
+                  : 'bg-[var(--bg-panel)] border-[var(--border-glass)] text-[var(--text-muted)]/40 hover:border-[var(--border-glass)]/60 hover:text-[var(--text-primary)]/60'
                 }`}
               >
                 {m}
@@ -323,12 +324,12 @@ const OrbitalVisualizer: React.FC = () => {
       </div>
 
       {/* Footer Insight Card */}
-      <div className="mt-12 p-8 bg-slate-900/40 rounded-[40px] border border-white/5 flex gap-8 items-center group hover:bg-white/5 transition-all">
-         <div className="w-16 h-16 rounded-[24px] bg-indigo-600/20 flex items-center justify-center text-indigo-400 shadow-xl group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all">
+      <div className="mt-12 p-8 bg-[var(--bg-panel)] rounded-[40px] border border-[var(--border-glass)] flex gap-8 items-center group hover:bg-[var(--bg-panel)]/80 transition-all shadow-md">
+         <div className="w-16 h-16 rounded-[24px] bg-[var(--color-primary)]/20 flex items-center justify-center text-[var(--color-primary)] shadow-xl group-hover:scale-110 group-hover:bg-[var(--color-primary)] group-hover:text-white transition-all">
            <i className="fas fa-chart-line text-2xl"></i>
          </div>
-         <p className="text-xs text-white/40 leading-relaxed font-bold uppercase tracking-widest max-w-3xl">
-           These visual states represent <span className="text-white">90% probability regions</span>. The <span className="text-indigo-400 font-black">Z-Axis</span> is the primary quantization axis for magnetic moments, defining how these orbitals align in external fields.
+         <p className="text-xs text-[var(--text-muted)] leading-relaxed font-bold uppercase tracking-widest max-w-3xl">
+           These visual states represent <span className="text-[var(--text-primary)]">90% probability regions</span>. The <span className="text-[var(--color-primary)] font-black">Z-Axis</span> is the primary quantization axis for magnetic moments, defining how these orbitals align in external fields.
          </p>
       </div>
     </div>

@@ -60,7 +60,8 @@ const MechanicsVisualizer: React.FC = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Draw grid and ground
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.05)';
+    const isLightMode = document.body.classList.contains('light-mode');
+    ctx.strokeStyle = isLightMode ? 'rgba(15, 23, 42, 0.1)' : 'rgba(255, 255, 255, 0.05)';
     ctx.lineWidth = 1;
     for (let i = 0; i < canvas.width; i += 50) {
       ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, canvas.height); ctx.stroke();
@@ -93,7 +94,8 @@ const MechanicsVisualizer: React.FC = () => {
     ctx.stroke();
 
     // Data Readout on Canvas
-    ctx.fillStyle = 'white';
+    const isLight = document.body.classList.contains('light-mode');
+    ctx.fillStyle = isLight ? '#0f172a' : 'white';
     ctx.font = '12px monospace';
     ctx.fillText(`Height: ${Math.max(0, currentY).toFixed(1)}m`, 20, 30);
     ctx.fillText(`Range: ${currentX.toFixed(1)}m`, 20, 50);
@@ -119,9 +121,9 @@ const MechanicsVisualizer: React.FC = () => {
   }, [isRunning]);
 
   return (
-    <div className="w-full h-full flex flex-col gap-6 text-white">
+    <div className="w-full h-full flex flex-col gap-6 text-[var(--text-primary)]">
       {/* Canvas Container */}
-      <div className="flex-1 bg-black/40 rounded-3xl border border-white/10 overflow-hidden relative">
+      <div className="flex-1 bg-[var(--bg-panel)] rounded-3xl border border-[var(--border-glass)] overflow-hidden relative shadow-lg">
         <canvas
           ref={canvasRef}
           width={1000}
@@ -131,42 +133,42 @@ const MechanicsVisualizer: React.FC = () => {
       </div>
 
       {/* Control Panel */}
-      <div className="bg-white/5 p-6 rounded-3xl border border-white/10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="bg-[var(--bg-panel)] p-6 rounded-3xl border border-[var(--border-glass)] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 shadow-md">
 
         {/* Sliders */}
         <div className="flex flex-col gap-2">
-          <label className="text-[10px] font-mono text-slate-400 uppercase tracking-widest flex justify-between">
-            <span>Angle</span> <span className="text-indigo-400">{angle}°</span>
+          <label className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest flex justify-between font-bold">
+            <span>Angle</span> <span className="text-[var(--color-primary)]">{angle}°</span>
           </label>
-          <input type="range" min="0" max="90" value={angle} onChange={(e) => setAngle(Number(e.target.value))} className="accent-indigo-500" />
+          <input type="range" min="0" max="90" value={angle} onChange={(e) => setAngle(Number(e.target.value))} className="accent-[var(--color-primary)] cursor-pointer" />
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-[10px] font-mono text-slate-400 uppercase tracking-widest flex justify-between">
-            <span>Velocity</span> <span className="text-indigo-400">{velocity} m/s</span>
+          <label className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest flex justify-between font-bold">
+            <span>Velocity</span> <span className="text-[var(--color-primary)]">{velocity} m/s</span>
           </label>
-          <input type="range" min="5" max="50" value={velocity} onChange={(e) => setVelocity(Number(e.target.value))} className="accent-indigo-500" />
+          <input type="range" min="5" max="50" value={velocity} onChange={(e) => setVelocity(Number(e.target.value))} className="accent-[var(--color-primary)] cursor-pointer" />
         </div>
 
         <div className="flex flex-col gap-2">
-          <label className="text-[10px] font-mono text-slate-400 uppercase tracking-widest flex justify-between">
-            <span>Gravity</span> <span className="text-indigo-400">{gravity} m/s²</span>
+          <label className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest flex justify-between font-bold">
+            <span>Gravity</span> <span className="text-[var(--color-primary)]">{gravity} m/s²</span>
           </label>
-          <input type="range" min="1" max="25" step="0.1" value={gravity} onChange={(e) => setGravity(Number(e.target.value))} className="accent-indigo-500" />
+          <input type="range" min="1" max="25" step="0.1" value={gravity} onChange={(e) => setGravity(Number(e.target.value))} className="accent-[var(--color-primary)] cursor-pointer" />
         </div>
 
         {/* Buttons */}
         <div className="flex items-end gap-3">
           <button
             onClick={toggleSim}
-            className="flex-1 h-10 rounded-xl bg-indigo-600 hover:bg-indigo-500 transition-colors flex items-center justify-center gap-2 text-sm font-bold tracking-wider"
+            className="flex-1 h-10 rounded-xl bg-[var(--color-primary)] hover:opacity-90 transition-all flex items-center justify-center gap-2 text-sm font-bold tracking-wider text-white shadow-lg shadow-[var(--color-primary)]/20 active:scale-95"
           >
             {isRunning ? <Pause size={16} /> : <Play size={16} />}
             {isRunning ? 'PAUSE' : 'LAUNCH'}
           </button>
           <button
             onClick={resetSim}
-            className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 transition-colors flex items-center justify-center text-slate-300"
+            className="w-10 h-10 rounded-xl bg-[var(--bg-panel)] hover:bg-[var(--bg-panel)]/80 border border-[var(--border-glass)] transition-all flex items-center justify-center text-[var(--text-muted)] shadow-sm active:scale-95"
           >
             <RotateCcw size={16} />
           </button>

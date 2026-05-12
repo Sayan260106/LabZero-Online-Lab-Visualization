@@ -98,22 +98,22 @@ const GeometryLab: React.FC<GeometryLabProps> = ({ rotation, zoom = 1, molecules
 
   if (!molecules || molecules.length === 0 || !selectedMolecule) {
     return (
-      <div className="glass-panel rounded-[40px] p-8 border border-white/10 flex items-center justify-center h-[600px]">
-        <div className="text-white text-xl font-mono">Loading Molecule Data...</div>
+      <div className="bg-[var(--bg-panel)] rounded-[40px] p-8 border border-[var(--border-glass)] flex items-center justify-center h-[600px]">
+        <div className="text-[var(--text-primary)] text-xl font-mono font-bold">Loading Molecule Data...</div>
       </div>
     );
   }
 
   return (
-    <div className="glass-panel rounded-[40px] p-8 border border-white/10 space-y-10 select-none animate-in fade-in duration-1000 bg-slate-900/50">
+    <div className="bg-[var(--bg-panel)] rounded-[40px] p-8 border border-[var(--border-glass)] space-y-10 select-none animate-in fade-in duration-1000 shadow-xl">
       {/* UI Header Controls */}
       <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
         <div className="flex items-center gap-8">
-          <div className="flex items-center gap-4 bg-slate-950/90 p-2 rounded-2xl border border-white/10 shadow-inner">
+          <div className="flex items-center gap-4 bg-[var(--bg-deep)] p-2 rounded-2xl border border-[var(--border-glass)] shadow-inner">
             {(['Real', 'Model'] as const).map(m => (
               <label key={m} className="flex items-center gap-3 px-4 cursor-pointer group">
-                <input type="radio" name="mode" checked={mode === m} onChange={() => setMode(m)} className="w-4 h-4 accent-indigo-500" />
-                <span className={`text-xs font-black uppercase tracking-widest transition-colors ${mode === m ? 'text-white' : 'text-white/20 group-hover:text-white/40'}`}>{m}</span>
+                <input type="radio" name="mode" checked={mode === m} onChange={() => setMode(m)} className="w-4 h-4 accent-[var(--color-primary)]" />
+                <span className={`text-xs font-black uppercase tracking-widest transition-colors ${mode === m ? 'text-[var(--text-primary)]' : 'text-[var(--text-muted)]/40 group-hover:text-[var(--text-primary)]/60'}`}>{m}</span>
               </label>
             ))}
           </div>
@@ -122,27 +122,27 @@ const GeometryLab: React.FC<GeometryLabProps> = ({ rotation, zoom = 1, molecules
             <select 
               value={selectedMolecule.formula}
               onChange={(e) => setSelectedMolecule(molecules.find(m => m.formula === e.target.value)!)}
-              className="appearance-none bg-slate-950/90 border border-white/10 rounded-2xl pl-12 pr-14 py-3 text-sm font-black text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all shadow-xl min-w-[240px] cursor-pointer"
+              className="appearance-none bg-[var(--bg-deep)] border border-[var(--border-glass)] rounded-2xl pl-12 pr-14 py-3 text-sm font-black text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary)]/50 transition-all shadow-xl min-w-[240px] cursor-pointer"
             >
-              {molecules.map(m => <option key={m.formula} value={m.formula}>{m.formula} ({m.name})</option>)}
+              {molecules.map(m => <option key={m.formula} value={m.formula} className="bg-[var(--bg-deep)]">{m.formula} ({m.name})</option>)}
             </select>
           </div>
         </div>
 
-        <div className="flex flex-wrap gap-10 items-center bg-white/5 px-8 py-3 rounded-2xl border border-white/5">
+        <div className="flex flex-wrap gap-10 items-center bg-[var(--bg-deep)] px-8 py-3 rounded-2xl border border-[var(--border-glass)] shadow-sm">
           <label className="flex items-center gap-3 cursor-pointer group">
-            <input type="checkbox" checked={showBondAngles} onChange={() => setShowBondAngles(!showBondAngles)} className="w-5 h-5 rounded accent-indigo-500" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-white/40 group-hover:text-white">Bond Angles</span>
+            <input type="checkbox" checked={showBondAngles} onChange={() => setShowBondAngles(!showBondAngles)} className="w-5 h-5 rounded accent-[var(--color-primary)]" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]/60 group-hover:text-[var(--text-primary)]">Bond Angles</span>
           </label>
           <label className="flex items-center gap-3 cursor-pointer group">
-             <input type="checkbox" checked={showLonePairs} onChange={() => setShowLonePairs(!showLonePairs)} className="w-5 h-5 rounded accent-indigo-500" />
-            <span className="text-[10px] font-black uppercase tracking-widest text-white/40 group-hover:text-white">Lone Pairs</span>
+             <input type="checkbox" checked={showLonePairs} onChange={() => setShowLonePairs(!showLonePairs)} className="w-5 h-5 rounded accent-[var(--color-primary)]" />
+            <span className="text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)]/60 group-hover:text-[var(--text-primary)]">Lone Pairs</span>
           </label>
         </div>
       </div>
 
       {/* 3D Viewport */}
-      <div className="relative bg-[#020617] rounded-[32px] border border-white/10 overflow-hidden h-[600px] shadow-2xl">
+      <div className="relative bg-[var(--bg-deep)] rounded-[32px] border border-[var(--border-glass)] overflow-hidden h-[600px] shadow-2xl">
         <Canvas shadows>
           <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={40} />
           <OrbitControls enablePan={false} minDistance={4} maxDistance={15} />
@@ -187,25 +187,25 @@ const GeometryLab: React.FC<GeometryLabProps> = ({ rotation, zoom = 1, molecules
         </Canvas>
 
         {/* Profile Card Overlay */}
-        <div className="absolute bottom-10 left-10 p-8 glass-panel rounded-[32px] bg-black/60 backdrop-blur-xl min-w-[320px] border-l-4 border-l-indigo-600 pointer-events-none">
+        <div className="absolute bottom-10 left-10 p-8 bg-[var(--bg-panel)]/80 backdrop-blur-xl min-w-[320px] border-l-4 border-l-[var(--color-primary)] pointer-events-none rounded-[32px] border border-[var(--border-glass)] shadow-2xl">
            <div className="flex items-center gap-6 mb-6">
-             <div className="w-16 h-16 bg-indigo-600 rounded-3xl flex items-center justify-center text-3xl font-black shadow-lg">
+             <div className="w-16 h-16 bg-[var(--color-primary)] rounded-3xl flex items-center justify-center text-3xl font-black shadow-lg text-white">
                {selectedMolecule.formula}
              </div>
              <div>
-               <h4 className="text-2xl font-black text-white">{selectedMolecule.name}</h4>
-               <p className="text-[10px] font-black text-indigo-400 uppercase tracking-widest">Three.js Engine</p>
+               <h4 className="text-2xl font-black text-[var(--text-primary)]">{selectedMolecule.name}</h4>
+               <p className="text-[10px] font-black text-[var(--color-primary)] uppercase tracking-widest">Three.js Engine</p>
              </div>
            </div>
            
-           <div className="space-y-4 pt-4 border-t border-white/10">
+           <div className="space-y-4 pt-4 border-t border-[var(--border-glass)]">
              <div className="flex justify-between items-center text-[10px] font-bold">
-               <span className="text-white/30 uppercase">Framework</span>
-               <span className="text-indigo-200 uppercase font-black">VSEPR {mode}</span>
+               <span className="text-[var(--text-muted)]/40 uppercase">Framework</span>
+               <span className="text-[var(--color-primary)]/80 uppercase font-black">VSEPR {mode}</span>
              </div>
              <div className="flex justify-between items-end">
-               <span className="text-[10px] font-bold text-white/30 uppercase pb-1">Dynamics</span>
-               <span className="text-2xl font-black text-white">
+               <span className="text-[10px] font-bold text-[var(--text-muted)]/40 uppercase pb-1">Dynamics</span>
+               <span className="text-2xl font-black text-[var(--text-primary)]">
                  {mode === 'Real' ? selectedMolecule.realAngle : selectedMolecule.modelAngle}
                </span>
              </div>

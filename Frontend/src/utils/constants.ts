@@ -525,14 +525,14 @@ The branch of mathematics concerning linear equations, vectors, and matrices.
     name: 'Biology',
     icon: 'Dna',
     color: 'emerald',
-    targetClass: ['Class 11', 'Class 12'],
+    targetClass: ['Class 9', 'Class 10', 'Class 11', 'Class 12'],
     topics: [
       {
         id: TopicId.MICROBIOLOGY,
         slug: 'microbiology',
         name: 'Microorganisms',
         description: 'Analyze the 3D structure and movement mechanisms of a single-celled bacterium.',
-        targetClass: ['Class 11'],
+        targetClass: ['Class 9'],
         theory: `
 # Microbiology
 The study of microscopic organisms, such as bacteria, viruses, archaea, fungi and protozoa.
@@ -551,7 +551,7 @@ The study of microscopic organisms, such as bacteria, viruses, archaea, fungi an
         slug: 'cell_biology',
         name: 'Cellular Anatomy',
         description: 'Explore a 3D cross-section of a eukaryotic cell and its organelles.',
-        targetClass: ['Class 11'],
+        targetClass: ['Class 10'],
         theory: `
 # Cell Biology
 The fundamental unit of life; studying structural and functional components.
@@ -625,7 +625,7 @@ Study of plant function, including photosynthesis and nutrient transport.
         slug: 'human_reproduction',
         name: 'Human Reproduction',
         description: 'Biological processes of human life cycle.',
-        targetClass: ['Class 12'],
+        targetClass: [],
         theory: `
 # Human Reproduction
 The process of producing offspring through sexual reproduction.

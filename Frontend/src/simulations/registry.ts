@@ -15,6 +15,8 @@ const MechanicsSim = React.lazy(() => import('./physics/MechanicsSim'));
 const ElectromagnetismSim = React.lazy(() => import('./physics/ElectromagnetismSim'));
 const WaveOpticsSim = React.lazy(() => import('./physics/WaveOpticsSim'));
 const ThermodynamicsSim = React.lazy(() => import('./physics/ThermodynamicsSim'));
+const RefractionSim = React.lazy(() => import('./physics/RefractionSim'));
+// const RefractionSim=React.lazy(() => import('./physics'/RefractionSim) )
 
 // Math
 const PiApproximationSim = React.lazy(() => import('./math/PiApproximationSim'));

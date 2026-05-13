@@ -134,7 +134,12 @@ const SubjectPage: React.FC<SubjectPageProps> = ({
           </motion.div>
         </header>
 
-        <DailyChallenges subjectId={subject.slug as SubjectId} subjectName={subject.name} theme={theme} />
+        <DailyChallenges
+          subjectId={subject.slug as SubjectId}
+          subjectName={subject.name}
+          selectedClass={selectedClass}
+          theme={theme}
+        />
 
         <Skeleton name="subject-topics" loading={false}>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

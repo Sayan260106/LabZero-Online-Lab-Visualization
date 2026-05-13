@@ -8,7 +8,7 @@ export const SUBJECTS: Subject[] = [
     name: 'Chemistry',
     icon: 'Beaker',
     color: 'emerald',
-    targetClass: ['Class 11', 'Class 12'],
+    targetClass: ['Class 9', 'Class 10', 'Class 11', 'Class 12'],
     topics: [
       {
         id: TopicId.ATOMIC_STRUCTURE,
@@ -74,7 +74,7 @@ Analysis of chemical bonding and the spatial arrangement of atoms in molecules.
         slug: 'quantum_numbers',
         name: 'Quantum Numbers',
         description: 'Learn the four quantum numbers that describe the unique state of an electron.',
-        targetClass: ['Class 11'],
+        targetClass: ['Class 10'],
         theory: `
 # Quantum Numbers
 Quantum numbers are like the "address" of an electron in an atom. No two electrons in the same atom can have the same set of four quantum numbers.
@@ -110,7 +110,7 @@ Systematic variations in physical and chemical properties of elements across per
         slug: 'historical_models',
         name: 'Historical Models',
         description: 'Explore how our understanding of the atom evolved from Dalton to Bohr.',
-        targetClass: ['Class 11'],
+        targetClass: ['Class 9'],
         theory: `
 # Historical Atomic Models
 The journey of discovery from solid spheres to quantized energy levels.
@@ -137,7 +137,7 @@ The journey of discovery from solid spheres to quantized energy levels.
         slug: 'quantum_config',
         name: 'Quantum Configuration',
         description: 'Master the rules for filling electrons in orbitals.',
-        targetClass: ['Class 11'],
+        targetClass: ['Class 12'],
         theory: `
 # Electron Configuration
 The distribution of electrons in an atom's orbitals.

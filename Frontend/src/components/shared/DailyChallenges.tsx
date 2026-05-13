@@ -24,6 +24,7 @@ interface DailyChallengesProps {
   subjectId: SubjectId;
   subjectName: string;
   theme: 'dark' | 'light';
+  selectedClass?: string | null;
 }
 
 interface ChallengeProgress {
@@ -83,12 +84,13 @@ const difficultyStyles: Record<DailyChallenge['difficulty'], string> = {
   stretch: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
 };
 
-const DailyChallenges: React.FC<DailyChallengesProps> = ({ subjectId, subjectName, theme }) => {
+const DailyChallenges: React.FC<DailyChallengesProps> = ({ subjectId, subjectName, theme, selectedClass }) => {
   const todayKey = getTodayKey();
-  const progressKey = `labzero_daily_challenges_${subjectId}_${todayKey}`;
-  const streakKey = `labzero_daily_streak_${subjectId}`;
+  const classKey = selectedClass?.replace(/\s+/g, '_').toLowerCase() || 'all_classes';
+  const progressKey = `labzero_daily_challenges_${subjectId}_${classKey}_${todayKey}`;
+  const streakKey = `labzero_daily_streak_${subjectId}_${classKey}`;
   const isDark = theme === 'dark';
-  const challenges = useMemo(() => getDailyChallenges(subjectId), [subjectId, todayKey]);
+  const challenges = useMemo(() => getDailyChallenges(subjectId, new Date(`${todayKey}T00:00:00.000Z`), 5, selectedClass), [subjectId, selectedClass, todayKey]);
   const [progress, setProgress] = useState<ChallengeProgress>(() => loadProgress(progressKey));
   const [streak, setStreak] = useState<StreakProgress>(() => loadStreak(streakKey));
   const [activeIndex, setActiveIndex] = useState(0);
@@ -100,7 +102,7 @@ const DailyChallenges: React.FC<DailyChallengesProps> = ({ subjectId, subjectNam
   }, [progressKey, streakKey]);
 
   const activeChallenge = challenges[activeIndex];
-  const bankSize = getChallengeBankSize(subjectId);
+  const bankSize = getChallengeBankSize(subjectId, selectedClass);
 
   const attemptedCount = challenges.filter((challenge) => progress.selected[challenge.id]).length;
   const completedCount = challenges.filter((challenge) => progress.completed[challenge.id]).length;
@@ -185,7 +187,9 @@ const DailyChallenges: React.FC<DailyChallengesProps> = ({ subjectId, subjectNam
               <Trophy size={22} />
             </div>
             <div>
-              <p className={`text-[9px] font-mono uppercase tracking-[0.3em] ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Daily Lab Quest</p>
+              <p className={`text-[9px] font-mono uppercase tracking-[0.3em] ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                Daily Lab Quest{selectedClass ? ` / ${selectedClass}` : ''}
+              </p>
               <h3 className={`text-2xl font-display font-bold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{subjectName}</h3>
             </div>
           </div>
@@ -323,6 +327,11 @@ const DailyChallenges: React.FC<DailyChallengesProps> = ({ subjectId, subjectNam
               <span className={`px-3 py-1.5 rounded-full border text-[9px] font-mono uppercase tracking-[0.2em] ${isDark ? 'border-white/10 text-slate-400' : 'border-slate-200 text-slate-500'}`}>
                 Bank {bankSize}
               </span>
+              {selectedClass && (
+                <span className={`px-3 py-1.5 rounded-full border text-[9px] font-mono uppercase tracking-[0.2em] ${isDark ? 'border-white/10 text-slate-400' : 'border-slate-200 text-slate-500'}`}>
+                  {selectedClass}
+                </span>
+              )}
             </div>
 
             <p className={`text-[10px] font-mono uppercase tracking-[0.4em] mb-5 ${isDark ? 'text-primary' : 'text-indigo-600'}`}>

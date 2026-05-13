@@ -1,6 +1,7 @@
 import { SubjectId } from '../types/types';
 
 export type ChallengeDifficulty = 'warmup' | 'core' | 'stretch';
+export type CurriculumClass = 'Class 9' | 'Class 10' | 'Class 11' | 'Class 12';
 
 export interface DailyChallenge {
   id: string;
@@ -14,6 +15,7 @@ export interface DailyChallenge {
   answer: string;
   explanation: string;
   estimatedMinutes: number;
+  targetClass: CurriculumClass[];
 }
 
 interface ChallengeSeed {
@@ -24,7 +26,10 @@ interface ChallengeSeed {
   answer: string;
   distractors: string[];
   explanation: string;
+  targetClass?: CurriculumClass[];
 }
+
+const ALL_CLASSES: CurriculumClass[] = ['Class 9', 'Class 10', 'Class 11', 'Class 12'];
 
 const subjectNames: Record<SubjectId, string> = {
   [SubjectId.PHYSICS]: 'Physics',
@@ -73,16 +78,36 @@ const chemistrySeeds: ChallengeSeed[] = [
   { topic: 'Atomic Structure', skill: 'Isotopes', difficulty: 'core', fact: 'Isotopes of an element differ in number of', answer: 'Neutrons', distractors: ['Protons', 'Electron shells only', 'Atomic number'], explanation: 'Isotopes share proton count but have different neutron counts.' },
   { topic: 'Atomic Structure', skill: 'Electron discovery', difficulty: 'warmup', fact: 'The electron was discovered by', answer: 'J. J. Thomson', distractors: ['Niels Bohr', 'Ernest Rutherford', 'Dmitri Mendeleev'], explanation: 'Thomson identified electrons using cathode ray experiments.' },
   { topic: 'Atomic Structure', skill: 'Quantum model', difficulty: 'stretch', fact: 'An orbital describes a region of high electron', answer: 'Probability', distractors: ['Certainty', 'Nuclear charge', 'Mass density'], explanation: 'Orbitals are probability distributions, not fixed tracks.' },
+  { topic: 'Atomic Structure', skill: 'Mass number', difficulty: 'warmup', fact: 'Mass number equals protons plus', answer: 'Neutrons', distractors: ['Electrons', 'Orbitals', 'Valence shells'], explanation: 'Mass number counts nucleons: protons and neutrons.' },
+  { topic: 'Atomic Structure', skill: 'Neutral atom', difficulty: 'warmup', fact: 'In a neutral atom, number of electrons equals number of', answer: 'Protons', distractors: ['Neutrons', 'Nucleons', 'Shells'], explanation: 'Equal protons and electrons make the net charge zero.' },
+  { topic: 'Atomic Structure', skill: 'Nucleus', difficulty: 'core', fact: 'Most atomic mass is concentrated in the', answer: 'Nucleus', distractors: ['Valence shell', 'Electron cloud', 'Bond pair'], explanation: 'Protons and neutrons in the nucleus account for nearly all atomic mass.' },
+  { topic: 'Atomic Structure', skill: 'Cation formation', difficulty: 'core', fact: 'A cation forms when an atom loses', answer: 'Electrons', distractors: ['Protons', 'Neutrons', 'Nuclei'], explanation: 'Losing electrons leaves more protons than electrons, giving a positive charge.' },
+  { topic: 'Atomic Structure', skill: 'Anion formation', difficulty: 'core', fact: 'An anion forms when an atom gains', answer: 'Electrons', distractors: ['Protons', 'Neutrons', 'Mass number'], explanation: 'Gaining electrons gives a negative net charge.' },
+  { topic: 'Atomic Structure', skill: 'Isobar concept', difficulty: 'stretch', fact: 'Isobars have the same mass number but different', answer: 'Atomic numbers', distractors: ['Neutron numbers always', 'Electron spin only', 'Shell names'], explanation: 'Isobars are atoms of different elements with the same mass number.' },
   { topic: 'Quantum Numbers', skill: 'Principal quantum number', difficulty: 'core', fact: 'The principal quantum number mainly describes electron', answer: 'Energy level', distractors: ['Spin direction', 'Orbital orientation', 'Nuclear mass'], explanation: 'n identifies the shell and broadly the energy level.' },
   { topic: 'Quantum Numbers', skill: 'Spin', difficulty: 'core', fact: 'Electron spin quantum number can be', answer: '+1/2 or -1/2', distractors: ['0 only', '+1 or -1', 'Any integer'], explanation: 'Electrons have two allowed spin states.' },
   { topic: 'Periodic Trends', skill: 'Atomic radius', difficulty: 'core', fact: 'Atomic radius generally decreases across a period because', answer: 'Nuclear charge increases', distractors: ['New shells are added', 'Neutrons disappear', 'Mass becomes zero'], explanation: 'Increasing effective nuclear charge pulls electrons closer.' },
   { topic: 'Periodic Trends', skill: 'Ionization energy', difficulty: 'core', fact: 'Ionization energy generally increases across a period due to', answer: 'Stronger nuclear attraction', distractors: ['Lower proton count', 'More shielding only', 'Larger atomic radius'], explanation: 'Electrons are held more tightly across a period.' },
   { topic: 'Periodic Trends', skill: 'Electronegativity', difficulty: 'warmup', fact: 'Electronegativity means the tendency to attract', answer: 'Shared electrons', distractors: ['Neutrons', 'Nuclei', 'Alpha particles'], explanation: 'Electronegativity describes attraction for bonding electrons.' },
+  { topic: 'Periodic Trends', skill: 'Group radius trend', difficulty: 'warmup', fact: 'Atomic radius generally increases down a group because new', answer: 'Shells are added', distractors: ['Protons disappear', 'Electrons stop moving', 'Nuclei split'], explanation: 'Additional shells place valence electrons farther from the nucleus.' },
+  { topic: 'Periodic Trends', skill: 'Metallic character', difficulty: 'core', fact: 'Metallic character generally increases down a', answer: 'Group', distractors: ['Period left to right', 'Nucleus only', 'Single orbital'], explanation: 'Down a group, atoms lose electrons more easily due to larger size and shielding.' },
+  { topic: 'Periodic Trends', skill: 'Nonmetallic trend', difficulty: 'core', fact: 'Nonmetallic character generally increases across a period from', answer: 'Left to right', distractors: ['Right to left', 'Bottom to top only', 'Middle outward'], explanation: 'Across a period, atoms attract electrons more strongly.' },
+  { topic: 'Periodic Trends', skill: 'Electron affinity', difficulty: 'stretch', fact: 'Electron affinity is the energy change when an atom gains an', answer: 'Electron', distractors: ['Proton', 'Neutron', 'Alpha particle'], explanation: 'Electron affinity describes adding an electron to a gaseous atom.' },
+  { topic: 'Periodic Trends', skill: 'Shielding effect', difficulty: 'core', fact: 'Shielding reduces attraction between nucleus and', answer: 'Valence electrons', distractors: ['Protons', 'Neutrons', 'Atomic mass'], explanation: 'Inner electrons partially shield outer electrons from nuclear charge.' },
+  { topic: 'Periodic Trends', skill: 'Effective nuclear charge', difficulty: 'stretch', fact: 'Effective nuclear charge generally increases across a', answer: 'Period', distractors: ['Group downward only', 'Nucleus outward', 'Neutron series'], explanation: 'Across a period, proton number rises while shielding changes less.' },
+  { topic: 'Periodic Trends', skill: 'Ion size', difficulty: 'core', fact: 'Cations are generally smaller than their parent', answer: 'Atoms', distractors: ['Nuclei', 'Neutrons', 'Isotopes always'], explanation: 'Losing electrons reduces repulsion and may remove an outer shell.' },
   { topic: 'Chemical Bonding', skill: 'Ionic bonds', difficulty: 'warmup', fact: 'An ionic bond forms mainly by electron', answer: 'Transfer', distractors: ['Sharing', 'Delocalization', 'Diffraction'], explanation: 'Ionic bonding forms oppositely charged ions by transfer.' },
   { topic: 'Chemical Bonding', skill: 'Covalent bonds', difficulty: 'warmup', fact: 'A covalent bond forms mainly by electron', answer: 'Sharing', distractors: ['Transfer', 'Loss only', 'Nuclear fusion'], explanation: 'Covalent bonds involve shared electron pairs.' },
   { topic: 'Molecular Structure', skill: 'VSEPR', difficulty: 'core', fact: 'Methane has approximately this bond angle', answer: '109.5 degrees', distractors: ['90 degrees', '120 degrees', '180 degrees'], explanation: 'CH4 is tetrahedral with bond angles near 109.5 degrees.' },
   { topic: 'Molecular Structure', skill: 'Hybridization', difficulty: 'core', fact: 'The hybridization of carbon in methane is', answer: 'sp3', distractors: ['sp', 'sp2', 'dsp2'], explanation: 'Four sigma bonds around carbon correspond to sp3 hybridization.' },
   { topic: 'Molecular Structure', skill: 'Geometry', difficulty: 'stretch', fact: 'Carbon dioxide has molecular geometry', answer: 'Linear', distractors: ['Bent', 'Tetrahedral', 'Trigonal pyramidal'], explanation: 'Two electron domains around carbon make CO2 linear.' },
+  { topic: 'Molecular Structure', skill: 'Water shape', difficulty: 'core', fact: 'Water molecule has this shape', answer: 'Bent', distractors: ['Linear', 'Tetrahedral', 'Trigonal planar'], explanation: 'Two bond pairs and two lone pairs around oxygen make water bent.' },
+  { topic: 'Molecular Structure', skill: 'Ammonia shape', difficulty: 'core', fact: 'Ammonia has molecular geometry', answer: 'Trigonal pyramidal', distractors: ['Linear', 'Bent', 'Octahedral'], explanation: 'NH3 has three bond pairs and one lone pair on nitrogen.' },
+  { topic: 'Molecular Structure', skill: 'BF3 geometry', difficulty: 'core', fact: 'Boron trifluoride has geometry', answer: 'Trigonal planar', distractors: ['Tetrahedral', 'Bent', 'Trigonal pyramidal'], explanation: 'BF3 has three electron domains and no lone pair on boron.' },
+  { topic: 'Molecular Structure', skill: 'Sigma bond', difficulty: 'warmup', fact: 'A sigma bond forms by head-on orbital', answer: 'Overlap', distractors: ['Ionization', 'Reflection', 'Diffraction'], explanation: 'Sigma bonds result from axial overlap of orbitals.' },
+  { topic: 'Molecular Structure', skill: 'Pi bond', difficulty: 'core', fact: 'A pi bond forms by sideways overlap of', answer: 'p orbitals', distractors: ['s orbitals only', 'Nuclei', 'Neutrons'], explanation: 'Pi bonds come from lateral overlap of unhybridized p orbitals.' },
+  { topic: 'Molecular Structure', skill: 'Lone pair effect', difficulty: 'stretch', fact: 'Lone pairs usually make bond angles', answer: 'Smaller', distractors: ['Always larger', 'Always 180 degrees', 'Zero'], explanation: 'Lone pair-bond pair repulsions compress bond angles.' },
+  { topic: 'Molecular Structure', skill: 'Ethene hybridization', difficulty: 'stretch', fact: 'Carbon atoms in ethene are generally', answer: 'sp2 hybridized', distractors: ['sp3 hybridized', 'sp hybridized', 'Unhybridized only'], explanation: 'Each carbon in ethene has three electron domains and one pi bond.' },
   { topic: 'Acids and Bases', skill: 'pH', difficulty: 'warmup', fact: 'A neutral solution at 25 C has pH', answer: '7', distractors: ['0', '1', '14'], explanation: 'Neutral water has equal hydrogen and hydroxide ion concentrations.' },
   { topic: 'Acids and Bases', skill: 'Acidity', difficulty: 'warmup', fact: 'A solution with pH less than 7 is', answer: 'Acidic', distractors: ['Basic', 'Neutral', 'Inert'], explanation: 'Lower pH indicates higher hydrogen ion activity.' },
   { topic: 'Redox', skill: 'Oxidation', difficulty: 'core', fact: 'Oxidation is loss of', answer: 'Electrons', distractors: ['Protons', 'Neutrons', 'Nuclei'], explanation: 'OIL RIG: oxidation is loss, reduction is gain.' },
@@ -94,6 +119,46 @@ const chemistrySeeds: ChallengeSeed[] = [
   { topic: 'Solutions', skill: 'Solute', difficulty: 'warmup', fact: 'The substance dissolved in a solution is the', answer: 'Solute', distractors: ['Solvent', 'Catalyst', 'Buffer only'], explanation: 'The solute dissolves in the solvent.' },
   { topic: 'Periodic Table', skill: 'Groups', difficulty: 'warmup', fact: 'Vertical columns in the periodic table are called', answer: 'Groups', distractors: ['Periods', 'Blocks only', 'Isotopes'], explanation: 'Groups collect elements with similar valence electron patterns.' },
   { topic: 'Periodic Table', skill: 'Periods', difficulty: 'warmup', fact: 'Horizontal rows in the periodic table are called', answer: 'Periods', distractors: ['Groups', 'Families only', 'Ions'], explanation: 'Periods indicate principal energy levels being filled.' },
+  { topic: 'Historical Models', skill: 'Dalton model', difficulty: 'warmup', fact: 'Dalton described atoms as', answer: 'Indivisible solid spheres', distractors: ['Positive clouds', 'Nuclear systems', 'Electron orbitals'], explanation: 'Dalton treated atoms as tiny solid particles that combined in fixed ratios.' },
+  { topic: 'Historical Models', skill: 'Thomson model', difficulty: 'warmup', fact: 'Thomson proposed the atom as a positive sphere containing', answer: 'Embedded electrons', distractors: ['Neutrons only', 'Empty space only', 'Fixed shells'], explanation: 'The plum pudding model placed electrons inside a diffuse positive charge.' },
+  { topic: 'Historical Models', skill: 'Cathode rays', difficulty: 'core', fact: 'Cathode ray experiments led to the discovery of the', answer: 'Electron', distractors: ['Proton', 'Neutron', 'Nucleus'], explanation: 'J. J. Thomson showed cathode rays were streams of negatively charged particles.' },
+  { topic: 'Historical Models', skill: 'Rutherford experiment', difficulty: 'core', fact: 'Rutherford used this experiment to infer a small dense nucleus', answer: 'Gold foil experiment', distractors: ['Oil drop experiment', 'Flame test', 'Discharge tube only'], explanation: 'Large alpha-particle deflections showed positive charge was concentrated in a nucleus.' },
+  { topic: 'Historical Models', skill: 'Atomic space', difficulty: 'warmup', fact: 'Rutherford concluded that most of an atom is', answer: 'Empty space', distractors: ['Solid matter', 'Only neutrons', 'Liquid charge'], explanation: 'Most alpha particles passed straight through foil, showing atoms are mostly empty.' },
+  { topic: 'Historical Models', skill: 'Bohr model', difficulty: 'core', fact: 'Bohr explained atomic spectra using fixed electron', answer: 'Energy levels', distractors: ['Mass numbers', 'Neutron shells', 'Random paths'], explanation: 'Bohr proposed electrons occupy quantized orbits with definite energies.' },
+  { topic: 'Historical Models', skill: 'Spectral lines', difficulty: 'core', fact: 'Bohr model explains hydrogen line spectra by electron', answer: 'Transitions between levels', distractors: ['Nuclear fusion', 'Loss of protons', 'Molecular collisions only'], explanation: 'Light is emitted or absorbed when electrons jump between quantized levels.' },
+  { topic: 'Historical Models', skill: 'Model limitation', difficulty: 'stretch', fact: 'A major limitation of Bohr model is that it works best for', answer: 'Hydrogen-like atoms', distractors: ['All molecules', 'All solids', 'Only noble gases'], explanation: 'Bohr theory is accurate mainly for one-electron atoms and ions.' },
+  { topic: 'Historical Models', skill: 'Modern model', difficulty: 'core', fact: 'The modern atomic model describes electrons using', answer: 'Probability clouds', distractors: ['Fixed circular tracks', 'Solid rings', 'Positive pudding'], explanation: 'Quantum mechanics replaces exact orbits with orbital probability distributions.' },
+  { topic: 'Historical Models', skill: 'Nuclear model', difficulty: 'warmup', fact: 'In Rutherford model, positive charge is concentrated in the', answer: 'Nucleus', distractors: ['Electron cloud', 'Outer shell', 'Cathode ray'], explanation: 'The nuclear model puts nearly all positive charge and mass at the center.' },
+  { topic: 'Quantum Numbers', skill: 'Principal quantum number', difficulty: 'warmup', fact: 'Principal quantum number n identifies the electron', answer: 'Shell', distractors: ['Spin only', 'Charge', 'Nucleus'], explanation: 'n labels the main energy shell of an electron.' },
+  { topic: 'Quantum Numbers', skill: 'Azimuthal quantum number', difficulty: 'core', fact: 'The azimuthal quantum number mainly identifies orbital', answer: 'Shape', distractors: ['Spin', 'Mass', 'Nuclear charge'], explanation: 'l distinguishes subshell shape such as s, p, d, or f.' },
+  { topic: 'Quantum Numbers', skill: 'Magnetic quantum number', difficulty: 'core', fact: 'Magnetic quantum number tells orbital', answer: 'Orientation', distractors: ['Size only', 'Electron mass', 'Atomic number'], explanation: 'm_l identifies the orientation of an orbital in space.' },
+  { topic: 'Quantum Numbers', skill: 'Spin quantum number', difficulty: 'warmup', fact: 'Electron spin can have values', answer: '+1/2 and -1/2', distractors: ['0 and 1', '+2 and -2', 'Only 0'], explanation: 'An electron has two allowed spin states.' },
+  { topic: 'Quantum Numbers', skill: 's subshell', difficulty: 'warmup', fact: 'For an s subshell, l equals', answer: '0', distractors: ['1', '2', '3'], explanation: 'Subshell labels correspond to l values: s=0, p=1, d=2, f=3.' },
+  { topic: 'Quantum Numbers', skill: 'p subshell', difficulty: 'core', fact: 'A p subshell can contain maximum electrons', answer: '6', distractors: ['2', '10', '14'], explanation: 'A p subshell has three orbitals, each holding two electrons.' },
+  { topic: 'Quantum Numbers', skill: 'd subshell', difficulty: 'core', fact: 'A d subshell contains this many orbitals', answer: '5', distractors: ['1', '3', '7'], explanation: 'For d, l=2 and m_l has five possible values.' },
+  { topic: 'Quantum Numbers', skill: 'Pauli principle', difficulty: 'core', fact: 'No two electrons in an atom can have the same set of', answer: 'Four quantum numbers', distractors: ['Two periods', 'Three isotopes', 'One mass number'], explanation: 'Pauli exclusion makes each electron quantum state unique.' },
+  { topic: 'Quantum Numbers', skill: 'Orbital capacity', difficulty: 'warmup', fact: 'One orbital can hold at most', answer: '2 electrons', distractors: ['1 electron', '6 electrons', '8 electrons'], explanation: 'Two electrons may share an orbital only with opposite spins.' },
+  { topic: 'Quantum Numbers', skill: 'Allowed l values', difficulty: 'stretch', fact: 'For n = 3, allowed l values are', answer: '0, 1, 2', distractors: ['1, 2, 3', '0 only', '0, 1, 2, 3'], explanation: 'For a shell n, l ranges from 0 to n - 1.' },
+  { topic: 'Quantum Configuration', skill: 'Aufbau principle', difficulty: 'warmup', fact: 'Aufbau principle says electrons fill orbitals of lowest', answer: 'Energy first', distractors: ['Mass first', 'Charge first', 'Radius first'], explanation: 'Electrons occupy lower-energy orbitals before higher-energy orbitals.' },
+  { topic: 'Quantum Configuration', skill: 'Pauli exclusion', difficulty: 'core', fact: 'Two electrons in the same orbital must have opposite', answer: 'Spins', distractors: ['Charges', 'Masses', 'Atomic numbers'], explanation: 'Opposite spin allows two electrons to occupy one orbital.' },
+  { topic: 'Quantum Configuration', skill: 'Hund rule', difficulty: 'core', fact: 'Hund rule fills equal-energy orbitals singly before', answer: 'Pairing', distractors: ['Ionizing', 'Bonding', 'Nuclear decay'], explanation: 'Electrons spread out with parallel spins in degenerate orbitals first.' },
+  { topic: 'Quantum Configuration', skill: '1s capacity', difficulty: 'warmup', fact: 'The maximum number of electrons in 1s orbital is', answer: '2', distractors: ['1', '6', '8'], explanation: 'Any single orbital can hold at most two electrons.' },
+  { topic: 'Quantum Configuration', skill: '2p capacity', difficulty: 'core', fact: 'The 2p subshell can hold maximum', answer: '6 electrons', distractors: ['2 electrons', '8 electrons', '10 electrons'], explanation: 'Three 2p orbitals each hold two electrons.' },
+  { topic: 'Quantum Configuration', skill: 'Sodium configuration', difficulty: 'core', fact: 'The outer configuration of sodium is', answer: '3s1', distractors: ['2p6', '3p1', '2s1'], explanation: 'Sodium has configuration 1s2 2s2 2p6 3s1.' },
+  { topic: 'Quantum Configuration', skill: 'Chlorine valence', difficulty: 'core', fact: 'Chlorine has this many valence electrons', answer: '7', distractors: ['1', '2', '8'], explanation: 'Chlorine configuration ends in 3s2 3p5, giving seven valence electrons.' },
+  { topic: 'Quantum Configuration', skill: 'Noble gas notation', difficulty: 'warmup', fact: 'Noble gas notation shortens electron configuration using', answer: 'Previous noble gas core', distractors: ['Atomic mass only', 'Isotope number', 'Bond angle'], explanation: 'Core electrons are represented by the preceding noble gas symbol.' },
+  { topic: 'Quantum Configuration', skill: 'Half-filled stability', difficulty: 'stretch', fact: 'Extra stability is often associated with half-filled and', answer: 'Fully filled subshells', distractors: ['Empty nuclei', 'Unequal protons', 'Broken orbitals'], explanation: 'Symmetry and exchange energy stabilize half-filled and filled subshells.' },
+  { topic: 'Quantum Configuration', skill: 'Orbital order', difficulty: 'stretch', fact: 'The 4s orbital generally fills before', answer: '3d', distractors: ['2p', '2s', '1s'], explanation: 'In the Aufbau order, 4s is filled before 3d for neutral atoms.' },
+  { topic: 'Advanced Experiment Lab', skill: 'Reaction rate', difficulty: 'warmup', fact: 'Increasing concentration usually increases reaction', answer: 'Rate', distractors: ['Atomic number', 'Molar mass', 'pH always to 7'], explanation: 'Higher concentration increases collision frequency between reacting particles.' },
+  { topic: 'Advanced Experiment Lab', skill: 'Temperature effect', difficulty: 'core', fact: 'Raising temperature generally increases rate by increasing particle', answer: 'Kinetic energy', distractors: ['Atomic number', 'Nuclear charge', 'Isotope count'], explanation: 'Faster particles collide more often and with more energy.' },
+  { topic: 'Advanced Experiment Lab', skill: 'Catalyst role', difficulty: 'core', fact: 'A catalyst changes rate by providing lower activation', answer: 'Energy pathway', distractors: ['Atomic mass pathway', 'pH limit only', 'Density pathway'], explanation: 'Catalysts offer an alternate mechanism with lower activation energy.' },
+  { topic: 'Advanced Experiment Lab', skill: 'pH monitoring', difficulty: 'warmup', fact: 'pH sensors primarily track acidity through hydrogen ion', answer: 'Concentration', distractors: ['Mass number', 'Neutron count', 'Bond angle'], explanation: 'pH is related to hydrogen ion concentration in solution.' },
+  { topic: 'Advanced Experiment Lab', skill: 'Thermal safety', difficulty: 'core', fact: 'A rapid uncontrolled temperature rise in reaction monitoring indicates', answer: 'Thermal breach', distractors: ['Perfect equilibrium', 'Zero collision rate', 'Neutralization complete'], explanation: 'A sudden heat spike can signal unsafe runaway behavior.' },
+  { topic: 'Advanced Experiment Lab', skill: 'Limiting reagent', difficulty: 'core', fact: 'The reactant consumed first is the', answer: 'Limiting reagent', distractors: ['Excess reagent', 'Catalyst', 'Solvent'], explanation: 'The limiting reagent determines maximum product yield.' },
+  { topic: 'Advanced Experiment Lab', skill: 'Yield', difficulty: 'core', fact: 'Percent yield compares actual yield with', answer: 'Theoretical yield', distractors: ['Atomic radius', 'pH value', 'Boiling point'], explanation: 'Percent yield equals actual yield divided by theoretical yield times 100.' },
+  { topic: 'Advanced Experiment Lab', skill: 'Collision theory', difficulty: 'stretch', fact: 'For a reaction, collisions must have enough energy and correct', answer: 'Orientation', distractors: ['Color', 'Atomic symbol', 'Mass defect'], explanation: 'Effective collisions require both sufficient energy and suitable orientation.' },
+  { topic: 'Advanced Experiment Lab', skill: 'Equilibrium shift', difficulty: 'stretch', fact: 'Le Chatelier principle predicts response to changes in concentration, pressure, or', answer: 'Temperature', distractors: ['Atomic number', 'Electron spin only', 'Neutron ratio'], explanation: 'Equilibrium shifts to oppose imposed changes including temperature changes.' },
+  { topic: 'Advanced Experiment Lab', skill: 'Titration endpoint', difficulty: 'warmup', fact: 'A titration endpoint is commonly detected by a color change of an', answer: 'Indicator', distractors: ['Isotope', 'Electrode shell', 'Inert gas'], explanation: 'Indicators change color near a specific pH range.' },
 ];
 
 const mathSeeds: ChallengeSeed[] = [
@@ -159,6 +224,68 @@ const seedMap: Record<SubjectId, ChallengeSeed[]> = {
   [SubjectId.BIOLOGY]: biologySeeds,
 };
 
+const topicClassMap: Record<SubjectId, Record<string, CurriculumClass[]>> = {
+  [SubjectId.PHYSICS]: {
+    'Classical Mechanics': ['Class 11'],
+    'Work and Energy': ['Class 11'],
+    Gravitation: ['Class 11'],
+    Thermodynamics: ['Class 11'],
+    'Heat Transfer': ['Class 11'],
+    Units: ['Class 9', 'Class 11'],
+    Waves: ['Class 9', 'Class 11'],
+    Optics: ['Class 9'],
+    Electromagnetism: ['Class 12'],
+    Circuits: ['Class 12'],
+    'Wave Optics': ['Class 12'],
+    'Modern Physics': ['Class 12'],
+    'Nuclear Physics': ['Class 12'],
+  },
+  [SubjectId.CHEMISTRY]: {
+    'Historical Models': ['Class 9'],
+    'Quantum Numbers': ['Class 10'],
+    'Atomic Structure': ['Class 11'],
+    'Molecular Structure': ['Class 11'],
+    'Advanced Experiment Lab': ['Class 11', 'Class 12'],
+    'Periodic Trends': ['Class 12'],
+    'Quantum Configuration': ['Class 12'],
+  },
+  [SubjectId.MATH]: {
+    'Coordinate Geometry': ['Class 9', 'Class 10'],
+    'Pi Approximation': ['Class 10'],
+    Algebra: ['Class 10', 'Class 11'],
+    Trigonometry: ['Class 10', 'Class 11'],
+    Functions: ['Class 11'],
+    Calculus: ['Class 11', 'Class 12'],
+    Probability: ['Class 10', 'Class 12'],
+    'Linear Algebra': ['Class 12'],
+    'Vector Algebra': ['Class 12'],
+  },
+  [SubjectId.BIOLOGY]: {
+    'Cell Biology': ['Class 9', 'Class 11'],
+    'Plant Physiology': ['Class 10', 'Class 11'],
+    Genetics: ['Class 10', 'Class 12'],
+    Evolution: ['Class 10', 'Class 12'],
+    'Human Physiology': ['Class 10', 'Class 11'],
+    Biochemistry: ['Class 11', 'Class 12'],
+    Immunity: ['Class 12'],
+    Microbiology: ['Class 12'],
+    Respiration: ['Class 10', 'Class 11'],
+    Blood: ['Class 11', 'Class 12'],
+    'Nervous System': ['Class 10', 'Class 11'],
+  },
+};
+
+const getSeedTargetClasses = (subjectId: SubjectId, seed: ChallengeSeed): CurriculumClass[] => {
+  if (seed.targetClass) return seed.targetClass;
+  const mappedClasses = topicClassMap[subjectId]?.[seed.topic];
+  if (mappedClasses) return mappedClasses;
+  return subjectId === SubjectId.CHEMISTRY ? [] : ALL_CLASSES;
+};
+
+const isCurriculumClass = (value?: string | null): value is CurriculumClass => {
+  return Boolean(value && ALL_CLASSES.includes(value as CurriculumClass));
+};
+
 const hashString = (input: string): number => {
   let hash = 0;
   for (let index = 0; index < input.length; index += 1) {
@@ -175,9 +302,10 @@ const rotate = <T,>(items: T[], offset: number): T[] => {
 const buildChallenge = (subjectId: SubjectId, seed: ChallengeSeed, seedIndex: number, variantIndex: number): DailyChallenge => {
   const promptTemplate = challengePrompts[variantIndex % challengePrompts.length];
   const options = rotate([seed.answer, ...seed.distractors], seedIndex + variantIndex);
+  const targetClass = getSeedTargetClasses(subjectId, seed);
 
   return {
-    id: `${subjectId}-${seedIndex + 1}-${variantIndex + 1}`,
+    id: `${subjectId}-${targetClass.join('-').replace(/\s+/g, '').toLowerCase()}-${seedIndex + 1}-${variantIndex + 1}`,
     subjectId,
     subjectName: subjectNames[subjectId],
     topic: seed.topic,
@@ -188,6 +316,7 @@ const buildChallenge = (subjectId: SubjectId, seed: ChallengeSeed, seedIndex: nu
     answer: seed.answer,
     explanation: seed.explanation,
     estimatedMinutes: seed.difficulty === 'warmup' ? 2 : seed.difficulty === 'core' ? 4 : 6,
+    targetClass,
   };
 };
 
@@ -198,14 +327,33 @@ export const DAILY_CHALLENGE_BANK: Record<SubjectId, DailyChallenge[]> = Object.
   return bank;
 }, {} as Record<SubjectId, DailyChallenge[]>);
 
-export const getChallengeBankSize = (subjectId: SubjectId): number => DAILY_CHALLENGE_BANK[subjectId]?.length || 0;
-
-export const getDailyChallenges = (subjectId: SubjectId, date = new Date(), count = 5): DailyChallenge[] => {
+export const getChallengeBankSize = (subjectId: SubjectId, selectedClass?: string | null): number => {
   const bank = DAILY_CHALLENGE_BANK[subjectId] || [];
+  const eligibleBank = subjectId === SubjectId.CHEMISTRY ? bank.filter((challenge) => challenge.targetClass.length > 0) : bank;
+  if (!isCurriculumClass(selectedClass)) return eligibleBank.length;
+  const classBankSize = eligibleBank.filter((challenge) => challenge.targetClass.includes(selectedClass)).length;
+  return classBankSize || eligibleBank.length;
+};
+
+export const getDailyChallenges = (
+  subjectId: SubjectId,
+  date = new Date(),
+  count = 5,
+  selectedClass?: string | null
+): DailyChallenge[] => {
+  const subjectBank = DAILY_CHALLENGE_BANK[subjectId] || [];
+  const eligibleBank = subjectId === SubjectId.CHEMISTRY
+    ? subjectBank.filter((challenge) => challenge.targetClass.length > 0)
+    : subjectBank;
+  const classBank = isCurriculumClass(selectedClass)
+    ? eligibleBank.filter((challenge) => challenge.targetClass.includes(selectedClass))
+    : eligibleBank;
+  const bank = classBank.length ? classBank : eligibleBank;
   if (!bank.length) return [];
 
   const dayKey = date.toISOString().slice(0, 10);
-  const start = hashString(`${subjectId}-${dayKey}`) % bank.length;
+  const classKey = isCurriculumClass(selectedClass) ? selectedClass : 'all-classes';
+  const start = hashString(`${subjectId}-${classKey}-${dayKey}`) % bank.length;
 
   return Array.from({ length: Math.min(count, bank.length) }, (_, index) => bank[(start + index * 17) % bank.length]);
 };

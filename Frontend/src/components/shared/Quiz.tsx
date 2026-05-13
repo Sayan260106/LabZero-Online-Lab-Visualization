@@ -74,84 +74,84 @@ const QuizPage: React.FC<Props> = ({ questions, onExit }) => {
       .slice(0, 3);
 
     return (
-      <div className="fixed inset-0 z-[200] bg-[#020617] flex items-center justify-center p-6 overflow-y-auto grainy">
+      <div className="fixed inset-0 z-[200] bg-[var(--bg-deep)] flex items-center justify-center p-6 overflow-y-auto grainy">
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           className="w-full max-w-4xl grid grid-cols-1 lg:grid-cols-2 gap-8"
         >
           {/* Main Score Display */}
-          <div className="bg-[#020617] border border-white/5 rounded-[40px] p-12 flex flex-col items-center justify-center text-center relative overflow-hidden group">
-            <div className="absolute inset-0 bg-primary/5 blur-[100px] pointer-events-none" />
+          <div className="bg-[var(--bg-panel)] border border-[var(--border-glass)] rounded-[40px] p-12 flex flex-col items-center justify-center text-center relative overflow-hidden group shadow-2xl">
+            <div className="absolute inset-0 bg-[var(--color-primary)]/5 blur-[100px] pointer-events-none" />
             <motion.div 
               initial={{ rotate: -180, opacity: 0 }}
               animate={{ rotate: 0, opacity: 1 }}
               transition={{ duration: 1, type: "spring" }}
-              className="w-48 h-48 rounded-full border-4 border-white/5 flex flex-col items-center justify-center relative mb-10"
+              className="w-48 h-48 rounded-full border-4 border-[var(--border-glass)] flex flex-col items-center justify-center relative mb-10"
             >
-              <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-slate-500 mb-2">Accuracy</div>
-              <div className="text-7xl font-display font-bold text-white tracking-tighter">{accuracy}%</div>
+              <div className="text-[10px] font-mono uppercase tracking-[0.3em] text-[var(--text-muted)] mb-2 font-bold">Accuracy</div>
+              <div className="text-7xl font-display font-bold text-[var(--text-primary)] tracking-tighter">{accuracy}%</div>
             </motion.div>
             
-            <h1 className="text-4xl font-display font-bold text-white mb-4 uppercase tracking-tight">Session Analysis</h1>
-            <p className="text-slate-500 text-sm font-light max-w-xs mb-10 leading-relaxed font-mono">Module evaluation complete. Neural patterns processed for proficiency mapping.</p>
+            <h1 className="text-4xl font-display font-bold text-[var(--text-primary)] mb-4 uppercase tracking-tight">Session Analysis</h1>
+            <p className="text-[var(--text-muted)] text-sm font-bold max-w-xs mb-10 leading-relaxed font-mono">Module evaluation complete. Neural patterns processed for proficiency mapping.</p>
             
-            <div className="grid grid-cols-3 gap-8 w-full border-t border-white/5 pt-10">
+            <div className="grid grid-cols-3 gap-8 w-full border-t border-[var(--border-glass)] pt-10">
               <div className="text-center">
-                <div className="text-xs font-mono text-slate-500 uppercase tracking-widest mb-2">Score</div>
-                <div className="text-2xl font-bold text-green-400">{score}/{questions.length}</div>
+                <div className="text-xs font-mono text-[var(--text-muted)] uppercase tracking-widest mb-2 font-bold">Score</div>
+                <div className="text-2xl font-bold text-green-500">{score}/{questions.length}</div>
               </div>
-              <div className="text-center border-x border-white/5 px-4">
-                <div className="text-xs font-mono text-slate-500 uppercase tracking-widest mb-2">Level</div>
-                <div className="text-2xl font-bold text-indigo-400 uppercase">{level}</div>
+              <div className="text-center border-x border-[var(--border-glass)] px-4">
+                <div className="text-xs font-mono text-[var(--text-muted)] uppercase tracking-widest mb-2 font-bold">Level</div>
+                <div className="text-2xl font-bold text-[var(--color-primary)] uppercase">{level}</div>
               </div>
               <div className="text-center">
-                <div className="text-xs font-mono text-slate-500 uppercase tracking-widest mb-2">Streak</div>
-                <div className="text-2xl font-bold text-amber-400">{correctStreak}</div>
+                <div className="text-xs font-mono text-[var(--text-muted)] uppercase tracking-widest mb-2 font-bold">Streak</div>
+                <div className="text-2xl font-bold text-amber-500">{correctStreak}</div>
               </div>
             </div>
           </div>
 
           {/* Detailed Analytics */}
           <div className="space-y-6">
-            <div className="bg-[#020617] border border-white/5 rounded-[32px] p-8">
+            <div className="bg-[var(--bg-panel)] border border-[var(--border-glass)] rounded-[32px] p-8 shadow-xl">
               <div className="flex items-center gap-3 mb-8">
-                <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-400">
+                <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-500">
                   <AlertCircle size={20} />
                 </div>
-                <h2 className="text-lg font-display font-bold text-white uppercase tracking-tight">Proficiency Gaps</h2>
+                <h2 className="text-lg font-display font-bold text-[var(--text-primary)] uppercase tracking-tight">Proficiency Gaps</h2>
               </div>
               
               <div className="space-y-4">
                 {weakAreas.length === 0 ? (
                   <div className="p-6 border border-green-500/20 bg-green-500/5 rounded-2xl flex items-center gap-4">
-                    <CheckCircle2 className="text-green-400" />
+                    <CheckCircle2 className="text-green-500" />
                     <div>
-                      <p className="text-sm font-bold text-green-400 uppercase">Flawless execution</p>
-                      <p className="text-xs text-slate-500 font-mono mt-1 uppercase tracking-widest uppercase tracking-widest">No cognitive gaps identified</p>
+                      <p className="text-sm font-bold text-green-500 uppercase">Flawless execution</p>
+                      <p className="text-xs text-[var(--text-muted)] font-mono mt-1 uppercase tracking-widest font-bold">No cognitive gaps identified</p>
                     </div>
                   </div>
                 ) : (
                   weakAreas.map(([topic, count]) => (
-                    <div key={topic} className="p-4 bg-white/5 rounded-2xl flex items-center justify-between">
+                    <div key={topic} className="p-4 bg-[var(--color-primary)]/5 border border-[var(--border-glass)] rounded-2xl flex items-center justify-between">
                       <div className="flex items-center gap-4">
-                        <BarChart3 size={16} className="text-rose-400" />
-                        <span className="text-sm font-mono text-slate-300 uppercase tracking-widest">{topic}</span>
+                        <BarChart3 size={16} className="text-rose-500" />
+                        <span className="text-sm font-mono text-[var(--text-primary)] uppercase tracking-widest font-bold">{topic}</span>
                       </div>
-                      <span className="text-xs font-mono text-rose-500">{count} errors</span>
+                      <span className="text-xs font-mono text-rose-600 font-bold">{count} errors</span>
                     </div>
                   ))
                 )}
               </div>
             </div>
 
-            <div className="bg-[#020617] border border-white/5 rounded-[32px] p-8 flex flex-col text-center">
-              <h3 className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.3em] mb-8 leading-relaxed italic opacity-50">
+            <div className="bg-[var(--bg-panel)] border border-[var(--border-glass)] rounded-[32px] p-8 flex flex-col text-center shadow-xl">
+              <h3 className="text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-[0.3em] mb-8 leading-relaxed italic font-bold">
                 Continue module exploration to strengthen identified neurological connections.
               </h3>
               <button
                 onClick={onExit}
-                className="w-full py-5 bg-primary hover:bg-primary/80 text-white rounded-2xl text-xs font-mono uppercase tracking-[0.3em] transition-all shadow-[0_0_30px_rgba(var(--color-primary-rgb),0.3)] flex items-center justify-center gap-3 group"
+                className="w-full py-5 bg-[var(--color-primary)] hover:opacity-90 text-white rounded-2xl text-xs font-mono uppercase tracking-[0.3em] transition-all shadow-[0_0_30px_rgba(var(--color-primary-rgb),0.3)] flex items-center justify-center gap-3 group font-bold"
               >
                 <span>Terminate Session</span>
                 <ChevronRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -164,45 +164,45 @@ const QuizPage: React.FC<Props> = ({ questions, onExit }) => {
   }
 
   return (
-    <div className="fixed inset-0 z-[200] bg-[#020617] text-white flex flex-col p-8 overflow-hidden grainy">
+    <div className="fixed inset-0 z-[200] bg-[var(--bg-deep)] text-[var(--text-primary)] flex flex-col p-8 overflow-hidden grainy transition-colors duration-500">
       {/* Header telemetry */}
       <div className="max-w-7xl mx-auto w-full flex items-center justify-between mb-12">
         <div className="flex items-center gap-6">
           <button
             onClick={onExit}
-            className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-500 hover:text-rose-500 hover:border-rose-500/30 transition-all group"
+            className="w-12 h-12 rounded-xl bg-[var(--bg-panel)] border border-[var(--border-glass)] flex items-center justify-center text-[var(--text-muted)] hover:text-rose-500 hover:border-rose-500/30 transition-all group shadow-sm"
           >
             <X size={20} className="group-hover:rotate-90 transition-transform" />
           </button>
           <div>
-            <div className="text-[9px] font-mono text-slate-500 uppercase tracking-[0.3em] mb-1">Module ID</div>
-            <div className="text-xs font-mono text-white tracking-widest">ASM-{level.toUpperCase()}-092</div>
+            <div className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-[0.3em] mb-1 font-bold">Module ID</div>
+            <div className="text-xs font-mono text-[var(--text-primary)] tracking-widest font-bold">ASM-{level.toUpperCase()}-092</div>
           </div>
         </div>
 
         <div className="flex items-center gap-8">
            <div className="text-right hidden md:block">
-            <div className="text-[9px] font-mono text-slate-500 uppercase tracking-[0.2em] mb-1">Neural Load</div>
-            <div className="text-sm font-mono text-indigo-400 font-bold uppercase tracking-widest">Adaptive: {level}</div>
+            <div className="text-[9px] font-mono text-[var(--text-muted)] uppercase tracking-[0.2em] mb-1 font-bold">Neural Load</div>
+            <div className="text-sm font-mono text-[var(--color-primary)] font-bold uppercase tracking-widest">Adaptive: {level}</div>
           </div>
-          <div className="h-10 w-px bg-white/10 hidden md:block" />
-          <div className="flex items-center gap-3 px-6 py-2 bg-white/[0.02] border border-white/5 rounded-full">
-            <TrendingUp size={14} className="text-primary" />
-            <span className="text-xs font-mono text-white uppercase tracking-widest">{score} Correct</span>
+          <div className="h-10 w-px bg-[var(--border-glass)] hidden md:block" />
+          <div className="flex items-center gap-3 px-6 py-2 bg-[var(--bg-panel)] border border-[var(--border-glass)] rounded-full shadow-sm">
+            <TrendingUp size={14} className="text-[var(--color-primary)]" />
+            <span className="text-xs font-mono text-[var(--text-primary)] uppercase tracking-widest font-bold">{score} Correct</span>
           </div>
         </div>
       </div>
 
       {/* Progress Track */}
       <div className="max-w-3xl mx-auto w-full mb-20 relative">
-        <div className="h-1 bg-white/5 rounded-full overflow-hidden flex items-center">
+        <div className="h-1 bg-[var(--border-glass)] rounded-full overflow-hidden flex items-center">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
-            className="h-full bg-gradient-to-r from-primary to-indigo-400 shadow-[0_0_10px_rgba(99,102,241,0.5)]"
+            className="h-full bg-gradient-to-r from-[var(--color-primary)] to-indigo-400 shadow-[0_0_10px_rgba(var(--color-primary-rgb),0.5)]"
           />
         </div>
-        <div className="absolute -top-6 right-0 text-[10px] font-mono text-slate-600 uppercase tracking-widest">
+        <div className="absolute -top-6 right-0 text-[10px] font-mono text-[var(--text-muted)] uppercase tracking-widest font-bold">
           Node {current + 1} / {questions.length}
         </div>
       </div>
@@ -215,13 +215,13 @@ const QuizPage: React.FC<Props> = ({ questions, onExit }) => {
             initial={{ opacity: 0, scale: 0.98, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: -10 }}
-            className="w-full max-w-2xl bg-white/[0.01] border border-white/5 backdrop-blur-2xl p-10 md:p-16 rounded-[48px] relative group"
+            className="w-full max-w-2xl bg-[var(--bg-panel)] border border-[var(--border-glass)] backdrop-blur-2xl p-10 md:p-16 rounded-[48px] relative group shadow-2xl"
           >
-            <div className="absolute -top-4 left-10 px-4 py-2 bg-[#020617] border border-white/10 rounded-xl">
-               <span className="text-[10px] font-mono text-primary uppercase tracking-[0.3em]">Query Logic</span>
+            <div className="absolute -top-4 left-10 px-4 py-2 bg-[var(--bg-deep)] border border-[var(--border-glass)] rounded-xl shadow-lg">
+               <span className="text-[10px] font-mono text-[var(--color-primary)] uppercase tracking-[0.3em] font-bold">Query Logic</span>
             </div>
 
-            <h2 className="text-2xl md:text-3xl font-display font-medium text-white mb-12 tracking-tight leading-snug">
+            <h2 className="text-2xl md:text-3xl font-display font-medium text-[var(--text-primary)] mb-12 tracking-tight leading-snug">
               {question.question}
             </h2>
 
@@ -242,14 +242,14 @@ const QuizPage: React.FC<Props> = ({ questions, onExit }) => {
                     key={i}
                     onClick={() => handleOptionClick(option)}
                     disabled={answered}
-                    className={`w-full text-left p-6 rounded-3xl text-sm font-light transition-all duration-300 flex items-center justify-between group/opt ${
+                    className={`w-full text-left p-6 rounded-3xl text-sm transition-all duration-300 flex items-center justify-between group/opt ${
                       answered 
                         ? variant === "correct" 
-                          ? "bg-green-500/20 border-green-500/40 text-green-400"
+                          ? "bg-green-500/20 border-green-500/40 text-green-600 font-bold"
                           : variant === "wrong"
-                            ? "bg-rose-500/20 border-rose-500/40 text-rose-400 opacity-100"
-                            : "opacity-40 border-white/5"
-                        : "bg-white/[0.02] border border-white/5 hover:border-primary/50 hover:bg-primary/5 text-slate-300 hover:text-white"
+                            ? "bg-rose-500/20 border-rose-500/40 text-rose-600 opacity-100 font-bold"
+                            : "opacity-40 border-[var(--border-glass)]"
+                        : "bg-[var(--bg-deep)] border border-[var(--border-glass)] hover:border-[var(--color-primary)]/50 hover:bg-[var(--color-primary)]/5 text-[var(--text-muted)] hover:text-[var(--text-primary)] font-medium"
                     }`}
                   >
                     <span className="flex-1">{option}</span>
@@ -259,8 +259,8 @@ const QuizPage: React.FC<Props> = ({ questions, onExit }) => {
                           ? "bg-green-500 border-green-400"
                           : variant === "wrong"
                             ? "bg-rose-500 border-rose-400"
-                            : "border-white/10"
-                        : "border-white/10 group-hover/opt:border-primary/50"
+                            : "border-[var(--border-glass)]"
+                        : "border-[var(--border-glass)] group-hover/opt:border-[var(--color-primary)]/50"
                     }`}>
                       {answered && variant === "correct" && <CheckCircle2 size={12} className="text-white" />}
                       {answered && variant === "wrong" && <X size={12} className="text-white" />}
@@ -275,7 +275,7 @@ const QuizPage: React.FC<Props> = ({ questions, onExit }) => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 onClick={handleNext}
-                className="mt-12 w-full py-5 bg-white text-black hover:bg-slate-200 rounded-[28px] text-[10px] font-mono uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-3 font-bold"
+                className="mt-12 w-full py-5 bg-[var(--color-primary)] text-white hover:opacity-90 rounded-[28px] text-[10px] font-mono uppercase tracking-[0.4em] transition-all flex items-center justify-center gap-3 font-bold shadow-lg"
               >
                 <span>Synchronize Next Node</span>
                 <ChevronRight size={16} />

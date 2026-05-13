@@ -239,11 +239,11 @@ const LandingPage: React.FC<LandingPageProps> = ({
                     onClick={() => onSelectSubject(subject)}
                     className="bg-[var(--bg-panel)] rounded-[32px] p-6 border border-[var(--border-glass)] shadow-[0_4px_20px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)] transition-all duration-300 flex flex-col cursor-pointer group hover:-translate-y-1 h-[440px]"
                   >
-                    <div className={`w-full h-48 rounded-[24px] bg-[var(--bg-deep)]/40 mb-6 overflow-hidden border ${subjectMeta.theme} flex items-center justify-center relative group-hover:bg-[var(--bg-deep)]/60 transition-colors`}>
+                    <div className={`w-full h-48 rounded-[24px] bg-white/[0.03] mb-6 overflow-hidden border ${subjectMeta.theme} flex items-center justify-center relative group-hover:bg-white/[0.08] transition-all duration-500`}>
                       <img
                         src={subjectMeta.img}
                         alt={subjectMeta.name}
-                        className="w-full h-full object-cover opacity-60 mix-blend-multiply group-hover:scale-105 transition-transform duration-500 saturate-50"
+                        className="w-full h-full object-cover opacity-100 group-hover:scale-105 transition-transform duration-500 saturate-100 brightness-[1.1]"
                       />
                       <div className="absolute inset-0 bg-white/5 group-hover:opacity-0 transition-opacity"></div>
                     </div>
@@ -377,8 +377,8 @@ const LandingPage: React.FC<LandingPageProps> = ({
                       <Play size={16} fill="currentColor" className="ml-1" />
                     </div>
                   </div>
-                  <div className="absolute right-0 bottom-0 w-48 h-48 rounded-tl-full overflow-hidden opacity-30 mix-blend-multiply flex items-end justify-end group-hover:opacity-40 transition-opacity">
-                    <img src={sim.iconUrl} className="w-full h-full object-cover rounded-tl-full grayscale brightness-50" alt="sim graphic" />
+                  <div className="absolute right-0 bottom-0 w-48 h-48 rounded-tl-full overflow-hidden opacity-80 flex items-end justify-end group-hover:opacity-100 transition-opacity">
+                    <img src={sim.iconUrl} className="w-full h-full object-cover rounded-tl-full brightness-[1.1] saturate-[1.2]" alt="sim graphic" />
                   </div>
                 </div>
               ))}

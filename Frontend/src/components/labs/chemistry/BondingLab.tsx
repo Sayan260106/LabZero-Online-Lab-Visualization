@@ -64,7 +64,7 @@ const BondingLab: React.FC<BondingLabProps> = ({ elements }) => {
     atomA.append("circle")
       .attr("r", 45)
       .attr("fill", "url(#gradA)")
-      .attr("stroke", "rgba(255,255,255,0.2)")
+      .attr("stroke", "var(--border-glass)")
       .attr("stroke-width", 2);
 
     atomA.append("text")
@@ -84,7 +84,7 @@ const BondingLab: React.FC<BondingLabProps> = ({ elements }) => {
     atomB.append("circle")
       .attr("r", 45)
       .attr("fill", "url(#gradB)")
-      .attr("stroke", "rgba(255,255,255,0.2)")
+      .attr("stroke", "var(--border-glass)")
       .attr("stroke-width", 2);
 
     atomB.append("text")
@@ -197,19 +197,19 @@ const BondingLab: React.FC<BondingLabProps> = ({ elements }) => {
 
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-8 mb-10">
           <div className="space-y-1">
-            <h3 className="text-3xl font-black text-white tracking-tight">Interaction Laboratory</h3>
-            <p className="text-sm text-white/40 font-medium">Explore the electrostatic force between valence shells.</p>
+            <h3 className="text-3xl font-black text-[var(--text-primary)] tracking-tight">Interaction Laboratory</h3>
+            <p className="text-sm text-[var(--text-muted)] font-medium">Explore the electrostatic force between valence shells.</p>
           </div>
 
-          <div className="flex items-center gap-4 bg-slate-900/50 p-2 rounded-2xl border border-white/5">
+          <div className="flex items-center gap-4 bg-[var(--bg-panel)] p-2 rounded-2xl border border-[var(--border-glass)] shadow-lg">
             <div className="flex flex-col items-end px-3">
-              <span className="text-[10px] font-black text-indigo-400 uppercase">Selected Pair</span>
-              <span className="text-xs font-bold text-white/80">{elA.symbol} + {elB.symbol}</span>
+              <span className="text-[10px] font-black text-[var(--color-primary)] uppercase">Selected Pair</span>
+              <span className="text-xs font-bold text-[var(--text-primary)]/80">{elA.symbol} + {elB.symbol}</span>
             </div>
-            <div className="w-px h-8 bg-white/10"></div>
+            <div className="w-px h-8 bg-[var(--border-glass)]"></div>
             <button
               onClick={reset}
-              className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-indigo-600/20 active:scale-95"
+              className="px-6 py-2.5 bg-[var(--color-primary)] hover:opacity-90 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg shadow-[var(--color-primary)]/20 active:scale-95 text-white"
             >
               Reset Environment
             </button>
@@ -218,13 +218,13 @@ const BondingLab: React.FC<BondingLabProps> = ({ elements }) => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           {/* Main Simulation View */}
-          <div className="lg:col-span-8 relative aspect-video bg-slate-950/40 rounded-[24px] border border-white/5 overflow-hidden group shadow-inner">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(99,102,241,0.05)_0%,transparent_70%)] pointer-events-none"></div>
+          <div className="lg:col-span-8 relative aspect-video bg-[var(--bg-deep)] rounded-[24px] border border-[var(--border-glass)] overflow-hidden group shadow-inner">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(var(--color-primary-rgb),0.05)_0%,transparent_70%)] pointer-events-none"></div>
 
             {status === 'IDLE' && (
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none text-center">
-                <div className="w-16 h-16 border-2 border-white/10 border-dashed rounded-full mx-auto mb-4 animate-[spin_10s_linear_infinite]"></div>
-                <p className="text-[10px] font-black text-white/20 uppercase tracking-[0.3em]">Drag atoms together</p>
+                <div className="w-16 h-16 border-2 border-[var(--border-glass)] border-dashed rounded-full mx-auto mb-4 animate-[spin_10s_linear_infinite]"></div>
+                <p className="text-[10px] font-black text-[var(--text-muted)]/40 uppercase tracking-[0.3em]">Drag atoms together</p>
               </div>
             )}
 
@@ -233,37 +233,37 @@ const BondingLab: React.FC<BondingLabProps> = ({ elements }) => {
 
           {/* Real-time Telemetry */}
           <div className="lg:col-span-4 space-y-6">
-            <div className="glass-panel p-6 rounded-3xl border border-white/5 space-y-6">
-              <h4 className="text-[10px] font-black text-white/40 uppercase tracking-widest">Bonding Telemetry</h4>
+            <div className="bg-[var(--bg-panel)] p-6 rounded-3xl border border-[var(--border-glass)] space-y-6 shadow-md">
+              <h4 className="text-[10px] font-black text-[var(--text-muted)] uppercase tracking-widest font-bold">Bonding Telemetry</h4>
 
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-white/60">Electronegativity Diff</span>
-                  <span className="text-sm font-mono font-bold text-indigo-400">Δχ = {electronegativityDiff.toFixed(2)}</span>
+                  <span className="text-xs text-[var(--text-muted)] font-bold">Electronegativity Diff</span>
+                  <span className="text-sm font-mono font-bold text-[var(--color-primary)]">Δχ = {electronegativityDiff.toFixed(2)}</span>
                 </div>
-                <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                <div className="h-2 bg-[var(--bg-deep)] rounded-full overflow-hidden border border-[var(--border-glass)]">
                   <div
                     className="h-full bg-gradient-to-r from-emerald-500 via-yellow-500 to-red-500 transition-all duration-700"
                     style={{ width: `${Math.min(100, (electronegativityDiff / 3.3) * 100)}%` }}
                   ></div>
                 </div>
-                <div className="flex justify-between text-[9px] font-bold text-white/20 uppercase tracking-tighter">
+                <div className="flex justify-between text-[9px] font-bold text-[var(--text-muted)]/40 uppercase tracking-tighter font-mono">
                   <span>Covalent (0.0)</span>
                   <span>Polar (0.5)</span>
                   <span>Ionic (1.7+)</span>
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-white/5 space-y-4">
+              <div className="pt-4 border-t border-[var(--border-glass)] space-y-4">
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-white/60">Atom A: {elA.name}</span>
+                  <span className="text-xs text-[var(--text-muted)] font-bold">Atom A: {elA.name}</span>
                   <select
                     value={elA.number}
                     onChange={e => { setStatus('IDLE'); setElA(elements.find(x => x.number === +e.target.value)!); }}
-                    className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[10px] font-bold text-white focus:outline-none"
+                    className="bg-[var(--bg-deep)] border border-[var(--border-glass)] rounded-lg px-2 py-1 text-[10px] font-bold text-[var(--text-primary)] focus:outline-none focus:border-[var(--color-primary)]/50"
                   >
                     {elements.map(e => (
-                      <option key={e.number} value={e.number} className="bg-slate-900 text-white">
+                      <option key={e.number} value={e.number} className="bg-[var(--bg-deep)] text-[var(--text-primary)]">
                         {e.symbol}
                       </option>
                     ))}
@@ -271,14 +271,14 @@ const BondingLab: React.FC<BondingLabProps> = ({ elements }) => {
                 </div>
 
                 <div className="flex justify-between items-center">
-                  <span className="text-xs text-white/60">Atom B: {elB.name}</span>
+                  <span className="text-xs text-[var(--text-muted)] font-bold">Atom B: {elB.name}</span>
                   <select
                     value={elB.number}
                     onChange={e => { setStatus('IDLE'); setElB(elements.find(x => x.number === +e.target.value)!); }}
-                    className="bg-white/5 border border-white/10 rounded-lg px-2 py-1 text-[10px] font-bold text-white focus:outline-none"
+                    className="bg-[var(--bg-deep)] border border-[var(--border-glass)] rounded-lg px-2 py-1 text-[10px] font-bold text-[var(--text-primary)] focus:outline-none focus:border-[var(--color-primary)]/50"
                   >
                     {elements.map(e => (
-                      <option key={e.number} value={e.number} className="bg-slate-900 text-white">
+                      <option key={e.number} value={e.number} className="bg-[var(--bg-deep)] text-[var(--text-primary)]">
                         {e.symbol}
                       </option>
                     ))}
@@ -287,14 +287,14 @@ const BondingLab: React.FC<BondingLabProps> = ({ elements }) => {
               </div>
             </div>
               {status === 'BONDED' && (
-                <div className="glass-panel p-6 rounded-3xl border border-indigo-500/30 bg-indigo-600/5 animate-in slide-in-from-right-4 duration-500">
+                <div className="bg-[var(--bg-panel)] p-6 rounded-3xl border border-[var(--color-primary)]/30 bg-[var(--color-primary)]/5 animate-in slide-in-from-right-4 duration-500 shadow-md">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center">
-                      <i className="fas fa-link text-indigo-400 text-xs"></i>
+                    <div className="w-8 h-8 rounded-full bg-[var(--color-primary)]/20 flex items-center justify-center">
+                      <i className="fas fa-link text-[var(--color-primary)] text-xs"></i>
                     </div>
-                    <h5 className="font-black text-sm uppercase text-white">{bondType} Bond</h5>
+                    <h5 className="font-black text-sm uppercase text-[var(--text-primary)]">{bondType} Bond</h5>
                   </div>
-                  <p className="text-xs text-white/50 leading-relaxed italic">
+                  <p className="text-xs text-[var(--text-muted)] leading-relaxed italic font-medium">
                     {bondType === 'Ionic'
                       ? `Electrostatic attraction between ${elA.symbol}⁺ and ${elB.symbol}⁻ formed after a complete electron transfer.`
                       : `Stable overlap of atomic orbitals where ${elA.symbol} and ${elB.symbol} achieve octet stability through sharing.`}

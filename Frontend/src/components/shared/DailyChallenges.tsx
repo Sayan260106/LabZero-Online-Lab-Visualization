@@ -94,15 +94,21 @@ const DailyChallenges: React.FC<DailyChallengesProps> = ({ subjectId, subjectNam
   const [progress, setProgress] = useState<ChallengeProgress>(() => loadProgress(progressKey));
   const [streak, setStreak] = useState<StreakProgress>(() => loadStreak(streakKey));
   const [activeIndex, setActiveIndex] = useState(0);
+  const [showReviewNote, setShowReviewNote] = useState(false);
 
   useEffect(() => {
     setProgress(loadProgress(progressKey));
     setStreak(loadStreak(streakKey));
     setActiveIndex(0);
+    setShowReviewNote(false);
   }, [progressKey, streakKey]);
 
   const activeChallenge = challenges[activeIndex];
   const bankSize = getChallengeBankSize(subjectId, selectedClass);
+
+  useEffect(() => {
+    setShowReviewNote(false);
+  }, [activeChallenge?.id]);
 
   const attemptedCount = challenges.filter((challenge) => progress.selected[challenge.id]).length;
   const completedCount = challenges.filter((challenge) => progress.completed[challenge.id]).length;
@@ -143,6 +149,7 @@ const DailyChallenges: React.FC<DailyChallengesProps> = ({ subjectId, subjectNam
   const handleSelect = (challenge: DailyChallenge, option: string) => {
     if (progress.selected[challenge.id]) return;
 
+    setShowReviewNote(false);
     updateProgress({
       selected: { ...progress.selected, [challenge.id]: option },
       completed: { ...progress.completed, [challenge.id]: option === challenge.answer },
@@ -405,13 +412,48 @@ const DailyChallenges: React.FC<DailyChallengesProps> = ({ subjectId, subjectNam
                     {nextUnattemptedIndex >= 0 ? 'Next Quest' : 'View Summary'}
                   </button>
                   <button
-                    onClick={() => setActiveIndex(activeIndex)}
+                    onClick={() => setShowReviewNote((isVisible) => !isVisible)}
+                    aria-expanded={showReviewNote}
                     className={`h-10 px-4 rounded-xl border text-[10px] font-mono uppercase tracking-[0.2em] flex items-center gap-2 transition-colors ${isDark ? 'border-white/10 text-slate-300 hover:bg-white/5' : 'border-slate-200 text-slate-600 hover:bg-slate-50'}`}
                   >
                     <BookOpen size={14} />
-                    Review Note
+                    {showReviewNote ? 'Hide Review' : 'Review Note'}
                   </button>
                 </div>
+                {showReviewNote && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    transition={{ duration: 0.25 }}
+                    className={`mt-5 overflow-hidden rounded-2xl border ${isDark ? 'border-white/10 bg-slate-950/40' : 'border-slate-200 bg-white'}`}
+                  >
+                    <div className="p-4">
+                      <div className={`text-[9px] font-mono uppercase tracking-widest mb-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>
+                        Review note / {activeChallenge.topic}
+                      </div>
+                      <h5 className={`text-base font-bold mb-2 ${isDark ? 'text-white' : 'text-slate-900'}`}>{activeChallenge.skill}</h5>
+                      <p className={`text-sm leading-relaxed mb-4 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+                        {activeChallenge.explanation}
+                      </p>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                        <div className={`p-3 rounded-xl border ${isDark ? 'border-white/10 bg-white/[0.03]' : 'border-slate-200 bg-slate-50'}`}>
+                          <div className={`text-[9px] font-mono uppercase tracking-widest mb-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Status</div>
+                          <div className={wasCorrect ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold'}>
+                            {wasCorrect ? 'Cleared' : 'Revise this concept'}
+                          </div>
+                        </div>
+                        <div className={`p-3 rounded-xl border ${isDark ? 'border-white/10 bg-white/[0.03]' : 'border-slate-200 bg-slate-50'}`}>
+                          <div className={`text-[9px] font-mono uppercase tracking-widest mb-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Your answer</div>
+                          <div className={wasCorrect ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold'}>{selectedAnswer}</div>
+                        </div>
+                        <div className={`p-3 rounded-xl border ${isDark ? 'border-white/10 bg-white/[0.03]' : 'border-slate-200 bg-slate-50'}`}>
+                          <div className={`text-[9px] font-mono uppercase tracking-widest mb-1 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Remember</div>
+                          <div className="text-emerald-400 font-semibold">{activeChallenge.answer}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
               </motion.div>
             )}
 

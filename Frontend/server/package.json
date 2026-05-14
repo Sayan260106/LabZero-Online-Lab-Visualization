@@ -1,0 +1,13 @@
+{
+  "name": "labzero-signaling-server",
+  "version": "1.0.0",
+  "description": "Signaling server for LabZero remote camera",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "ws": "^8.16.0"
+  }
+}

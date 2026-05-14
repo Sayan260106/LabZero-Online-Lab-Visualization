@@ -405,9 +405,14 @@ async function hasWebcam(): Promise<boolean> {
 }
 
 const getDefaultSignalingUrl = () => {
-  const host = window.location.hostname || "localhost";
+  // Check for environment variable first (Production)
+  const envUrl = import.meta.env.VITE_SIGNALING_URL;
+  if (envUrl) return envUrl;
+
+  // Fallback to local proxy (Development)
+  const host = window.location.host;
   const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-  return `${protocol}://${host}:5000`;
+  return `${protocol}://${host}/signal`;
 };
 
 const getPhoneSenderUrl = (signalingUrl: string) => {
@@ -418,6 +423,43 @@ const getPhoneSenderUrl = (signalingUrl: string) => {
   url.searchParams.set("signal", signalingUrl);
   return url.toString();
 };
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Stable Preview component to avoid remounting flickers
+// ─────────────────────────────────────────────────────────────────────────────
+const PreviewVideo = React.memo(({ stream, isLight, className, style, layoutId }: { stream: MediaStream | null; isLight?: boolean; className?: string; style?: React.CSSProperties; layoutId?: string }) => {
+  const localRef = useRef<HTMLVideoElement>(null);
+  
+  useEffect(() => {
+    const video = localRef.current;
+    if (!video || !stream) return;
+
+    if (video.srcObject !== stream) {
+      video.srcObject = stream;
+      video.play().catch(err => {
+        if (err.name !== 'AbortError') {
+          console.warn("Preview playback failed", err);
+        }
+      });
+    }
+  }, [stream]);
+
+  return (
+    <motion.video 
+      ref={localRef} 
+      layoutId={layoutId}
+      autoPlay 
+      playsInline 
+      muted 
+      className={className} 
+      style={{
+        ...style,
+        transform: `scaleX(-1) ${style?.transform || ''}`,
+        opacity: style?.opacity !== undefined ? style.opacity : (isLight ? 1 : 0.8)
+      }} 
+    />
+  );
+});
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Main component
@@ -445,6 +487,21 @@ const GestureController: React.FC<GestureControllerProps> = ({
   const lastSwipeTimeRef = useRef(0);
   const lastPinchDistRef = useRef<number | null>(null);
   const raiseHandFiredRef = useRef(false);
+  const currentStreamRef = useRef<MediaStream | null>(null);
+
+  // Latest callbacks to avoid useEffect thrashing
+  const cbRef = useRef({ 
+    onSelect, onBack, onRaiseHand, onScroll, onNextSlide, onPrevSlide, 
+    onRotate, onLaserPointer, onAnnotate, onToggleTheme, onResetZoom, onZoom, onPositionChange,
+    onCameraSourceChange
+  });
+  useEffect(() => {
+    cbRef.current = { 
+      onSelect, onBack, onRaiseHand, onScroll, onNextSlide, onPrevSlide, 
+      onRotate, onLaserPointer, onAnnotate, onToggleTheme, onResetZoom, onZoom, onPositionChange,
+      onCameraSourceChange
+    };
+  }, [onSelect, onBack, onRaiseHand, onScroll, onNextSlide, onPrevSlide, onRotate, onLaserPointer, onAnnotate, onToggleTheme, onResetZoom, onZoom, onPositionChange, onCameraSourceChange]);
 
   const TARGET_FPS = 60;
   const FRAME_INTERVAL = 1000 / TARGET_FPS;
@@ -471,8 +528,13 @@ const GestureController: React.FC<GestureControllerProps> = ({
   const signalingUrl = getDefaultSignalingUrl();
   const phoneSenderUrl = getPhoneSenderUrl(signalingUrl);
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied">("idle");
+  const [remoteConnected, setRemoteConnected] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [activeStream, setActiveStream] = useState<MediaStream | null>(null);
 
   const handleRemoteStream = useCallback((stream: MediaStream) => {
+    currentStreamRef.current = stream;
+    setActiveStream(stream);
     if (!videoRef.current) return;
 
     videoRef.current.srcObject = stream;
@@ -483,8 +545,8 @@ const GestureController: React.FC<GestureControllerProps> = ({
   const switchToRemoteCamera = useCallback((reason: string) => {
     console.warn(reason);
     setCameraMode('phone');
-    onCameraSourceChange('remote');
-  }, [onCameraSourceChange]);
+    cbRef.current.onCameraSourceChange?.('remote');
+  }, []);
 
   const copyPhoneLink = useCallback(async () => {
     try {
@@ -526,16 +588,195 @@ const GestureController: React.FC<GestureControllerProps> = ({
     };
   }, [isActive]);
 
+  const fire = useCallback((id: GestureId) => {
+    setJustFired(id);
+    setTimeout(() => setJustFired(null), 900);
+  }, []);
+
+  const handleGestureResult = useCallback((res: any, now: number) => {
+    if (res.gestures.length > 0) {
+      const top = res.gestures[0][0];
+      const rawGesture = top.categoryName as GestureId;
+      const conf = top.score ?? 0;
+      const lm = res.landmarks[0];
+      const indexTip = lm[8];
+      const thumbTip = lm[4];
+
+      const pinchDist = Math.hypot(
+        (1 - thumbTip.x) - (1 - indexTip.x),
+        thumbTip.y - indexTip.y,
+      );
+      const isPinching = pinchDist < PINCH_THRESHOLD;
+      const gesture: GestureId = isPinching ? 'Pinch' : rawGesture;
+      const trackingPoint =
+        gesture === 'Closed_Fist'
+          ? (lm[9] ?? lm[0])
+          : gesture === 'Pinch'
+            ? {
+              x: (thumbTip.x + indexTip.x) / 2,
+              y: (thumbTip.y + indexTip.y) / 2,
+            }
+            : indexTip;
+
+      // Safe-area guard
+      if (trackingPoint.x < SAFE || trackingPoint.x > 1 - SAFE ||
+        trackingPoint.y < SAFE || trackingPoint.y > 1 - SAFE) {
+        return;
+      }
+
+      // Smoothed, mirrored position
+      const rawX = 1 - trackingPoint.x;
+      const rawY = trackingPoint.y;
+      const prev = lastHandPosRef.current;
+      const sx = prev ? prev.x + (rawX - prev.x) * SMOOTH : rawX;
+      const sy = prev ? prev.y + (rawY - prev.y) * SMOOTH : rawY;
+      const pos = { x: sx, y: sy };
+
+      setCurrentGesture(gesture);
+      setConfidence(conf);
+      setHandPosition(pos);
+      onPositionChange?.(pos);
+
+      // Trail
+      setTrail(t => [...t, { x: sx, y: sy, id: trailIdRef.current++ }].slice(-14));
+
+      // ── Hold-gesture bookkeeping ──────────────────────────────────
+      const holdDef = GESTURE_DEFS.find(g => g.id === gesture && g.holdMs !== null);
+
+      if (holdDef && holdDef.holdMs !== null) {
+        if (!holdStateRef.current[gesture]) {
+          holdStateRef.current = {};                          // reset others
+          holdStateRef.current[gesture] = { startMs: now, fired: false };
+        }
+        const held = now - holdStateRef.current[gesture].startMs;
+        const progress = Math.min(held / holdDef.holdMs, 1);
+        setHoldProgress({ [gesture]: progress });
+
+        if (!holdStateRef.current[gesture].fired && held >= holdDef.holdMs) {
+          holdStateRef.current[gesture].fired = true;
+          fire(gesture);
+          setActiveMode(holdDef.mode);
+
+          switch (gesture) {
+            case 'Thumb_Up': {
+              const ex = pos.x * window.innerWidth;
+              const ey = pos.y * window.innerHeight;
+              (document.elementFromPoint(ex, ey) as HTMLElement | null)?.click();
+              cbRef.current.onSelect?.();
+              break;
+            }
+            case 'Thumb_Down': cbRef.current.onBack?.(); break;
+            case 'Victory': cbRef.current.onToggleTheme?.(); break;
+            case 'ILoveYou': cbRef.current.onResetZoom?.(); break;
+          }
+        }
+      } else {
+        // Different gesture — reset hold state
+        if (Object.keys(holdStateRef.current).some(k => k !== gesture)) {
+          holdStateRef.current = {};
+          setHoldProgress({});
+        }
+      }
+
+      // ── Continuous / immediate gestures ──────────────────────────
+      if (gesture === 'Pointing_Up') {
+        setActiveMode('POINTER');
+        cbRef.current.onLaserPointer?.(pos);
+        if (prev) {
+          const dx = pos.x - prev.x, dy = pos.y - prev.y;
+          if (Math.abs(dx) > 0.003 || Math.abs(dy) > 0.003) cbRef.current.onAnnotate?.(pos);
+        }
+
+      } else if (gesture === 'Open_Palm') {
+        setActiveMode('SCROLL');
+
+        // One-shot raise-hand on first frame of this gesture
+        if (!raiseHandFiredRef.current) {
+          raiseHandFiredRef.current = true;
+          cbRef.current.onRaiseHand?.();
+        }
+
+        // Vertical scroll
+        if (prev) {
+          const dy = pos.y - prev.y;
+          if (Math.abs(dy) > 0.007) cbRef.current.onScroll?.(dy * 2200);
+        }
+
+        // Swipe detection — sliding window of x-positions
+        swipeBufRef.current.push({ x: sx, t: now });
+        swipeBufRef.current = swipeBufRef.current.filter(s => now - s.t < 350);
+
+        if (swipeBufRef.current.length >= 4 && now - lastSwipeTimeRef.current > SWIPE_DEBOUNCE) {
+          const first = swipeBufRef.current[0];
+          const last = swipeBufRef.current[swipeBufRef.current.length - 1];
+          const dt = (last.t - first.t) / 1000;
+          const vel = dt > 0 ? (last.x - first.x) / dt : 0;
+
+          if (Math.abs(vel) > SWIPE_VEL_THRESHOLD) {
+            lastSwipeTimeRef.current = now;
+            swipeBufRef.current = [];
+            fire('Palm_Swipe');
+            setActiveMode('SWIPE');
+            vel > 0 ? cbRef.current.onNextSlide?.() : cbRef.current.onPrevSlide?.();
+          }
+        }
+
+      } else if (gesture === 'Closed_Fist') {
+        setActiveMode('ROTATE');
+        if (prev) {
+          const dx = pos.x - prev.x, dy = pos.y - prev.y;
+          if (Math.abs(dx) > 0.005 || Math.abs(dy) > 0.005) cbRef.current.onRotate?.(dx * 400, dy * 400);
+        }
+
+      } else if (gesture === 'Pinch') {
+        setActiveMode('ZOOM');
+        if (lastPinchDistRef.current !== null) {
+          const delta = pinchDist - lastPinchDistRef.current;
+          if (Math.abs(delta) > 0.003) cbRef.current.onZoom?.(delta * 500);
+        }
+
+      } else {
+        // Gesture that is none of the above — clear continuous states
+        cbRef.current.onLaserPointer?.(null);
+        swipeBufRef.current = [];
+        raiseHandFiredRef.current = false;
+      }
+
+      lastPinchDistRef.current = isPinching ? pinchDist : null;
+      lastHandPosRef.current = pos;
+
+    } else {
+      // No hand
+      setCurrentGesture('None');
+      setConfidence(0);
+      setHandPosition(null);
+      setActiveMode('IDLE');
+      setTrail([]);
+      setHoldProgress({});
+      holdStateRef.current = {};
+      swipeBufRef.current = [];
+      raiseHandFiredRef.current = false;
+      lastHandPosRef.current = null;
+      lastPinchDistRef.current = null;
+      onPositionChange?.(null);
+      cbRef.current.onLaserPointer?.(null);
+    }
+  }, [fire]);
+
+  const handleRemoteGestureData = useCallback((data: any) => {
+    const now = Date.now();
+    const mockRes = {
+      gestures: [[{ categoryName: data.gesture, score: data.score }]],
+      landmarks: [data.landmarks]
+    };
+    handleGestureResult(mockRes, now);
+  }, [handleGestureResult]);
+
   // ── Camera + prediction loop ─────────────────────────────────────────────
   useEffect(() => {
     let stream: MediaStream | null = null;
     let alive = true;
     let raf: number;
-
-    const fire = (id: GestureId) => {
-      setJustFired(id);
-      setTimeout(() => setJustFired(null), 900);
-    };
 
     const loop = () => {
       if (!alive) return;
@@ -563,174 +804,7 @@ const GestureController: React.FC<GestureControllerProps> = ({
 
         try {
           const res = gestureRecRef.current.recognizeForVideo(vid, now);
-
-          if (res.gestures.length > 0) {
-            const top = res.gestures[0][0];
-            const rawGesture = top.categoryName as GestureId;
-            const conf = top.score ?? 0;
-            const lm = res.landmarks[0];
-            const indexTip = lm[8];
-            const thumbTip = lm[4];
-
-            const pinchDist = Math.hypot(
-              (1 - thumbTip.x) - (1 - indexTip.x),
-              thumbTip.y - indexTip.y,
-            );
-            const isPinching = pinchDist < PINCH_THRESHOLD;
-            const gesture: GestureId = isPinching ? 'Pinch' : rawGesture;
-            const trackingPoint =
-              gesture === 'Closed_Fist'
-                ? (lm[9] ?? lm[0])
-                : gesture === 'Pinch'
-                  ? {
-                    x: (thumbTip.x + indexTip.x) / 2,
-                    y: (thumbTip.y + indexTip.y) / 2,
-                  }
-                  : indexTip;
-
-            // Safe-area guard
-            if (trackingPoint.x < SAFE || trackingPoint.x > 1 - SAFE ||
-              trackingPoint.y < SAFE || trackingPoint.y > 1 - SAFE) {
-              raf = requestAnimationFrame(loop); return;
-            }
-
-            // Smoothed, mirrored position
-            const rawX = 1 - trackingPoint.x;
-            const rawY = trackingPoint.y;
-            const prev = lastHandPosRef.current;
-            const sx = prev ? prev.x + (rawX - prev.x) * SMOOTH : rawX;
-            const sy = prev ? prev.y + (rawY - prev.y) * SMOOTH : rawY;
-            const pos = { x: sx, y: sy };
-
-            setCurrentGesture(gesture);
-            setConfidence(conf);
-            setHandPosition(pos);
-            onPositionChange?.(pos);
-
-            // Trail
-            setTrail(t => [...t, { x: sx, y: sy, id: trailIdRef.current++ }].slice(-14));
-
-            // ── Hold-gesture bookkeeping ──────────────────────────────────
-            const holdDef = GESTURE_DEFS.find(g => g.id === gesture && g.holdMs !== null);
-
-            if (holdDef && holdDef.holdMs !== null) {
-              if (!holdStateRef.current[gesture]) {
-                holdStateRef.current = {};                          // reset others
-                holdStateRef.current[gesture] = { startMs: now, fired: false };
-              }
-              const held = now - holdStateRef.current[gesture].startMs;
-              const progress = Math.min(held / holdDef.holdMs, 1);
-              setHoldProgress({ [gesture]: progress });
-
-              if (!holdStateRef.current[gesture].fired && held >= holdDef.holdMs) {
-                holdStateRef.current[gesture].fired = true;
-                fire(gesture);
-                setActiveMode(holdDef.mode);
-
-                switch (gesture) {
-                  case 'Thumb_Up': {
-                    const ex = pos.x * window.innerWidth;
-                    const ey = pos.y * window.innerHeight;
-                    (document.elementFromPoint(ex, ey) as HTMLElement | null)?.click();
-                    onSelect?.();
-                    break;
-                  }
-                  case 'Thumb_Down': onBack?.(); break;
-                  case 'Victory': onToggleTheme?.(); break;
-                  case 'ILoveYou': onResetZoom?.(); break;
-                }
-              }
-            } else {
-              // Different gesture — reset hold state
-              if (Object.keys(holdStateRef.current).some(k => k !== gesture)) {
-                holdStateRef.current = {};
-                setHoldProgress({});
-              }
-            }
-
-            // ── Continuous / immediate gestures ──────────────────────────
-            if (gesture === 'Pointing_Up') {
-              setActiveMode('POINTER');
-              onLaserPointer?.(pos);
-              if (prev) {
-                const dx = pos.x - prev.x, dy = pos.y - prev.y;
-                if (Math.abs(dx) > 0.003 || Math.abs(dy) > 0.003) onAnnotate?.(pos);
-              }
-
-            } else if (gesture === 'Open_Palm') {
-              setActiveMode('SCROLL');
-
-              // One-shot raise-hand on first frame of this gesture
-              if (!raiseHandFiredRef.current) {
-                raiseHandFiredRef.current = true;
-                onRaiseHand?.();
-              }
-
-              // Vertical scroll
-              if (prev) {
-                const dy = pos.y - prev.y;
-                if (Math.abs(dy) > 0.007) onScroll?.(dy * 2200);
-              }
-
-              // Swipe detection — sliding window of x-positions
-              swipeBufRef.current.push({ x: sx, t: now });
-              swipeBufRef.current = swipeBufRef.current.filter(s => now - s.t < 350);
-
-              if (swipeBufRef.current.length >= 4 && now - lastSwipeTimeRef.current > SWIPE_DEBOUNCE) {
-                const first = swipeBufRef.current[0];
-                const last = swipeBufRef.current[swipeBufRef.current.length - 1];
-                const dt = (last.t - first.t) / 1000;
-                const vel = dt > 0 ? (last.x - first.x) / dt : 0;
-
-                if (Math.abs(vel) > SWIPE_VEL_THRESHOLD) {
-                  lastSwipeTimeRef.current = now;
-                  swipeBufRef.current = [];
-                  fire('Palm_Swipe');
-                  setActiveMode('SWIPE');
-                  vel > 0 ? onNextSlide?.() : onPrevSlide?.();
-                }
-              }
-
-            } else if (gesture === 'Closed_Fist') {
-              setActiveMode('ROTATE');
-              if (prev) {
-                const dx = pos.x - prev.x, dy = pos.y - prev.y;
-                if (Math.abs(dx) > 0.005 || Math.abs(dy) > 0.005) onRotate?.(dx * 400, dy * 400);
-              }
-
-            } else if (gesture === 'Pinch') {
-              setActiveMode('ZOOM');
-              if (lastPinchDistRef.current !== null) {
-                const delta = pinchDist - lastPinchDistRef.current;
-                if (Math.abs(delta) > 0.003) onZoom?.(delta * 500);
-              }
-
-            } else {
-              // Gesture that is none of the above — clear continuous states
-              onLaserPointer?.(null);
-              swipeBufRef.current = [];
-              raiseHandFiredRef.current = false;
-            }
-
-            lastPinchDistRef.current = isPinching ? pinchDist : null;
-            lastHandPosRef.current = pos;
-
-          } else {
-            // No hand
-            setCurrentGesture('None');
-            setConfidence(0);
-            setHandPosition(null);
-            setActiveMode('IDLE');
-            setTrail([]);
-            setHoldProgress({});
-            holdStateRef.current = {};
-            swipeBufRef.current = [];
-            raiseHandFiredRef.current = false;
-            lastHandPosRef.current = null;
-            lastPinchDistRef.current = null;
-            onPositionChange?.(null);
-            onLaserPointer?.(null);
-          }
+          handleGestureResult(res, now);
         } catch (e) { console.error('Recognition error', e); }
       }
 
@@ -757,6 +831,8 @@ const GestureController: React.FC<GestureControllerProps> = ({
           video: { width: 640, height: 480, frameRate: { ideal: TARGET_FPS } },
         });
 
+        currentStreamRef.current = stream;
+        setActiveStream(stream);
         videoRef.current.srcObject = stream;
         await videoRef.current.play().catch(() => undefined);
         setCameraMode('webcam');
@@ -775,9 +851,24 @@ const GestureController: React.FC<GestureControllerProps> = ({
       alive = false;
       cancelAnimationFrame(raf);
       stream?.getTracks().forEach(t => t.stop());
+      currentStreamRef.current = null;
     };
-  }, [isActive, cameraSource, switchToRemoteCamera, onSelect, onBack, onRaiseHand, onScroll, onNextSlide, onPrevSlide,
-    onRotate, onLaserPointer, onAnnotate, onToggleTheme, onResetZoom, onZoom]);
+  }, [isActive, cameraSource, switchToRemoteCamera]);
+
+  // Clear preview when deactivated or source changes to avoid frozen frames
+  useEffect(() => {
+    setActiveStream(null);
+    setRemoteConnected(false);
+  }, [isActive, cameraSource]);
+
+  // Cleanup
+  useEffect(() => {
+    return () => {
+      currentStreamRef.current?.getTracks().forEach(t => t.stop());
+      currentStreamRef.current = null;
+      setActiveStream(null);
+    };
+  }, []);
 
   // ── Derived ──────────────────────────────────────────────────────────────
   const activeDef = GESTURE_DEFS.find(g => g.id === currentGesture);
@@ -831,6 +922,17 @@ const GestureController: React.FC<GestureControllerProps> = ({
           {showGuide && <GestureGuide onClose={() => setShowGuide(false)} theme={theme} />}
         </AnimatePresence>
 
+        {/* Hidden persistent video for MediaPipe processing */}
+        {isActive && (
+          <video
+            ref={videoRef}
+            autoPlay
+            playsInline
+            muted
+            className="pointer-events-none absolute h-0 w-0 opacity-0"
+          />
+        )}
+
         <motion.div layout className="relative flex items-center gap-3 rounded-2xl overflow-hidden"
           style={{
             padding: isActive ? '10px 14px' : '8px',
@@ -853,7 +955,7 @@ const GestureController: React.FC<GestureControllerProps> = ({
           )}
 
           {/* ── Toggle button ─────────────────────────────────────────────── */}
-          <motion.button onClick={onToggle}
+          <motion.button onClick={() => { if (isActive && isCollapsed) setIsCollapsed(false); else onToggle(); }}
             className="relative hidden md:flex items-center justify-center rounded-xl overflow-hidden flex-shrink-0"
             style={{
               width: 52, height: 52,
@@ -873,26 +975,49 @@ const GestureController: React.FC<GestureControllerProps> = ({
             )}
           </motion.button>
 
-          {/* ── Expanded panel ────────────────────────────────────────────── */}
-          <AnimatePresence>
-            {isActive && (
+          {/* ── Collapsible Content Group ────────────────────────────────── */}
+          <AnimatePresence mode="popLayout">
+            {isActive && !isCollapsed && (
               <motion.div
-                initial={{ opacity: 0, width: 0 }} animate={{ opacity: 1, width: 'auto' }}
-                exit={{ opacity: 0, width: 0 }}
-                transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-                className="flex items-center gap-4 overflow-hidden">
-
+                key="expanded-group"
+                initial={{ opacity: 0, scale: 0.9, x: -10 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                exit={{ opacity: 0, scale: 0.9, x: -10 }}
+                transition={{ type: 'spring', stiffness: 350, damping: 30 }}
+                className="flex items-center gap-4 origin-left"
+              >
                 <div className="h-10 w-px flex-shrink-0" style={{ background: isLight ? 'rgba(148,163,184,0.24)' : 'rgba(255,255,255,0.07)' }} />
 
-                {/* Status block */}
-                <div className="flex-shrink-0" style={{ minWidth: 110 }}>
+                {/* Status & Source Selector */}
+                <div className="flex-shrink-0" style={{ minWidth: 140 }}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <button 
+                      onClick={() => onCameraSourceChange('local')}
+                      className={`flex-1 h-8 rounded-md font-mono text-[10px] uppercase tracking-wider transition-all border ${
+                        cameraSource === 'local' 
+                          ? 'bg-indigo-500 text-white border-transparent shadow-[0_0_12px_rgba(99,102,241,0.5)]' 
+                          : isLight ? 'bg-slate-100 text-slate-500 border-slate-200' : 'bg-white/5 text-slate-400 border-white/10 hover:bg-white/10'
+                      }`}
+                    >
+                      Local
+                    </button>
+                    <button 
+                      onClick={() => onCameraSourceChange('remote')}
+                      className={`flex-1 h-8 rounded-md font-mono text-[10px] uppercase tracking-wider transition-all border ${
+                        cameraSource === 'remote' 
+                          ? 'bg-indigo-500 text-white border-transparent shadow-[0_0_12px_rgba(99,102,241,0.5)]' 
+                          : isLight ? 'bg-slate-100 text-slate-500 border-slate-200' : 'bg-white/5 text-slate-400 border-white/10 hover:bg-white/10'
+                      }`}
+                    >
+                      Phone
+                    </button>
+                  </div>
                   <div className="flex items-center gap-1.5 mb-1">
                     <motion.div className="w-1.5 h-1.5 rounded-full flex-shrink-0"
                       style={{ background: activeColor }}
                       animate={{ opacity: [1, 0.3, 1] }} transition={{ duration: 1.1, repeat: Infinity }} />
                     <span style={{ fontFamily: 'monospace', fontSize: 8, color: subtleText, letterSpacing: '0.22em', textTransform: 'uppercase' }}>
-                      {fps}fps · {isLoaded ? 'LIVE' : 'INIT…'} · 
-                      {cameraMode === 'webcam' ? '🎥 CAM' : cameraMode === 'phone' ? '📱 PHONE' : '❌ NONE'}
+                      {fps}fps · {isLoaded ? 'LIVE' : 'INIT…'}
                     </span>
                   </div>
                   <motion.div key={currentGesture}
@@ -958,80 +1083,122 @@ const GestureController: React.FC<GestureControllerProps> = ({
                 </div>
 
                 <div className="h-10 w-px flex-shrink-0" style={{ background: isLight ? 'rgba(148,163,184,0.24)' : 'rgba(255,255,255,0.07)' }} />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-                {/* Mini camera viewport */}
-                <div className="relative flex-shrink-0 rounded-xl overflow-hidden transition-colors duration-500"
-                  style={{ 
-                    width: 116, 
-                    height: 66, 
-                    background: isLight ? 'rgba(241,245,249,0.95)' : '#000', 
-                    border: isLight ? '1px solid rgba(148,163,184,0.28)' : '1px solid rgba(255,255,255,0.07)' 
-                  }}>
-                  <video ref={videoRef} autoPlay playsInline muted
-                    className="absolute inset-0 w-full h-full object-cover transition-all duration-500"
-                    style={{ 
-                      opacity: isLight ? 0.85 : 0.32, 
-                      filter: isLight ? 'none' : 'grayscale(100%) contrast(1.2)', 
-                      transform: 'scaleX(-1)' 
-                    }} />
-                  {/* Sweep line */}
-                  <motion.div className="absolute left-0 right-0 h-px pointer-events-none"
-                    style={{ background: `linear-gradient(90deg, transparent, ${activeColor}${isLight ? '90' : '65'}, transparent)` }}
-                    animate={{ top: ['0%', '100%', '0%'] }}
-                    transition={{ duration: 2.8, repeat: Infinity, ease: 'linear' }} />
-                  {/* HUD corner brackets */}
-                  {([
-                    { top: 4, left: 4, bt: 1, bl: 1, br: 0, bb: 0 },
-                    { top: 4, right: 4, bt: 1, bl: 0, br: 1, bb: 0 },
-                    { bottom: 4, left: 4, bt: 0, bl: 1, br: 0, bb: 1 },
-                    { bottom: 4, right: 4, bt: 0, bl: 0, br: 1, bb: 1 },
-                  ] as any[]).map((c, i) => (
-                    <div key={i} className="absolute w-3 h-3 pointer-events-none"
-                      style={{
-                        top: c.top, right: c.right, bottom: c.bottom, left: c.left,
-                        borderTopWidth: c.bt, borderLeftWidth: c.bl,
-                        borderRightWidth: c.br, borderBottomWidth: c.bb,
-                        borderColor: activeColor, borderStyle: 'solid', opacity: 0.65,
-                      }} />
-                  ))}
-                  <Trail points={trail} color={activeColor} />
-                  <AnimatePresence>
-                    {handPosition && (
-                      <motion.div className="absolute z-10 pointer-events-none"
-                        style={{ left: `${handPosition.x * 100}%`, top: `${handPosition.y * 100}%`, transform: 'translate(-50%,-50%)' }}
-                        initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
-                        transition={{ type: 'spring', stiffness: 600, damping: 28 }}>
-                        <div style={{
-                          width: 9, height: 9, borderRadius: '50%',
-                          background: activeColor, boxShadow: `0 0 10px ${activeColor}`,
+          {/* ── Persistent Preview Viewport ──────────────────────────────── */}
+          {isActive && (
+            <motion.div
+              layout
+              key="camera-preview-container"
+              className="relative flex-shrink-0 rounded-xl overflow-hidden border transition-colors duration-500"
+              style={{ 
+                width: isCollapsed ? 92 : 116, 
+                height: isCollapsed ? 52 : 66, 
+                borderColor: isCollapsed ? `${activeColor}40` : isLight ? 'rgba(148,163,184,0.28)' : 'rgba(255,255,255,0.07)',
+                background: isLight ? 'rgba(241,245,249,0.95)' : '#000', 
+              }}
+              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+            >
+              <PreviewVideo
+                layoutId="camera-preview-vid"
+                stream={activeStream}
+                isLight={isLight}
+                className="absolute inset-0 w-full h-full object-cover transition-all duration-500"
+                style={{ filter: 'none' }}
+              />
+
+              {/* HUD Elements (only show full details when expanded) */}
+              <AnimatePresence>
+                {!isCollapsed && (
+                  <motion.div 
+                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                    className="absolute inset-0 pointer-events-none"
+                  >
+                    {/* Sweep line */}
+                    <motion.div className="absolute left-0 right-0 h-px"
+                      style={{ background: `linear-gradient(90deg, transparent, ${activeColor}${isLight ? '90' : '65'}, transparent)` }}
+                      animate={{ top: ['0%', '100%', '0%'] }}
+                      transition={{ duration: 2.8, repeat: Infinity, ease: 'linear' }} />
+                    
+                    {/* HUD corner brackets */}
+                    {([
+                      { top: 4, left: 4, bt: 1, bl: 1, br: 0, bb: 0 },
+                      { top: 4, right: 4, bt: 1, bl: 0, br: 1, bb: 0 },
+                      { bottom: 4, left: 4, bt: 0, bl: 1, br: 0, bb: 1 },
+                      { bottom: 4, right: 4, bt: 0, bl: 0, br: 1, bb: 1 },
+                    ] as any[]).map((c, i) => (
+                      <div key={i} className="absolute w-3 h-3"
+                        style={{
+                          top: c.top, right: c.right, bottom: c.bottom, left: c.left,
+                          borderTopWidth: c.bt, borderLeftWidth: c.bl,
+                          borderRightWidth: c.br, borderBottomWidth: c.bb,
+                          borderColor: activeColor, borderStyle: 'solid', opacity: 0.65,
                         }} />
-                        <motion.div className="absolute"
-                          style={{ inset: -5, borderRadius: '50%', border: `1px solid ${activeColor}`, opacity: 0.5 }}
-                          animate={{ scale: [1, 1.9], opacity: [0.5, 0] }}
-                          transition={{ duration: 1, repeat: Infinity }} />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
+                    ))}
+                    <Trail points={trail} color={activeColor} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
-                {/* Utility buttons */}
-                <div className="flex flex-col gap-2 flex-shrink-0">
-                  <motion.button onClick={() => setShowGuide(s => !s)}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center"
-                    style={{
-                      background: showGuide ? 'rgba(129,140,248,0.18)' : isLight ? 'rgba(241,245,249,0.95)' : 'rgba(255,255,255,0.05)',
-                      border: `1px solid ${showGuide ? 'rgba(129,140,248,0.35)' : isLight ? 'rgba(148,163,184,0.24)' : 'rgba(255,255,255,0.07)'}`,
-                    }}
-                    whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.88 }}>
-                    <BookOpen size={12} style={{ color: showGuide ? '#818cf8' : isLight ? '#475569' : '#64748b' }} />
-                  </motion.button>
-                  <motion.button onClick={onToggle}
-                    className="w-8 h-8 rounded-lg flex items-center justify-center"
-                    style={{ background: isLight ? 'rgba(241,245,249,0.95)' : 'rgba(255,255,255,0.05)', border: isLight ? '1px solid rgba(148,163,184,0.24)' : '1px solid rgba(255,255,255,0.07)' }}
-                    whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.88 }}>
-                    <X size={11} style={{ color: isLight ? '#475569' : '#64748b' }} />
-                  </motion.button>
-                </div>
+              {/* Hand indicator (always show if active) */}
+              <AnimatePresence>
+                {handPosition && (
+                  <motion.div className="absolute z-10 pointer-events-none"
+                    style={{ left: `${handPosition.x * 100}%`, top: `${handPosition.y * 100}%`, transform: 'translate(-50%,-50%)' }}
+                    initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
+                    transition={{ type: 'spring', stiffness: 600, damping: 28 }}>
+                    <div style={{
+                      width: 9, height: 9, borderRadius: '50%',
+                      background: activeColor, boxShadow: `0 0 10px ${activeColor}`,
+                    }} />
+                    <motion.div className="absolute"
+                      style={{ inset: -5, borderRadius: '50%', border: `1px solid ${activeColor}`, opacity: 0.5 }}
+                      animate={{ scale: [1, 1.9], opacity: [0.5, 0] }}
+                      transition={{ duration: 1, repeat: Infinity }} />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Minimal indicator (collapsed only) */}
+              {isCollapsed && (
+                <div className="absolute bottom-1 right-1 w-1.5 h-1.5 rounded-full" 
+                  style={{ background: activeColor, boxShadow: `0 0 6px ${activeColor}` }} />
+              )}
+            </motion.div>
+          )}
+
+          {/* ── Utility buttons ───────────────────────────────────────────── */}
+          <AnimatePresence>
+            {isActive && !isCollapsed && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8, x: 10 }}
+                animate={{ opacity: 1, scale: 1, x: 0 }}
+                exit={{ opacity: 0, scale: 0.8, x: 10 }}
+                className="flex flex-col gap-2 flex-shrink-0"
+              >
+                <motion.button onClick={() => setShowGuide(s => !s)}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center"
+                  style={{
+                    background: showGuide ? 'rgba(129,140,248,0.18)' : isLight ? 'rgba(241,245,249,0.95)' : 'rgba(255,255,255,0.05)',
+                    border: `1px solid ${showGuide ? 'rgba(129,140,248,0.35)' : isLight ? 'rgba(148,163,184,0.24)' : 'rgba(255,255,255,0.07)'}`,
+                  }}
+                  whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.88 }}>
+                  <BookOpen size={12} style={{ color: showGuide ? '#818cf8' : isLight ? '#475569' : '#64748b' }} />
+                </motion.button>
+                <motion.button onClick={() => setIsCollapsed(true)}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center"
+                  style={{ background: isLight ? 'rgba(241,245,249,0.95)' : 'rgba(255,255,255,0.05)', border: isLight ? '1px solid rgba(148,163,184,0.24)' : '1px solid rgba(255,255,255,0.07)' }}
+                  whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.88 }}>
+                  <ChevronLeft size={12} style={{ color: isLight ? '#475569' : '#64748b' }} />
+                </motion.button>
+                <motion.button onClick={onToggle}
+                  className="w-8 h-8 rounded-lg flex items-center justify-center"
+                  style={{ background: isLight ? 'rgba(241,245,249,0.95)' : 'rgba(255,255,255,0.05)', border: isLight ? '1px solid rgba(148,163,184,0.24)' : '1px solid rgba(255,255,255,0.07)' }}
+                  whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.88 }}>
+                  <X size={11} style={{ color: isLight ? '#475569' : '#64748b' }} />
+                </motion.button>
               </motion.div>
             )}
           </AnimatePresence>
@@ -1039,7 +1206,7 @@ const GestureController: React.FC<GestureControllerProps> = ({
 
       </div>
       <AnimatePresence>
-        {isActive && cameraSource === 'remote' && (
+        {isActive && cameraSource === 'remote' && !remoteConnected && (
           <motion.div
             initial={{ opacity: 0, y: 12, scale: 0.96 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -1088,6 +1255,17 @@ const GestureController: React.FC<GestureControllerProps> = ({
       <Receiver
         isActive={isActive && cameraSource === 'remote'}
         onStream={handleRemoteStream}
+        onConnected={() => setRemoteConnected(true)}
+        onConnectionStateChange={(state) => {
+          if (state === 'failed' || state === 'closed') {
+            setRemoteConnected(false);
+          }
+        }}
+        onData={(data) => {
+          if (data.type === 'gesture-data') {
+            handleRemoteGestureData(data);
+          }
+        }}
         signalingUrl={signalingUrl}
       />
     </>

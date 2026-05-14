@@ -223,9 +223,10 @@ const AppContent: React.FC = () => {
 
   const [copyStatus, setCopyStatus] = useState<"idle" | "copied">("idle");
   const signalingUrl = (() => {
+    if (import.meta.env.VITE_SIGNALING_URL) return import.meta.env.VITE_SIGNALING_URL;
     const host = window.location.hostname || "localhost";
     const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-    return `${protocol}://${host}:5000`;
+    return `${protocol}://${host}/signal`;
   })();
 
   const phoneSenderUrl = (() => {

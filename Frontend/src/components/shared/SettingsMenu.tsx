@@ -360,19 +360,7 @@ export const SettingsMenu: React.FC<SettingsMenuProps> = ({
                     </div>
                   </div>
 
-                  {cameraSource === 'remote' && (
-                    <motion.div 
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      className="pt-2"
-                    >
-                      <QRCodePairing 
-                        pairingUrl={phoneSenderUrl}
-                        copyStatus={copyStatus}
-                        onCopy={onCopyPhoneLink}
-                      />
-                    </motion.div>
-                  )}
+                  {/* QRCode pairing removed per request */}
                 </motion.div>
               )}
             </AnimatePresence>

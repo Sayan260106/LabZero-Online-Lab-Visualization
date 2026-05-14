@@ -3,6 +3,9 @@ import { useEffect, useRef, useState } from "react";
 type ReceiverProps = {
   isActive: boolean;
   onStream: (stream: MediaStream) => void;
+  onData?: (data: any) => void;
+  onConnected?: () => void;
+  onConnectionStateChange?: (state: RTCPeerConnectionState) => void;
   signalingUrl?: string;
 };
 
@@ -16,6 +19,9 @@ const getDefaultSignalingUrl = () => {
 export default function Receiver({
   isActive,
   onStream,
+  onData,
+  onConnected,
+  onConnectionStateChange,
   signalingUrl = getDefaultSignalingUrl(),
 }: ReceiverProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -111,6 +117,26 @@ export default function Receiver({
     // ─────────────────────────────
     // WebRTC Events
     // ─────────────────────────────
+    peer.ondatachannel = (event) => {
+      console.log("📡 DataChannel received!");
+      const channel = event.channel;
+
+      channel.onmessage = (e) => {
+        try {
+          const gestureData = JSON.parse(e.data);
+          onData?.(gestureData);
+        } catch (err) {
+          console.error("❌ DataChannel message error:", err);
+        }
+      };
+
+      channel.onopen = () => {
+        console.log("✅ DataChannel open");
+        onConnected?.();
+      };
+      channel.onclose = () => console.log("⚠️ DataChannel closed");
+    };
+
     peer.ontrack = (event) => {
       console.log("🎥 Stream received!");
 
@@ -126,6 +152,7 @@ export default function Receiver({
 
       setStatus("📱 Phone camera live");
       onStream(stream);
+      onConnected?.();
     };
 
     peer.onicecandidate = (event) => {
@@ -138,6 +165,7 @@ export default function Receiver({
 
     peer.onconnectionstatechange = () => {
       console.log("🔗 Connection state:", peer.connectionState);
+      onConnectionStateChange?.(peer.connectionState);
 
       if (peer.connectionState === "connected") {
         setStatus("Connected");
@@ -164,19 +192,5 @@ export default function Receiver({
 
   if (!isActive) return null;
 
-  return (
-    <div className="fixed bottom-40 right-4 z-[120] w-52 overflow-hidden rounded-2xl border border-white/10 bg-slate-950/90 shadow-2xl backdrop-blur-xl">
-      <video
-        ref={videoRef}
-        autoPlay
-        playsInline
-        muted
-        className="h-28 w-full object-cover"
-      />
-
-      <div className="px-3 py-2 text-[9px] font-mono uppercase tracking-[0.2em] text-slate-400">
-        {status}
-      </div>
-    </div>
-  );
+  return null;
 }

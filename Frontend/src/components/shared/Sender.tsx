@@ -1,13 +1,16 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
+// @ts-ignore
+import { GestureRecognizer } from '@mediapipe/tasks-vision';
+import { getGestureRecognizer } from "../../services/gestureService";
 
 const getDefaultSignalingUrl = () => {
   const params = new URLSearchParams(window.location.search);
   const url = params.get("signal");
   if (url) return url;
 
-  const host = window.location.hostname;
+  const host = window.location.host;
   const protocol = window.location.protocol === "https:" ? "wss" : "ws";
-  return `${protocol}://${host}:5000`;
+  return `${protocol}://${host}/signal`;
 };
 
 export default function Sender() {
@@ -15,9 +18,57 @@ export default function Sender() {
   const pc = useRef<RTCPeerConnection | null>(null);
   const ws = useRef<WebSocket | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const dataChannel = useRef<RTCDataChannel | null>(null);
+  const gestureRecRef = useRef<GestureRecognizer | null>(null);
   const offerStartedRef = useRef(false);
+  const lastVideoTimeRef = useRef(-1);
 
   const [status, setStatus] = useState("📱 Starting phone camera...");
+  const [isDataChannelOpen, setIsDataChannelOpen] = useState(false);
+
+  // ── Detection Loop ─────────────────────────────
+  const loop = useCallback(() => {
+    if (!videoRef.current || !gestureRecRef.current || !dataChannel.current) return;
+    if (dataChannel.current.readyState !== "open") {
+      requestAnimationFrame(loop);
+      return;
+    }
+
+    const video = videoRef.current;
+    const now = Date.now();
+
+    if (video.currentTime !== lastVideoTimeRef.current && video.videoWidth > 0) {
+      lastVideoTimeRef.current = video.currentTime;
+
+      try {
+        const result = gestureRecRef.current.recognizeForVideo(video, now);
+
+        if (result.gestures.length > 0) {
+          const top = result.gestures[0][0];
+          const gesture = top.categoryName;
+          const score = top.score;
+          const landmarks = result.landmarks[0];
+
+          // Simplified packet to save bandwidth
+          const packet = {
+            type: "gesture-data",
+            gesture,
+            score,
+            landmarks: landmarks.map(l => ({ x: l.x, y: l.y, z: l.z }))
+          };
+
+          dataChannel.current.send(JSON.stringify(packet));
+        } else {
+          // No hand detected
+          dataChannel.current.send(JSON.stringify({ type: "gesture-data", gesture: "None", score: 0 }));
+        }
+      } catch (err) {
+        console.error("❌ Recognition error on phone:", err);
+      }
+    }
+
+    requestAnimationFrame(loop);
+  }, []);
 
   useEffect(() => {
     console.log("📡 Sender starting...");
@@ -30,6 +81,25 @@ export default function Sender() {
 
     ws.current = socket;
     pc.current = peer;
+
+    // 🎯 Init Recognizer
+    getGestureRecognizer().then(r => {
+      gestureRecRef.current = r;
+      console.log("✅ Gesture recognizer ready on phone");
+    });
+
+    // 📡 Create DataChannel
+    const dc = peer.createDataChannel("gesture-data", { ordered: false });
+    dataChannel.current = dc;
+
+    dc.onopen = () => {
+      console.log("✅ DataChannel open on sender");
+      setIsDataChannelOpen(true);
+    };
+    dc.onclose = () => {
+      setIsDataChannelOpen(false);
+      console.warn("⚠️ DataChannel closed on sender");
+    };
 
     // ─────────────────────────────
     // WebSocket Events
@@ -170,8 +240,8 @@ export default function Sender() {
       await pc.current.setLocalDescription(offer);
 
       ws.current.send(JSON.stringify({ offer }));
-
-      setStatus("📡 Sending video to LabZero...");
+      setStatus("🚀 Connected! Move your hand.");
+      requestAnimationFrame(loop);
     } catch (error) {
       console.error("❌ Camera failed", error);
       offerStartedRef.current = false;

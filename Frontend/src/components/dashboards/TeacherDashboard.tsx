@@ -5,6 +5,7 @@ import {
   Users,
   BookOpen,
   Calendar,
+  CalendarCheck,
   MessageSquare,
   Plus,
   Play,
@@ -26,6 +27,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Skeleton } from 'boneyard-js/react';
 import { classroomsService } from '../../services/classroomsService';
 import { getSubjects } from '../../services/subjectsService';
+import AttendancePortal from '../shared/AttendancePortal';
 
 interface TeacherDashboardProps {
   onBack?: () => void;
@@ -55,6 +57,7 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onBack, onStartMeet
   const [activeTab, setActiveTab] = React.useState<'students' | 'assignments'>('students');
   const [topics, setTopics] = React.useState<any[]>([]);
   const [isOnlineClassMenuOpen, setIsOnlineClassMenuOpen] = React.useState(false);
+  const [isAttendancePortalOpen, setIsAttendancePortalOpen] = React.useState(false);
 
   React.useEffect(() => {
     fetchClasses();
@@ -228,6 +231,13 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onBack, onStartMeet
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsAttendancePortalOpen(true)}
+            className="teacher-secondary-button flex items-center gap-2 rounded-2xl bg-white/90 border border-slate-200 px-5 py-3 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
+          >
+            <CalendarCheck size={16} />
+            Attendance
+          </button>
           {onStartMeeting && (
             <div className="relative">
               <button
@@ -362,16 +372,29 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onBack, onStartMeet
                       </div>
                       <div className="flex items-center gap-4">
                         {onStartMeeting && (
-                          <button
-                            onClick={(event) => {
-                              event.stopPropagation();
-                              onStartMeeting(item);
-                            }}
-                            className="hidden items-center gap-2 rounded-xl bg-sky-600 px-4 py-2 text-[9px] font-mono uppercase tracking-[0.18em] text-white shadow-lg shadow-sky-600/20 transition-all hover:bg-sky-500 md:flex"
-                          >
-                            <Video size={14} />
-                            Start
-                          </button>
+                          <>
+                            <button
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                setSelectedClass(item);
+                                setIsAttendancePortalOpen(true);
+                              }}
+                              className="hidden items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-2 text-[9px] font-mono uppercase tracking-[0.18em] text-emerald-700 shadow-sm transition-all hover:bg-emerald-100 md:flex"
+                            >
+                              <CalendarCheck size={14} />
+                              Roll
+                            </button>
+                            <button
+                              onClick={(event) => {
+                                event.stopPropagation();
+                                onStartMeeting(item);
+                              }}
+                              className="hidden items-center gap-2 rounded-xl bg-sky-600 px-4 py-2 text-[9px] font-mono uppercase tracking-[0.18em] text-white shadow-lg shadow-sky-600/20 transition-all hover:bg-sky-500 md:flex"
+                            >
+                              <Video size={14} />
+                              Start
+                            </button>
+                          </>
                         )}
                         <span className={`text-[9px] font-mono uppercase tracking-[0.2em] px-3 py-1.5 rounded-lg border ${item.is_live ? 'bg-emerald-50 text-emerald-700 border-emerald-200 shadow-inner' : 'bg-slate-100 text-slate-500 border-slate-200 shadow-inner'
                           }`}>
@@ -862,6 +885,15 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onBack, onStartMeet
           </div>
         )}
       </AnimatePresence>
+      {isAttendancePortalOpen && (
+        <AttendancePortal
+          mode="teacher"
+          classes={classes}
+          selectedClass={selectedClass}
+          studentName={user?.first_name}
+          onClose={() => setIsAttendancePortalOpen(false)}
+        />
+      )}
     </div>
   );
 };

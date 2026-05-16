@@ -5,6 +5,7 @@ import {
   Users,
   GraduationCap,
   BarChart3,
+  CalendarCheck,
   ShieldCheck,
   Settings,
   MoreVertical,
@@ -25,6 +26,7 @@ import {
 import { motion } from 'motion/react';
 import { useAuth } from '../../context/AuthContext';
 import { Skeleton } from 'boneyard-js/react';
+import AttendancePortal from '../shared/AttendancePortal';
 
 interface InstituteDashboardProps {
   onBack?: () => void;
@@ -47,6 +49,7 @@ const InstituteDashboard: React.FC<InstituteDashboardProps> = ({ onBack }) => {
   const [selectedFaculty, setSelectedFaculty] = React.useState<FacultyHighlight | null>(null);
   const [showAddFaculty, setShowAddFaculty] = React.useState(false);
   const [showManagementPortal, setShowManagementPortal] = React.useState(false);
+  const [showAttendancePortal, setShowAttendancePortal] = React.useState(false);
   const [actionNotice, setActionNotice] = React.useState<string | null>(null);
 
   const metrics = [
@@ -181,6 +184,13 @@ const InstituteDashboard: React.FC<InstituteDashboardProps> = ({ onBack }) => {
             title={isSearchOpen ? 'Close search' : 'Search dashboard'}
           >
             <Search size={18} />
+          </button>
+          <button
+            onClick={() => setShowAttendancePortal(true)}
+            className="px-5 py-3 rounded-xl border border-emerald-400/25 bg-emerald-500/10 text-emerald-200 text-[10px] font-mono uppercase tracking-widest hover:bg-emerald-500 hover:text-white transition-all shadow-inner flex items-center gap-2"
+          >
+            <CalendarCheck size={14} />
+            Attendance
           </button>
           <button
             onClick={exportLeaderboardReport}
@@ -669,6 +679,15 @@ const InstituteDashboard: React.FC<InstituteDashboardProps> = ({ onBack }) => {
             </div>
           </motion.div>
         </div>
+      )}
+
+      {showAttendancePortal && (
+        <AttendancePortal
+          mode="institute"
+          classes={[]}
+          studentName={user?.first_name}
+          onClose={() => setShowAttendancePortal(false)}
+        />
       )}
     </div>
   );

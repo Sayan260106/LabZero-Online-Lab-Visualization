@@ -2,6 +2,7 @@
 import React from 'react';
 import {
     BookOpen,
+    CalendarCheck,
     Clock,
     Trophy,
     Target,
@@ -24,6 +25,7 @@ import {
 import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../../context/AuthContext';
 import { classroomsService } from '../../services/classroomsService';
+import AttendancePortal from '../shared/AttendancePortal';
 
 interface StudentDashboardProps {
     onBack?: () => void;
@@ -41,6 +43,7 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ onBack, onLaunchLab
     const [isJoining, setIsJoining] = React.useState(false);
     const [selectedClass, setSelectedClass] = React.useState<any | null>(null);
     const [isOnlineClassMenuOpen, setIsOnlineClassMenuOpen] = React.useState(false);
+    const [isAttendancePortalOpen, setIsAttendancePortalOpen] = React.useState(false);
 
     React.useEffect(() => {
         fetchData();
@@ -151,6 +154,13 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ onBack, onLaunchLab
                         <Bell size={20} />
                         <div className="absolute top-3.5 right-4 w-2 h-2 bg-rose-500 rounded-full border-2 border-[var(--bg-deep)] group-hover:scale-125 transition-transform" />
                     </button>
+                    <button
+                        onClick={() => setIsAttendancePortalOpen(true)}
+                        className="flex items-center gap-2 rounded-2xl border border-emerald-500/25 bg-emerald-500/10 px-4 py-3 text-[10px] font-mono font-bold uppercase tracking-widest text-emerald-500 shadow-lg transition-all hover:bg-emerald-500 hover:text-white"
+                    >
+                        <CalendarCheck size={16} />
+                        Attendance
+                    </button>
                 </div>
             </header>
 
@@ -250,6 +260,18 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ onBack, onLaunchLab
                                     <div className="flex items-center justify-between">
                                         <span className="text-xs font-sans text-[var(--text-muted)] italic">{cls.assignments?.length || 0} tasks</span>
                                         <div className="flex items-center gap-2">
+                                            {onStartMeeting && (
+                                                <button
+                                                    onClick={(event) => {
+                                                        event.stopPropagation();
+                                                        setSelectedClass(cls);
+                                                        setIsAttendancePortalOpen(true);
+                                                    }}
+                                                    className="flex h-8 w-8 items-center justify-center rounded-full border border-cyan-500/20 bg-cyan-500/10 text-cyan-400 transition-all hover:bg-cyan-500 hover:text-white"
+                                                >
+                                                    <CalendarCheck size={14} />
+                                                </button>
+                                            )}
                                             {onStartMeeting && (
                                                 <button
                                                     onClick={(event) => {
@@ -562,6 +584,13 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ onBack, onLaunchLab
                                                     <p className="mt-2 text-sm text-[var(--text-muted)]">Enter the live class room for this classroom.</p>
                                                 </div>
                                                 <button
+                                                    onClick={() => setIsAttendancePortalOpen(true)}
+                                                    className="flex items-center justify-center gap-2 rounded-2xl border border-cyan-500/20 bg-cyan-500/10 px-5 py-3 text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-cyan-400 transition-all hover:bg-cyan-500 hover:text-white"
+                                                >
+                                                    <CalendarCheck size={16} />
+                                                    View Attendance
+                                                </button>
+                                                <button
                                                     onClick={() => onStartMeeting(selectedClass)}
                                                     className="flex items-center justify-center gap-2 rounded-2xl bg-emerald-500 px-5 py-3 text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-white transition-all hover:bg-emerald-400"
                                                 >
@@ -641,6 +670,15 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ onBack, onLaunchLab
                     </div>
                 )}
             </AnimatePresence>
+            {isAttendancePortalOpen && (
+                <AttendancePortal
+                    mode="student"
+                    classes={classes}
+                    selectedClass={selectedClass}
+                    studentName={user?.first_name}
+                    onClose={() => setIsAttendancePortalOpen(false)}
+                />
+            )}
         </div>
     );
 };

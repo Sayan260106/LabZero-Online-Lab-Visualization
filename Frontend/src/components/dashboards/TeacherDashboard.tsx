@@ -28,6 +28,7 @@ import { Skeleton } from 'boneyard-js/react';
 import { classroomsService } from '../../services/classroomsService';
 import { getSubjects } from '../../services/subjectsService';
 import AttendancePortal from '../shared/AttendancePortal';
+import DashboardLeaderboard from '../shared/DashboardLeaderboard';
 
 interface TeacherDashboardProps {
   onBack?: () => void;
@@ -414,6 +415,13 @@ const TeacherDashboard: React.FC<TeacherDashboardProps> = ({ onBack, onStartMeet
 
         {/* Sidebar: Announcements & Tasks */}
         <div className="lg:col-span-4 space-y-8">
+          <DashboardLeaderboard
+            mode="teacher"
+            theme="light"
+            classes={classes}
+            currentUser={user}
+          />
+
           <div className="teacher-feature-card p-8 rounded-[40px] bg-gradient-to-br from-sky-600 via-teal-600 to-violet-700 backdrop-blur-2xl text-white relative overflow-hidden group shadow-[0_18px_50px_rgba(14,116,144,0.24)] border border-white/40">
             <div className="absolute -right-8 -bottom-8 opacity-20 group-hover:scale-110 transition-transform duration-1000">
               <Sparkles size={200} />

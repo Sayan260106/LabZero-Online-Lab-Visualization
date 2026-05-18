@@ -26,6 +26,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useAuth } from '../../context/AuthContext';
 import { classroomsService } from '../../services/classroomsService';
 import AttendancePortal from '../shared/AttendancePortal';
+import DashboardLeaderboard from '../shared/DashboardLeaderboard';
 
 interface StudentDashboardProps {
     onBack?: () => void;
@@ -356,6 +357,12 @@ const StudentDashboard: React.FC<StudentDashboardProps> = ({ onBack, onLaunchLab
 
                 {/* Right Column: Library & Sidebar */}
                 <div className="lg:col-span-4 space-y-8">
+                    <DashboardLeaderboard
+                        mode="student"
+                        theme="dark"
+                        classes={classes}
+                        currentUser={user}
+                    />
 
                     {/* Simulation Assignments / Tasks */}
                     <div className="p-8 rounded-[40px] bg-[var(--bg-panel)] backdrop-blur-xl border border-[var(--border-glass)] space-y-6 shadow-xl">

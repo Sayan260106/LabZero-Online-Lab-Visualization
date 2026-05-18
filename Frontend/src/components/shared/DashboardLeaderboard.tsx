@@ -21,6 +21,7 @@ interface DashboardLeaderboardProps {
   theme?: LeaderboardTheme;
   classes?: any[];
   currentUser?: any;
+  topicMetrics?: LeaderboardTopicMetric[];
 }
 
 interface LeaderboardStudent {
@@ -33,6 +34,16 @@ interface LeaderboardStudent {
   labs: number;
   tasks: number;
   score: number;
+}
+
+interface LeaderboardTopicMetric {
+  id: string;
+  name: string;
+  accent: string;
+  streak: number;
+  xp: number;
+  cleared: number;
+  progress?: number;
 }
 
 const subjects = [
@@ -133,11 +144,11 @@ const buildRows = (classes: any[], currentUser: any, mode: LeaderboardMode): Lea
     const students = Array.isArray(classroom?.students) ? classroom.students : [];
     return students.map((student: any, studentIndex: number) => {
       const seed = classIndex * 7 + studentIndex;
-      const attendance = clamp(82 + (seed % 17), 70, 99);
-      const streak = 5 + (seed % 21);
-      const challengeXp = 120 + seed * 18;
-      const labs = 8 + (seed % 16);
-      const tasks = classroom?.assignments?.length || 0;
+      const attendance = clamp(Number(student?.attendance ?? student?.attendanceRate ?? 82 + (seed % 17)), 70, 99);
+      const streak = Number(student?.streak ?? student?.dailyChallengeStreak ?? 5 + (seed % 21));
+      const challengeXp = Number(student?.challengeXp ?? student?.xp ?? 120 + seed * 18);
+      const labs = Number(student?.labs ?? student?.completedLabs ?? 8 + (seed % 16));
+      const tasks = Number(student?.tasks ?? student?.activeTasks ?? classroom?.assignments?.length ?? 0);
       const score = Math.round(attendance * 0.34 + streak * 1.5 + challengeXp * 0.12 + labs * 1.8 + tasks * 2);
 
       return {
@@ -204,10 +215,14 @@ const DashboardLeaderboard: React.FC<DashboardLeaderboardProps> = ({
   theme = 'dark',
   classes = [],
   currentUser,
+  topicMetrics,
 }) => {
   const isDark = theme === 'dark';
   const rows = React.useMemo(() => buildRows(classes, currentUser, mode), [classes, currentUser, mode]);
-  const topicRows = React.useMemo(() => subjects.map((subject) => ({ ...subject, ...getSubjectStats(subject.id) })), []);
+  const topicRows = React.useMemo(
+    () => topicMetrics || subjects.map((subject) => ({ ...subject, ...getSubjectStats(subject.id) })),
+    [topicMetrics]
+  );
   const topScore = rows[0]?.score || 1;
   const averageAttendance = rows.length
     ? Math.round(rows.reduce((total, row) => total + row.attendance, 0) / rows.length)
@@ -299,7 +314,7 @@ const DashboardLeaderboard: React.FC<DashboardLeaderboardProps> = ({
         <div className="mb-4 flex items-center justify-between">
           <div className={`flex items-center gap-2 text-[10px] font-mono uppercase tracking-[0.2em] ${mutedClass}`}>
             <BarChart3 size={14} />
-            Topic Momentum
+            {mode === 'institute' ? 'Institute Topics' : 'Topic Momentum'}
           </div>
           <div className={`flex items-center gap-1 text-[10px] font-mono uppercase tracking-widest ${mutedClass}`}>
             <Users size={12} />
@@ -309,7 +324,7 @@ const DashboardLeaderboard: React.FC<DashboardLeaderboardProps> = ({
 
         <div className="space-y-3">
           {topicRows.map((topic, index) => {
-            const progress = clamp(topic.xp + topic.streak * 8 + topic.cleared * 12, 8 + index * 10, 100);
+            const progress = topic.progress ?? clamp(topic.xp + topic.streak * 8 + topic.cleared * 12, 8 + index * 10, 100);
             return (
               <div key={topic.id}>
                 <div className="mb-1 flex items-center justify-between gap-3">

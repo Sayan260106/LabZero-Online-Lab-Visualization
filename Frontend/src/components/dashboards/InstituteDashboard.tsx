@@ -27,6 +27,7 @@ import { motion } from 'motion/react';
 import { useAuth } from '../../context/AuthContext';
 import { Skeleton } from 'boneyard-js/react';
 import AttendancePortal from '../shared/AttendancePortal';
+import DashboardLeaderboard from '../shared/DashboardLeaderboard';
 
 interface InstituteDashboardProps {
   onBack?: () => void;
@@ -89,6 +90,30 @@ const InstituteDashboard: React.FC<InstituteDashboardProps> = ({ onBack }) => {
   const utilizationAverage = Math.round(
     utilizationData.reduce((total, item) => total + item.value, 0) / utilizationData.length
   );
+
+  const instituteLeaderboardClasses = [
+    {
+      id: 'institute-all',
+      name: 'Institute Top Cohort',
+      assignments: [{ id: 'attendance' }, { id: 'daily-challenge' }, { id: 'lab-completion' }],
+      students: consistentStudents.map((student) => ({
+        id: student.rank,
+        name: student.name,
+        attendance: student.attendance,
+        streak: student.streak,
+        challengeXp: student.consistency * 7,
+        labs: student.labs,
+        tasks: 3,
+      })),
+    },
+  ];
+
+  const instituteTopicMetrics = [
+    { id: 'attendance', name: 'Attendance Reliability', accent: 'bg-emerald-400', streak: 25, xp: 940, cleared: 5, progress: 94 },
+    { id: 'daily-challenges', name: 'Daily Challenge Streaks', accent: 'bg-amber-400', streak: 25, xp: 875, cleared: 5, progress: 88 },
+    { id: 'lab-completion', name: 'Lab Completion', accent: 'bg-violet-400', streak: 18, xp: 720, cleared: 4, progress: 82 },
+    { id: 'subject-mastery', name: 'Subject Mastery', accent: 'bg-cyan-400', streak: 21, xp: 790, cleared: 4, progress: 86 },
+  ];
 
   const filteredStudents = consistentStudents.filter((student) => {
     const searchable = `${student.name} ${student.grade} ${student.department}`.toLowerCase();
@@ -471,6 +496,14 @@ const InstituteDashboard: React.FC<InstituteDashboardProps> = ({ onBack }) => {
 
         {/* Sidebar: Faculty Management */}
         <div className="xl:col-span-4 space-y-6">
+          <DashboardLeaderboard
+            mode="institute"
+            theme="dark"
+            classes={instituteLeaderboardClasses}
+            currentUser={user}
+            topicMetrics={instituteTopicMetrics}
+          />
+
           <div className="p-6 md:p-7 rounded-[30px] bg-slate-900/85 backdrop-blur-xl border border-slate-700/80 space-y-7 shadow-lg">
             <div className="flex items-center justify-between">
               <h3 className="text-sm font-display font-medium text-slate-50 uppercase tracking-tight flex items-center gap-2 drop-shadow-sm">

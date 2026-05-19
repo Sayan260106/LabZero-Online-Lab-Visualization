@@ -234,7 +234,7 @@ const MemoryMapOverlay: React.FC<MemoryMapOverlayProps> = ({ onClose, initialSub
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                className="min-h-full w-full flex items-center justify-center"
+                className="min-h-full w-full flex items-start justify-center"
               >
                 <VisualMap node={mapData} />
               </motion.div>
@@ -248,20 +248,19 @@ const MemoryMapOverlay: React.FC<MemoryMapOverlayProps> = ({ onClose, initialSub
 
 const VisualMap: React.FC<{ node: MapNode }> = ({ node }) => {
   const children = node.children ?? [];
-  const rootWidth = 300;
-  const branchWidth = 430;
-  const rootCenterX = 210;
-  const branchLeft = 470;
-  const branchCenterX = branchLeft + branchWidth / 2;
-  const topPadding = 48;
-  const branchGap = 28;
+  const rootWidth = 280;
+  const branchWidth = 500;
+  const rootCenterX = 230;
+  const branchLeft = 620;
+  const topPadding = 56;
+  const branchGap = 32;
   const branchSlots = children.map((child) => {
     const detailsCount = child.children?.length || 0;
-    return Math.max(188, 124 + detailsCount * 58);
+    return Math.max(198, 130 + detailsCount * 64);
   });
   const contentHeight = branchSlots.reduce((sum, height) => sum + height, 0) + Math.max(children.length - 1, 0) * branchGap;
   const mapHeight = Math.max(640, contentHeight + topPadding * 2);
-  const mapWidth = 980;
+  const mapWidth = branchLeft + branchWidth + 72;
   const rootCenterY = mapHeight / 2;
   let currentTop = topPadding + Math.max(0, (mapHeight - topPadding * 2 - contentHeight) / 2);
   const branches = children.map((child, idx) => {
@@ -300,7 +299,7 @@ const VisualMap: React.FC<{ node: MapNode }> = ({ node }) => {
             initial={{ pathLength: 0, opacity: 0 }}
             animate={{ pathLength: 1, opacity: 0.72 }}
             transition={{ duration: 1.2, delay: idx * 0.12 }}
-            d={`M ${rootCenterX + rootWidth / 2} ${rootCenterY} C ${rootCenterX + rootWidth / 2 + 70} ${rootCenterY}, ${branchLeft - 70} ${centerY}, ${branchLeft} ${centerY}`}
+            d={`M ${rootCenterX + rootWidth / 2 + 8} ${rootCenterY} C ${rootCenterX + rootWidth / 2 + 150} ${rootCenterY}, ${branchLeft - 160} ${centerY}, ${branchLeft} ${centerY}`}
             stroke="url(#mindmap-line-grad)"
             strokeWidth="3"
             fill="none"
@@ -313,8 +312,8 @@ const VisualMap: React.FC<{ node: MapNode }> = ({ node }) => {
       {/* Root Node */}
       <motion.div
         layoutId="root-node"
-        className="memory-map-root-card absolute z-30 w-[300px] -translate-x-1/2 -translate-y-1/2 p-8 rounded-[28px] text-center group cursor-pointer"
-        style={{ left: rootCenterX, top: rootCenterY }}
+        className="memory-map-root-card absolute z-30 -translate-x-1/2 -translate-y-1/2 p-8 rounded-[28px] text-center group cursor-pointer"
+        style={{ left: rootCenterX, top: rootCenterY, width: rootWidth }}
         whileHover={{ scale: 1.05 }}
       >
         <div className="memory-map-root-icon w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5 backdrop-blur-xl shadow-inner group-hover:animate-pulse">

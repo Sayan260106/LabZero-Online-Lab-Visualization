@@ -471,6 +471,13 @@
     linear-gradient(135deg, var(--memory-map-primary-strong), var(--memory-map-primary) 48%, var(--memory-map-secondary));
   border: 1px solid rgba(255, 255, 255, 0.24);
   box-shadow: 0 24px 72px color-mix(in srgb, var(--memory-map-primary) 42%, transparent);
+  color: #ffffff;
+}
+
+.memory-map-root-card h4,
+.memory-map-root-card svg,
+.memory-map-root-card .font-mono {
+  color: #ffffff;
 }
 
 .memory-map-root-icon {

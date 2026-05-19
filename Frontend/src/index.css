@@ -292,6 +292,260 @@
   border-color: var(--border-glass);
 }
 
+/* Memory map: dedicated light and dark palettes for the visual hierarchy. */
+.memory-map-overlay {
+  --memory-map-scrim: rgba(2, 6, 23, 0.96);
+  --memory-map-shell: rgba(8, 13, 28, 0.94);
+  --memory-map-panel: rgba(15, 23, 42, 0.82);
+  --memory-map-panel-strong: rgba(15, 23, 42, 0.96);
+  --memory-map-panel-soft: rgba(255, 255, 255, 0.04);
+  --memory-map-text: #f8fafc;
+  --memory-map-muted: #94a3b8;
+  --memory-map-faint: #64748b;
+  --memory-map-border: rgba(148, 163, 184, 0.16);
+  --memory-map-border-strong: rgba(129, 140, 248, 0.44);
+  --memory-map-primary: #a78bfa;
+  --memory-map-primary-strong: #8b5cf6;
+  --memory-map-secondary: #22d3ee;
+  --memory-map-tertiary: #34d399;
+  --memory-map-line-a: #a78bfa;
+  --memory-map-line-b: #22d3ee;
+  --memory-map-shadow: 0 28px 90px rgba(0, 0, 0, 0.48);
+  --memory-map-card-shadow: 0 18px 54px rgba(0, 0, 0, 0.34);
+  color: var(--memory-map-text);
+}
+
+.light-mode .memory-map-overlay {
+  --memory-map-scrim: rgba(248, 250, 252, 0.92);
+  --memory-map-shell: rgba(255, 255, 255, 0.9);
+  --memory-map-panel: rgba(255, 255, 255, 0.88);
+  --memory-map-panel-strong: rgba(255, 255, 255, 0.98);
+  --memory-map-panel-soft: rgba(15, 23, 42, 0.035);
+  --memory-map-text: #0f172a;
+  --memory-map-muted: #475569;
+  --memory-map-faint: #64748b;
+  --memory-map-border: rgba(15, 23, 42, 0.11);
+  --memory-map-border-strong: rgba(79, 70, 229, 0.34);
+  --memory-map-primary: #4f46e5;
+  --memory-map-primary-strong: #4338ca;
+  --memory-map-secondary: #0f766e;
+  --memory-map-tertiary: #d97706;
+  --memory-map-line-a: #4f46e5;
+  --memory-map-line-b: #0f766e;
+  --memory-map-shadow: 0 28px 80px rgba(15, 23, 42, 0.18);
+  --memory-map-card-shadow: 0 18px 44px rgba(15, 23, 42, 0.12);
+}
+
+.memory-map-scrim {
+  background:
+    linear-gradient(135deg, var(--memory-map-scrim), rgba(15, 23, 42, 0.92)),
+    repeating-linear-gradient(90deg, rgba(148, 163, 184, 0.06) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(0deg, rgba(148, 163, 184, 0.05) 0 1px, transparent 1px 64px);
+}
+
+.light-mode .memory-map-scrim {
+  background:
+    linear-gradient(135deg, var(--memory-map-scrim), rgba(226, 232, 240, 0.86)),
+    repeating-linear-gradient(90deg, rgba(15, 23, 42, 0.055) 0 1px, transparent 1px 64px),
+    repeating-linear-gradient(0deg, rgba(15, 23, 42, 0.045) 0 1px, transparent 1px 64px);
+}
+
+.memory-map-shell {
+  background: var(--memory-map-shell);
+  border: 1px solid var(--memory-map-border);
+  box-shadow: var(--memory-map-shadow);
+}
+
+.memory-map-header {
+  background: var(--memory-map-panel);
+  border-bottom: 1px solid var(--memory-map-border);
+}
+
+.memory-map-title,
+.memory-map-card-title,
+.memory-map-branch-title {
+  color: var(--memory-map-text);
+}
+
+.memory-map-subtitle,
+.memory-map-card-copy,
+.memory-map-detail-copy {
+  color: var(--memory-map-muted);
+}
+
+.memory-map-rule {
+  background: var(--memory-map-border);
+}
+
+.memory-map-brand-icon,
+.memory-map-index,
+.memory-map-icon-button,
+.memory-map-close {
+  background: var(--memory-map-panel-soft);
+  border: 1px solid var(--memory-map-border);
+  color: var(--memory-map-muted);
+}
+
+.memory-map-brand-icon {
+  color: var(--memory-map-primary);
+  background: color-mix(in srgb, var(--memory-map-primary) 14%, transparent);
+}
+
+.memory-map-icon-button:hover,
+.memory-map-close:hover,
+.memory-map-selection-card:hover .memory-map-index {
+  background: color-mix(in srgb, var(--memory-map-primary) 16%, transparent);
+  border-color: var(--memory-map-border-strong);
+  color: var(--memory-map-text);
+}
+
+.memory-map-close:hover {
+  background: rgba(239, 68, 68, 0.14);
+  border-color: rgba(239, 68, 68, 0.28);
+  color: #ef4444;
+}
+
+.memory-map-badge,
+.memory-map-legend {
+  background: color-mix(in srgb, var(--memory-map-primary) 10%, transparent);
+  border: 1px solid var(--memory-map-border);
+  color: var(--memory-map-primary);
+}
+
+.memory-map-legend {
+  color: var(--memory-map-muted);
+}
+
+.memory-map-dot-core {
+  background: var(--memory-map-primary);
+}
+
+.memory-map-dot-branch {
+  background: var(--memory-map-secondary);
+}
+
+.memory-map-dot-detail {
+  background: var(--memory-map-tertiary);
+}
+
+.memory-map-content {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--memory-map-panel-soft) 70%, transparent), transparent 42%),
+    transparent;
+}
+
+.memory-map-selection-card {
+  background: var(--memory-map-panel);
+  border: 1px solid var(--memory-map-border);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+}
+
+.memory-map-selection-card:hover {
+  background: var(--memory-map-panel-strong);
+  border-color: var(--memory-map-border-strong);
+  box-shadow: var(--memory-map-card-shadow);
+  transform: translateY(-2px);
+}
+
+.memory-map-selection-card:hover .memory-map-card-title,
+.memory-map-card-link,
+.memory-map-selection-card:hover .memory-map-card-spark {
+  color: var(--memory-map-primary);
+}
+
+.memory-map-card-footer {
+  border-top: 1px solid var(--memory-map-border);
+  color: var(--memory-map-faint);
+}
+
+.memory-map-selection-card:hover .memory-map-card-footer svg {
+  color: var(--memory-map-primary);
+}
+
+.memory-map-canvas {
+  isolation: isolate;
+}
+
+.memory-map-root-card {
+  background:
+    linear-gradient(135deg, var(--memory-map-primary-strong), var(--memory-map-primary) 48%, var(--memory-map-secondary));
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  box-shadow: 0 24px 72px color-mix(in srgb, var(--memory-map-primary) 42%, transparent);
+}
+
+.memory-map-root-icon {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.32);
+}
+
+.memory-map-branch-card {
+  background: var(--memory-map-panel-strong);
+  border: 1px solid var(--memory-map-border);
+  box-shadow: var(--memory-map-card-shadow);
+}
+
+.memory-map-branch-card:hover {
+  border-color: var(--memory-map-border-strong);
+}
+
+.memory-map-branch-aura {
+  background: color-mix(in srgb, var(--memory-map-primary) 28%, transparent);
+}
+
+.memory-map-anchor {
+  background: var(--memory-map-secondary);
+  box-shadow: 0 0 0 7px color-mix(in srgb, var(--memory-map-secondary) 18%, transparent);
+}
+
+.memory-map-branch-icon {
+  color: var(--memory-map-primary);
+  background: color-mix(in srgb, var(--memory-map-primary) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--memory-map-primary) 24%, transparent);
+}
+
+.group\/node:hover .memory-map-branch-icon {
+  color: #ffffff;
+  background: var(--memory-map-primary);
+}
+
+.memory-map-branch-kicker {
+  color: var(--memory-map-secondary);
+}
+
+.group\/node:hover .memory-map-branch-title {
+  color: var(--memory-map-primary);
+}
+
+.memory-map-detail-card {
+  background: var(--memory-map-panel-soft);
+  border: 1px solid var(--memory-map-border);
+}
+
+.memory-map-detail-card:hover {
+  background: color-mix(in srgb, var(--memory-map-secondary) 11%, transparent);
+  border-color: color-mix(in srgb, var(--memory-map-secondary) 36%, transparent);
+}
+
+.memory-map-detail-bullet {
+  background: var(--memory-map-secondary);
+}
+
+.memory-map-detail-title {
+  color: var(--memory-map-text);
+}
+
+.group\/sub:hover .memory-map-detail-title {
+  color: var(--memory-map-secondary);
+}
+
+.memory-map-watermark {
+  color: color-mix(in srgb, var(--memory-map-text) 9%, transparent);
+}
+
+.group\/node:hover .memory-map-watermark {
+  color: color-mix(in srgb, var(--memory-map-primary) 24%, transparent);
+}
+
 /* Institute dashboard light-mode skin. Dark mode keeps the component Tailwind classes above. */
 .light-mode .institute-dashboard {
   background:

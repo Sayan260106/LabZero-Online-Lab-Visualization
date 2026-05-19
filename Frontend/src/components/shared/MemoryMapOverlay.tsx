@@ -85,72 +85,47 @@ const MemoryMapOverlay: React.FC<MemoryMapOverlayProps> = ({ onClose, initialSub
   }, [selectedTopic]);
 
   return (
-    <div className="fixed inset-0 z-[300] flex items-center justify-center p-2 sm:p-4 md:p-8 overflow-hidden">
+    <div className="memory-map-overlay fixed inset-0 z-[300] flex items-center justify-center p-2 sm:p-4 md:p-8 overflow-hidden">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="absolute inset-0 bg-[#020617]/98 backdrop-blur-3xl"
+        className="memory-map-scrim absolute inset-0 backdrop-blur-3xl"
       />
 
       <motion.div
         initial={{ opacity: 0, scale: 0.9, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-        className="relative w-full h-full bg-white/[0.01] border border-white/5 rounded-[28px] md:rounded-[40px] flex flex-col overflow-hidden shadow-[0_0_100px_rgba(0,0,0,0.5)]"
+        className="memory-map-shell relative w-full h-full rounded-[24px] md:rounded-[28px] flex flex-col overflow-hidden"
       >
-        {/* Background Particles */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none opacity-30">
-          {[...Array(20)].map((_, i) => (
-            <motion.div
-              key={i}
-              animate={{
-                y: [-20, 20],
-                x: [-10, 10],
-                opacity: [0.2, 0.5, 0.2],
-                scale: [1, 1.2, 1],
-              }}
-              transition={{
-                duration: 5 + Math.random() * 5,
-                repeat: Infinity,
-                delay: Math.random() * 5,
-              }}
-              className="absolute w-1 h-1 bg-white rounded-full blur-sm"
-              style={{
-                top: `${Math.random() * 100}%`,
-                left: `${Math.random() * 100}%`,
-              }}
-            />
-          ))}
-        </div>
-
         {/* Header */}
-        <div className="p-4 md:p-8 lg:p-10 flex items-center justify-between gap-4 border-b border-white/5 bg-white/[0.02] z-20">
+        <div className="memory-map-header p-4 md:p-8 lg:p-10 flex items-center justify-between gap-4 z-20">
           <div className="flex min-w-0 items-center gap-3 md:gap-6">
             {step !== 'subject' && (
               <button
                 onClick={handleBack}
-                className="w-10 h-10 md:w-12 md:h-12 shrink-0 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:text-white hover:bg-white/10 transition-all group"
+                className="memory-map-icon-button w-10 h-10 md:w-12 md:h-12 shrink-0 rounded-2xl flex items-center justify-center transition-all group"
               >
                 <ArrowLeft size={24} className="group-hover:-translate-x-1 transition-transform" />
               </button>
             )}
             <div className="min-w-0">
               <div className="flex items-center gap-3 flex-wrap">
-                <div className="w-10 h-10 shrink-0 rounded-xl bg-purple-500/20 flex items-center justify-center">
-                  <Brain className="text-purple-400" size={24} />
+                <div className="memory-map-brand-icon w-10 h-10 shrink-0 rounded-xl flex items-center justify-center">
+                  <Brain size={24} />
                 </div>
-                <h2 className="text-2xl md:text-3xl font-display font-bold text-white tracking-tight">
+                <h2 className="memory-map-title text-2xl md:text-3xl font-display font-bold tracking-tight">
                   Mind Map
                 </h2>
-                <div className="hidden sm:block px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-mono text-indigo-400 uppercase tracking-widest ml-2">
-                  v2.0 Professional
+                <div className="memory-map-badge hidden sm:block px-3 py-1 rounded-full text-[10px] font-mono uppercase tracking-widest ml-2">
+                  Structured View
                 </div>
               </div>
               <div className="flex items-center gap-2 mt-2">
-                <div className="hidden sm:block h-px w-6 bg-slate-700" />
-                <p className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.18em] md:tracking-[0.4em] truncate">
+                <div className="memory-map-rule hidden sm:block h-px w-6" />
+                <p className="memory-map-subtitle text-[10px] font-mono uppercase tracking-[0.18em] md:tracking-[0.4em] truncate">
                   {step === 'subject' && 'Explore Diverse Fields'}
                   {step === 'chapter' && `${selectedSubject?.name} Modules`}
                   {step === 'map' && `Visual Architecture: ${selectedTopic?.name}`}
@@ -161,24 +136,24 @@ const MemoryMapOverlay: React.FC<MemoryMapOverlayProps> = ({ onClose, initialSub
 
           <div className="flex shrink-0 items-center gap-2 md:gap-4">
             {step === 'map' && (
-              <div className="hidden lg:flex items-center gap-6 mr-8 px-6 py-2 rounded-2xl bg-white/5 border border-white/5">
-                <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
-                  <div className="w-2 h-2 rounded-full bg-purple-500" />
+              <div className="memory-map-legend hidden lg:flex items-center gap-6 mr-8 px-6 py-2 rounded-2xl">
+                <div className="flex items-center gap-2 text-[10px] font-mono">
+                  <div className="memory-map-dot memory-map-dot-core w-2 h-2 rounded-full" />
                   Core Module
                 </div>
-                <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
-                  <div className="w-2 h-2 rounded-full bg-indigo-400" />
+                <div className="flex items-center gap-2 text-[10px] font-mono">
+                  <div className="memory-map-dot memory-map-dot-branch w-2 h-2 rounded-full" />
                   Key Concepts
                 </div>
-                <div className="flex items-center gap-2 text-[10px] font-mono text-slate-400">
-                  <div className="w-2 h-2 rounded-full bg-slate-500" />
+                <div className="flex items-center gap-2 text-[10px] font-mono">
+                  <div className="memory-map-dot memory-map-dot-detail w-2 h-2 rounded-full" />
                   Technical Details
                 </div>
               </div>
             )}
             <button
               onClick={onClose}
-              className="w-11 h-11 md:w-14 md:h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-slate-400 hover:bg-red-500/20 hover:text-red-400 transition-all"
+              className="memory-map-close w-11 h-11 md:w-14 md:h-14 rounded-2xl flex items-center justify-center transition-all"
             >
               <X size={24} />
             </button>
@@ -186,7 +161,7 @@ const MemoryMapOverlay: React.FC<MemoryMapOverlayProps> = ({ onClose, initialSub
         </div>
 
         {/* Content */}
-        <div className="flex-1 min-h-0 overflow-auto p-4 md:p-8 lg:p-12 custom-scrollbar relative z-10">
+        <div className="memory-map-content flex-1 min-h-0 overflow-auto p-4 md:p-8 lg:p-12 custom-scrollbar relative z-10">
           <AnimatePresence mode="wait">
             {step === 'subject' && (
               <motion.div
@@ -194,7 +169,7 @@ const MemoryMapOverlay: React.FC<MemoryMapOverlayProps> = ({ onClose, initialSub
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -30 }}
-                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
               >
                 {subjects.map((subject, idx) => {
                   const colorClasses = COLOR_MAP[subject.color] || COLOR_MAP.purple;
@@ -202,20 +177,20 @@ const MemoryMapOverlay: React.FC<MemoryMapOverlayProps> = ({ onClose, initialSub
                     <button
                       key={subject.id}
                       onClick={() => handleSubjectSelect(subject)}
-                      className="group p-10 rounded-[40px] bg-white/[0.02] border border-white/5 hover:border-purple-500/50 hover:bg-purple-500/5 transition-all duration-700 text-left relative overflow-hidden flex flex-col h-[320px]"
+                      className="memory-map-selection-card group p-8 rounded-[24px] transition-all duration-500 text-left relative overflow-hidden flex flex-col h-[300px]"
                     >
                       <div className={`w-20 h-20 rounded-3xl ${colorClasses.split(' ')[0]} flex items-center justify-center ${colorClasses.split(' ')[1]} mb-8 group-hover:scale-110 transition-transform duration-500`}>
                         <Brain size={40} />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-2xl font-bold text-white mb-3 group-hover:text-purple-400 transition-colors uppercase">{subject.name}</h3>
-                        <p className="text-sm text-slate-500 leading-relaxed">
+                        <h3 className="memory-map-card-title text-2xl font-bold mb-3 transition-colors uppercase">{subject.name}</h3>
+                        <p className="memory-map-card-copy text-sm leading-relaxed">
                           Master {subject.name.toLowerCase()} through interactive visual architectures.
                         </p>
                       </div>
-                      <div className="flex items-center justify-between mt-auto pt-6 border-t border-white/5">
-                        <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">{subject.topics?.length || 0} Chapters</span>
-                        <ChevronRight className="text-slate-700 group-hover:text-purple-500 transition-colors" />
+                      <div className="memory-map-card-footer flex items-center justify-between mt-auto pt-6">
+                        <span className="text-[10px] font-mono uppercase tracking-widest">{subject.topics?.length || 0} Chapters</span>
+                        <ChevronRight className="transition-colors" />
                       </div>
                     </button>
                   );
@@ -235,17 +210,17 @@ const MemoryMapOverlay: React.FC<MemoryMapOverlayProps> = ({ onClose, initialSub
                   <button
                     key={topic.id}
                     onClick={() => handleTopicSelect(topic)}
-                    className="group p-8 rounded-[32px] bg-white/[0.02] border border-white/5 hover:border-indigo-500/30 hover:bg-indigo-500/5 transition-all duration-500 text-left relative overflow-hidden"
+                    className="memory-map-selection-card group p-7 rounded-[22px] transition-all duration-500 text-left relative overflow-hidden"
                   >
                     <div className="flex items-start justify-between mb-6">
-                      <div className="w-12 h-12 rounded-2xl bg-white/5 flex items-center justify-center text-slate-500 group-hover:bg-indigo-500 group-hover:text-white transition-all font-mono font-bold">
+                      <div className="memory-map-index w-12 h-12 rounded-2xl flex items-center justify-center transition-all font-mono font-bold">
                         {String(idx + 1).padStart(2, '0')}
                       </div>
-                      <Sparkles size={16} className="text-slate-800 group-hover:text-indigo-400 transition-colors" />
+                      <Sparkles size={16} className="memory-map-card-spark transition-colors" />
                     </div>
-                    <h3 className="text-xl font-bold text-white group-hover:text-indigo-400 transition-colors mb-3 uppercase tracking-tight">{topic.name}</h3>
-                    <p className="text-xs text-slate-500 leading-relaxed line-clamp-2 mb-6">{topic.description}</p>
-                    <div className="flex items-center gap-2 text-[10px] font-mono text-indigo-500/70 group-hover:text-indigo-400 transition-colors uppercase tracking-widest">
+                    <h3 className="memory-map-card-title text-xl font-bold transition-colors mb-3 uppercase tracking-tight">{topic.name}</h3>
+                    <p className="memory-map-card-copy text-xs leading-relaxed line-clamp-2 mb-6">{topic.description}</p>
+                    <div className="memory-map-card-link flex items-center gap-2 text-[10px] font-mono transition-colors uppercase tracking-widest">
                       Explore Map <ChevronRight size={14} />
                     </div>
                   </button>
@@ -303,21 +278,9 @@ const VisualMap: React.FC<{ node: MapNode }> = ({ node }) => {
 
   return (
     <div
-      className="relative shrink-0 overflow-visible"
+      className="memory-map-canvas relative shrink-0 overflow-visible"
       style={{ width: mapWidth, height: mapHeight }}
     >
-      {/* Global Background Glow */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          animate={{
-            scale: [1, 1.1, 1],
-            opacity: [0.1, 0.2, 0.1],
-          }}
-          transition={{ duration: 12, repeat: Infinity }}
-          className="absolute left-1/2 top-1/2 w-[900px] h-[900px] -translate-x-1/2 -translate-y-1/2 bg-blue-600/10 rounded-full blur-[150px]"
-        />
-      </div>
-
       <svg
         className="absolute inset-0 z-10 pointer-events-none"
         viewBox={`0 0 ${mapWidth} ${mapHeight}`}
@@ -327,15 +290,15 @@ const VisualMap: React.FC<{ node: MapNode }> = ({ node }) => {
       >
         <defs>
           <linearGradient id="mindmap-line-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#a855f7" />
-            <stop offset="100%" stopColor="#6366f1" />
+            <stop offset="0%" stopColor="var(--memory-map-line-a)" />
+            <stop offset="100%" stopColor="var(--memory-map-line-b)" />
           </linearGradient>
         </defs>
         {branches.map(({ child, centerY }, idx) => (
           <motion.path
             key={`${child.id}-line`}
             initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: 1, opacity: 0.5 }}
+            animate={{ pathLength: 1, opacity: 0.72 }}
             transition={{ duration: 1.2, delay: idx * 0.12 }}
             d={`M ${rootCenterX + rootWidth / 2} ${rootCenterY} C ${rootCenterX + rootWidth / 2 + 70} ${rootCenterY}, ${branchLeft - 70} ${centerY}, ${branchLeft} ${centerY}`}
             stroke="url(#mindmap-line-grad)"
@@ -350,11 +313,11 @@ const VisualMap: React.FC<{ node: MapNode }> = ({ node }) => {
       {/* Root Node */}
       <motion.div
         layoutId="root-node"
-        className="absolute z-30 w-[300px] -translate-x-1/2 -translate-y-1/2 p-8 rounded-[36px] bg-gradient-to-br from-purple-600 via-indigo-600 to-blue-600 shadow-[0_0_80px_rgba(139,92,246,0.5)] border border-white/20 text-center group cursor-pointer"
+        className="memory-map-root-card absolute z-30 w-[300px] -translate-x-1/2 -translate-y-1/2 p-8 rounded-[28px] text-center group cursor-pointer"
         style={{ left: rootCenterX, top: rootCenterY }}
         whileHover={{ scale: 1.05 }}
       >
-        <div className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-5 backdrop-blur-xl border border-white/30 shadow-inner group-hover:animate-pulse">
+        <div className="memory-map-root-icon w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-5 backdrop-blur-xl shadow-inner group-hover:animate-pulse">
           <Brain size={38} className="text-white" />
         </div>
         <h4 className="text-2xl font-display font-black text-white uppercase leading-tight break-words">{node.label}</h4>
@@ -381,20 +344,20 @@ const VisualMap: React.FC<{ node: MapNode }> = ({ node }) => {
           className="absolute z-20 pointer-events-auto group/node"
           style={{ left: branchLeft, top, width: branchWidth, minHeight: height }}
         >
-          <div className="relative h-full p-5 rounded-[28px] bg-[#0f172a]/95 border border-white/10 backdrop-blur-3xl hover:border-purple-500/60 transition-all cursor-pointer shadow-2xl overflow-hidden">
-            <div className="absolute -top-10 -left-10 w-24 h-24 bg-purple-600/20 rounded-full blur-3xl opacity-0 group-hover/node:opacity-100 transition-opacity" />
+          <div className="memory-map-branch-card relative h-full p-5 rounded-[22px] backdrop-blur-3xl transition-all cursor-pointer overflow-hidden">
+            <div className="memory-map-branch-aura absolute -top-10 -left-10 w-24 h-24 rounded-full blur-3xl opacity-0 group-hover/node:opacity-100 transition-opacity" />
             <div
-              className="absolute left-0 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-purple-400 ring-4 ring-purple-500/20"
+              className="memory-map-anchor absolute left-0 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full"
               style={{ top: centerY - top }}
             />
 
             <div className="flex items-start gap-3 mb-4 relative z-10">
-              <div className="w-10 h-10 shrink-0 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 group-hover/node:bg-purple-500 group-hover/node:text-white transition-all duration-500">
+              <div className="memory-map-branch-icon w-10 h-10 shrink-0 rounded-xl flex items-center justify-center transition-all duration-500">
                 <Target size={20} />
               </div>
               <div className="min-w-0">
-                <div className="text-[10px] font-mono text-purple-300/70 uppercase tracking-[0.24em] mb-1">Branch {String(idx + 1).padStart(2, '0')}</div>
-                <h5 className="text-lg font-bold text-white group-hover/node:text-purple-400 transition-colors uppercase leading-tight break-words">{child.label}</h5>
+                <div className="memory-map-branch-kicker text-[10px] font-mono uppercase tracking-[0.24em] mb-1">Branch {String(idx + 1).padStart(2, '0')}</div>
+                <h5 className="memory-map-branch-title text-lg font-bold transition-colors uppercase leading-tight break-words">{child.label}</h5>
               </div>
             </div>
 
@@ -407,20 +370,20 @@ const VisualMap: React.FC<{ node: MapNode }> = ({ node }) => {
                   transition={{ delay: idx * 0.12 + sIdx * 0.08 + 0.55 }}
                   className="group/sub relative"
                 >
-                  <div className="p-3 rounded-xl bg-white/[0.03] border border-white/5 hover:bg-white/[0.08] hover:border-indigo-500/40 transition-all">
+                  <div className="memory-map-detail-card p-3 rounded-xl transition-all">
                     <div className="flex items-start gap-2 mb-1">
-                      <div className="mt-1.5 w-1.5 h-1.5 shrink-0 rounded-full bg-indigo-500" />
-                      <span className="text-[11px] font-bold text-slate-200 group-hover/sub:text-indigo-300 transition-colors uppercase leading-snug break-words">{sub.label}</span>
+                      <div className="memory-map-detail-bullet mt-1.5 w-1.5 h-1.5 shrink-0 rounded-full" />
+                      <span className="memory-map-detail-title text-[11px] font-bold transition-colors uppercase leading-snug break-words">{sub.label}</span>
                     </div>
                     {sub.description && (
-                      <p className="text-[10px] text-slate-500 leading-normal pl-3.5 group-hover/sub:text-slate-400 transition-colors">{sub.description}</p>
+                      <p className="memory-map-detail-copy text-[10px] leading-normal pl-3.5 transition-colors">{sub.description}</p>
                     )}
                   </div>
                 </motion.div>
               ))}
             </div>
 
-            <div className="absolute bottom-2 right-2 text-white/5 group-hover/node:text-purple-500/20 transition-colors">
+            <div className="memory-map-watermark absolute bottom-2 right-2 transition-colors">
               <Layers size={32} />
             </div>
           </div>
